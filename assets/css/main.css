@@ -642,10 +642,12 @@ input, select, textarea {
 				padding: 1em;
 			}
 
-				.box.style2 {
-					padding: 1.5em 1.25em 1.5em 1.25em;
-					background-color: rgba(255, 255, 255, 0.9);
-				}
+      .box.style2 {
+        padding: 1.5em 1.25em 1.5em 1.25em;
+        background: #faecda;
+        text-align: justify;
+        /*background-color: rgba(255, 255, 255, 0.9);*/
+      }
 
 		}
 

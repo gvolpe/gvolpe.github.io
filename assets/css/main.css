@@ -1823,10 +1823,13 @@ input, select, textarea {
 				flex-direction: column;
 			}
 
-				.gallery article {
-					width: 100%;
-				}
+      .gallery article {
+        width: 100%;
+      }
 
+			.gallery article .image {
+        pointer-events: none;
+			}
 		}
 
 /* Header */

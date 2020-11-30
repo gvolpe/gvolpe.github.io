@@ -2091,6 +2091,9 @@ input, select, textarea {
 				width: 40%;
 			}
 
+      .main.dark .button.style2.down.anchored {
+        display: none;
+      }
 		}
 
 		@media screen and (max-width: 1280px) {

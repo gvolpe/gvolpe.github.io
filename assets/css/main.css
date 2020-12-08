@@ -1217,6 +1217,10 @@ input, select, textarea {
 				padding: 0.5em 1em 0.5em 1em;
 			}
 
+      table.default td.first {
+        width: 23ch;
+      }
+
 			table.default th {
 				text-align: left;
 				font-weight: 900;

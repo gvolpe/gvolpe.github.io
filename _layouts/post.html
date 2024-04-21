@@ -1,0 +1,42 @@
+---
+layout: default
+slug: single
+---
+<article class="post container card">
+  <header class="post-header">
+    <h1 class="post-title">{{ page.title }}</h1>
+    <span class="post-meta">
+      <time class="post-date" datetime="{{ page.date | date:"%Y-%m-%d" }}">{{ page.date | date: "%b %-d, %Y" }}</time>
+      <span class="post-author">by {{ site.author.name }}</span>
+    </span>
+  </header>
+
+  <div class="post-content">
+
+    {{ content }}
+
+    <div class="post-categories">
+      <span class="post-meta">
+        <span class="post-date">Categories:</span>
+        {% for category in page.categories %}
+        <a href="{{site.baseurl}}/blog/categories/#{{category|slugize}}">{{category}}</a>
+        {% unless forloop.last %}&nbsp;{% endunless %}
+        {% endfor %}
+      </span>
+    </div>
+
+    <aside class="share">
+
+      <span>Share this: </span>
+
+      <a href="http://twitter.com/share?text={{page.title}}&amp;url={{site.url}}{{ page.url }}&amp;hashtags=scala,haskell,fp&amp;via=volpegabriel87"
+      onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-twitter-square"></i>
+      </a>
+
+    </aside>
+
+    {% include github-comments.html %}
+
+  </div>
+</article>

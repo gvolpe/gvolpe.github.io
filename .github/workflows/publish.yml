@@ -1,0 +1,36 @@
+name: Blog
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/publish.yml"
+      - "_includes/**"
+      - "_layouts/**"
+      - "_posts/**"
+      - "css/**"
+      - "images/**"
+      - "js/**"
+      - "index.html"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - uses: cachix/install-nix-action@v22
+      - uses: cachix/cachix-action@v14
+        with:
+          name: gvolpe-blog
+          signingKey: "${{ secrets.CACHIX_SIGNING_KEY }}"
+
+      - name: "Generating site 🚧"
+        run: nix develop -c bundle exec rake site:generate
+
+      - name: "Deploy 🚀"
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          ACCESS_TOKEN: "${{ secrets.ACCESS_TOKEN }}"
+          BRANCH: master
+          FOLDER: "_site"

@@ -5,6 +5,7 @@ on:
     branches:
       - master
     paths:
+      - ".nojekyll"
       - ".github/workflows/**"
       - "_includes/**"
       - "_layouts/**"

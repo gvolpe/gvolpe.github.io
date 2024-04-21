@@ -1,4 +1,4 @@
-name: Blog
+name: Build
 
 on:
   pull_request: {}

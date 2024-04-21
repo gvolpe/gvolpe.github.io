@@ -1,11 +1,11 @@
-name: Blog
+name: Publish
 
 on:
   push:
     branches:
       - master
     paths:
-      - ".github/workflows/publish.yml"
+      - ".github/workflows/**"
       - "_includes/**"
       - "_layouts/**"
       - "_posts/**"

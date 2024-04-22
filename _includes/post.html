@@ -10,7 +10,7 @@
   <div class="post-categories">
     <span class="post-meta">
       {% for category in post.categories %}
-      <a href="{{site.baseurl}}/categories/#{{category|slugize}}">{{category}}</a>
+      <a href="{{site.baseurl}}/blog/categories/#{{category|slugize}}">{{category}}</a>
       {% unless forloop.last %}&nbsp;{% endunless %}
       {% endfor %}
     </span>

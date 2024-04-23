@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 22 Apr 2024 10:17:51 +0000</pubDate>
-    <lastBuildDate>Mon, 22 Apr 2024 10:17:51 +0000</lastBuildDate>
+    <pubDate>Tue, 23 Apr 2024 17:20:57 +0000</pubDate>
+    <lastBuildDate>Tue, 23 Apr 2024 17:20:57 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -25,7 +25,7 @@
 
 &lt;p&gt;Shown below is a side-by-side comparison of &lt;code&gt;nix flake show&lt;/code&gt;’s output on my &lt;a href=&quot;https://github.com/gvolpe/nix-config&quot;&gt;NixOS configuration&lt;/a&gt; flake:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/flake-show-schemas.png&quot; alt=&quot;schemas&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/flake-show-schemas.png&quot; alt=&quot;schemas&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Neat! Don’t you think? I was irked by the usual &lt;code&gt;homeConfigurations: unknown&lt;/code&gt; output.&lt;/p&gt;
 
@@ -327,7 +327,7 @@ nix-repl&amp;gt; outputs.nixosConfigurations.tongfang-amd.pkgs.secrets.githubTok
 
 &lt;p&gt;Once it was all set, I had my private flake successfully building my Home Manager and NixOS configurations on Garnix in no time!&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/garnix-private-build.png&quot; alt=&quot;summary&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/garnix-private-build.png&quot; alt=&quot;summary&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://garnix.io/&quot;&gt;Garnix&lt;/a&gt; rocks! Now even more with a revamped website and UI :)&lt;/p&gt;
 
@@ -455,15 +455,15 @@ on:
 
 &lt;p&gt;It expects the &lt;code&gt;NIXBUILD_SSH_KEY&lt;/code&gt; environment variable to be set with your private SSH key value used to sign up for Nixbuild. Note that both &lt;code&gt;homeConfigurations&lt;/code&gt; and &lt;code&gt;nixosConfigurations&lt;/code&gt; are exposed as checks, so these will also be built, resulting in the following workflow.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/nixbuild-jobs.png&quot; alt=&quot;jobs&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/nixbuild-jobs.png&quot; alt=&quot;jobs&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Once it finishes, it may produce some artifacts.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/nixbuild-artifacts.png&quot; alt=&quot;artifacts&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/nixbuild-artifacts.png&quot; alt=&quot;artifacts&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;As well as a final summary.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/nixbuild-summary.png&quot; alt=&quot;summary&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/nixbuild-summary.png&quot; alt=&quot;summary&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I found the summaries to be extremely helpful understanding what was built on the remote machine, which can also help us understand costs.&lt;/p&gt;
 
@@ -509,7 +509,7 @@ Gabriel.&lt;/p&gt;
 
 &lt;p&gt;Once you install the Garnix CI app in your Github account and enable the repositories where you want it to run, you’ll notice that it will automatically detect a &lt;code&gt;flake.nix&lt;/code&gt; and it will evaluate its packages, dev shells, checks and NixOS configurations. Still, this is all configurable per repository via a &lt;a href=&quot;https://github.com/gvolpe/nix-config/blob/master/garnix.yaml&quot;&gt;garnix.yaml&lt;/a&gt; file.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/garnix-app.png&quot; alt=&quot;app&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/garnix-app.png&quot; alt=&quot;app&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;The &lt;code&gt;homeConfigurations&lt;/code&gt; output is &lt;a href=&quot;https://github.com/garnix-io/issues/issues/24&quot;&gt;not yet supported&lt;/a&gt;, but it’s in the plans. A current workaround is to expose these as &lt;code&gt;packages&lt;/code&gt; or &lt;code&gt;checks&lt;/code&gt; instead, as I have in my flake’s outputs.&lt;/p&gt;
 
@@ -563,17 +563,17 @@ git+file:///home/gvolpe/workspace/nix-config?ref&lt;span class=&quot;o&quot;&gt;
 
 &lt;p&gt;Here’s the &lt;a href=&quot;https://github.com/gvolpe/nix-config/pull/162/files&quot;&gt;pull request&lt;/a&gt; I made to completely remove the GHA workflows for my configuration (including Cachix) and use Garnix instead. The build times are insanely fast!&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/garnix-actions.png&quot; alt=&quot;actions&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/garnix-actions.png&quot; alt=&quot;actions&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Building my Home Manager configuration used to take about &lt;strong&gt;7m 30s&lt;/strong&gt; with my previous setup. With Garnix, it built in &lt;strong&gt;1m 45s&lt;/strong&gt; the first time, but it only took about &lt;strong&gt;26s&lt;/strong&gt; in subsequent runs by leveraging its binary cache!&lt;/p&gt;
 
 &lt;p&gt;The dashboard is quite minimalistic and could use some improvements, but the service is still in Beta :)&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/garnix-home.png&quot; alt=&quot;home&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/garnix-home.png&quot; alt=&quot;home&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;If we click on the status of any build, we can see the logs whenever available.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/garnix-logs.png&quot; alt=&quot;logs&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/garnix-logs.png&quot; alt=&quot;logs&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;There are a few tickets raised in their &lt;a href=&quot;https://github.com/garnix-io/issues/issues&quot;&gt;issue tracker&lt;/a&gt; to make it nicer and provide a better user experience, thus I believe it can only get better from now 💪&lt;/p&gt;
 
@@ -691,7 +691,7 @@ Gabriel.&lt;/p&gt;
 
 &lt;p&gt;Up to August 2022, my Neovim configuration was tightly coupled to my Home Manager configuration. It now lives at &lt;a href=&quot;https://github.com/gvolpe/neovim-coc&quot;&gt;neovim-coc&lt;/a&gt;, and it is only there for archival reasons; it is no longer maintained.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/neovim-flake.png&quot; alt=&quot;flake&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/neovim-flake.png&quot; alt=&quot;flake&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;It was back then when I started &lt;a href=&quot;https://github.com/gvolpe/neovim-flake&quot;&gt;Neovim Flake&lt;/a&gt; as a fork of &lt;a href=&quot;https://github.com/jordanisaacs&quot;&gt;Jordan Isaacs&lt;/a&gt;’ flake. I liked the flakes approach for individual applications so much that I soon started making countless changes to adapt it to my needs and liking. It changed so much that you wouldn’t recognize it from the fork.&lt;/p&gt;
 
@@ -860,7 +860,7 @@ git+file:///home/gvolpe/workspace/neovim-flake
 
 &lt;p&gt;For instance, the &lt;a href=&quot;https://gvolpe.com/neovim-flake/options.html#opt-vim.lsp.scala.enable&quot;&gt;vim.lsp.scala&lt;/a&gt; options look as follows.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/vim-scala-docs.png&quot; alt=&quot;docs&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/vim-scala-docs.png&quot; alt=&quot;docs&quot; /&gt;&lt;/p&gt;
 
 &lt;h3 id=&quot;updates&quot;&gt;Updates&lt;/h3&gt;
 
@@ -2219,9 +2219,9 @@ Gabriel.&lt;/p&gt;
 
 &lt;p&gt;This was a really fun problem to solve! I hope you have enjoyed reading about it. As a bonus track, here are some graphics showing how this performs under heavy load of events coming in from an Apache Pulsar topic.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/metrics1.png&quot; alt=&quot;m1&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/metrics1.png&quot; alt=&quot;m1&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;../images/metrics2.png&quot; alt=&quot;m1&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../../images/metrics2.png&quot; alt=&quot;m1&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I can’t disclose more information than you can see in these JVM metrics but the GC pauses are interesting to observe, which makes sense given that we allocate quite a lot of objects in memory during the aggregation time window.&lt;/p&gt;
 

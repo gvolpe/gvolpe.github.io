@@ -29,7 +29,7 @@ The only downside of relying on plugins defined in `nixpkgs` is that they may ge
 
 Up to August 2022, my Neovim configuration was tightly coupled to my Home Manager configuration. It now lives at [neovim-coc](https://github.com/gvolpe/neovim-coc), and it is only there for archival reasons; it is no longer maintained.
 
-![flake](../images/neovim-flake.png)
+![flake](../../images/neovim-flake.png)
 
 It was back then when I started [Neovim Flake](https://github.com/gvolpe/neovim-flake) as a fork of [Jordan Isaacs](https://github.com/jordanisaacs)' flake. I liked the flakes approach for individual applications so much that I soon started making countless changes to adapt it to my needs and liking. It changed so much that you wouldn't recognize it from the fork.
 
@@ -214,7 +214,7 @@ Home Manager users are accustomed to access the [DocBook documentation](https://
 
 For instance, the [vim.lsp.scala](https://gvolpe.com/neovim-flake/options.html#opt-vim.lsp.scala.enable) options look as follows.
 
-![docs](../images/vim-scala-docs.png)
+![docs](../../images/vim-scala-docs.png)
 
 ### Updates
 

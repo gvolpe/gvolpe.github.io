@@ -10,7 +10,7 @@ These past few weeks I've been interviewing with a few companies, as I'm activel
 
 Interviewing is hard; interviewing Software Engineers is a work of art.
 
-![interview](../images/interview.png)
+![interview](../../images/interview.png)
 
 Let's be honest. Software Engineers, especially in the functional programming space, are a scarce resource. So the better the interview process, the bigger the chances you have of hiring great engineers.
 

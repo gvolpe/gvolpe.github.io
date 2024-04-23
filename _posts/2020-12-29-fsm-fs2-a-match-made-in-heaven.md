@@ -415,9 +415,9 @@ Initially, my first solution was based on `evalMapAccumulate` + `debounce` + `Re
 
 This was a really fun problem to solve! I hope you have enjoyed reading about it. As a bonus track, here are some graphics showing how this performs under heavy load of events coming in from an Apache Pulsar topic.
 
-![m1](../images/metrics1.png)
+![m1](../../images/metrics1.png)
 
-![m1](../images/metrics2.png)
+![m1](../../images/metrics2.png)
 
 I can't disclose more information than you can see in these JVM metrics but the GC pauses are interesting to observe, which makes sense given that we allocate quite a lot of objects in memory during the aggregation time window.
 

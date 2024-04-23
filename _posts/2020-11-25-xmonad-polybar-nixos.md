@@ -31,7 +31,7 @@ XMonad is a dynamically tiling [X11](https://en.wikipedia.org/wiki/X_Window_Syst
 
 This is what it looks like at the moment on my machine (it's always evolving).
 
-![xmonad](../images/xmonad.jpg)
+![xmonad](../../images/xmonad.jpg)
 
 That's not only XMonad but also [Polybar](https://polybar.github.io/) and [Picom](https://github.com/yshui/picom) complementing it, a status bar and a compositor, respectively.
 
@@ -198,7 +198,7 @@ The former has been around for a long time and it's a good default but after try
 
 Here's how it looks on my machine.
 
-![rofi](../images/rofi.png)
+![rofi](../../images/rofi.png)
 
 I use a customized version of the [Arthur theme](https://github.com/davatorium/rofi/blob/next/themes/arthur.rasi). Here's how to import it using Home Manager.
 

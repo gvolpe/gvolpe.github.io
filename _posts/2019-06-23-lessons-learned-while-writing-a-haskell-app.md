@@ -134,7 +134,7 @@ What I want to test is how these components play their role in the main logic as
 
 The main logic resides in the implementation of the `CachedForex` service. By following the flow diagram below you should be able to understand it.
 
-![flow-diagram](../images/api-rates-flow.png)
+![flow-diagram](../../images/api-rates-flow.png)
 
 *For the atomic block `bracket` and `finally` from `Control.Monad.Catch` do the trick.*
 

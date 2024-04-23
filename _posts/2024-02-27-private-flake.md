@@ -201,7 +201,7 @@ builds:
 
 Once it was all set, I had my private flake successfully building my Home Manager and NixOS configurations on Garnix in no time!
 
-![summary](../images/garnix-private-build.png)
+![summary](../../images/garnix-private-build.png)
  
 [Garnix](https://garnix.io/) rocks! Now even more with a revamped website and UI :)
 

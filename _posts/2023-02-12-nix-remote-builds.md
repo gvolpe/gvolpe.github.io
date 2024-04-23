@@ -102,15 +102,15 @@ jobs:
 
 It expects the `NIXBUILD_SSH_KEY` environment variable to be set with your private SSH key value used to sign up for Nixbuild. Note that both `homeConfigurations` and `nixosConfigurations` are exposed as checks, so these will also be built, resulting in the following workflow.
 
-![jobs](../images/nixbuild-jobs.png)
+![jobs](../../images/nixbuild-jobs.png)
 
 Once it finishes, it may produce some artifacts.
 
-![artifacts](../images/nixbuild-artifacts.png)
+![artifacts](../../images/nixbuild-artifacts.png)
 
 As well as a final summary.
 
-![summary](../images/nixbuild-summary.png)
+![summary](../../images/nixbuild-summary.png)
 
 I found the summaries to be extremely helpful understanding what was built on the remote machine, which can also help us understand costs.
 

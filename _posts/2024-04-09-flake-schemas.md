@@ -20,7 +20,7 @@ Before we look into the shenanigans we need to get through to get this working, 
 
 Shown below is a side-by-side comparison of `nix flake show`'s output on my [NixOS configuration](https://github.com/gvolpe/nix-config) flake:
 
-![schemas](../images/flake-show-schemas.png)
+![schemas](../../images/flake-show-schemas.png)
 
 Neat! Don't you think? I was irked by the usual `homeConfigurations: unknown` output.
 

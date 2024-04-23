@@ -164,7 +164,7 @@ So far, I have been trying this configuration on [this blog](https://github.com/
 
 Here's a screenshot of the current size of all the caches I have defined:
 
-![cachix](../images/cachix.png)
+![cachix](../../images/cachix.png)
 
 ### Microsite publishing automation
 

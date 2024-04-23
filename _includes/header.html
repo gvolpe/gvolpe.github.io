@@ -1,22 +1,10 @@
-<header class="header">
-
+<header id="header">
+  <h1>Gabriel Volpe's blog</h1>
   <div class="overlay">
-
     <div class="container">
-
-      <h1 class="title">
-        <a href="{{ site.baseurl }}/">{{ site.title }}</a>
-      </h1>
-
-      <nav class="navbar">
-        <a href="#" class="menu-icon">
-          <span></span>
-          <span></span>
-          <span></span>
-        </a>
-
-        <ul class="nav">
-          <li><a href="{{ site.base }}/">home</a></li>
+      <nav>
+        <ul>
+          <li><a href="{{ site.base }}/">Home</a></li>
           {% for page in site.pages %}
             {% if page.title and page.title != 'Home' %}
             <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
@@ -26,7 +14,7 @@
         </ul>
       </nav>
     </div>
-
+     
     {% if page.slug == 'home' %}
       <h2 class="txt-center">
         <strong>{{ site.description }}</strong>
@@ -34,5 +22,4 @@
     {% endif %}
 
   </div>
-
 </header>

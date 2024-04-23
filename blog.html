@@ -4,9 +4,11 @@ permalink: /blog/
 title: Blog
 ---
 
-<div class="post-list">
-  <!--NOTE: pagination only works on one index.html: https://jekyllrb.com/docs/pagination/-->
-  {% for post in site.posts %}
-    {% include post.html %}
-  {% endfor %}
-</div>
+<section id="intro" class="main style3 dark fullscreen">
+  <div class="post-list">
+    <!--NOTE: pagination only works on one index.html: https://jekyllrb.com/docs/pagination/-->
+    {% for post in site.posts %}
+      {% include post.html %}
+    {% endfor %}
+  </div>
+</section>

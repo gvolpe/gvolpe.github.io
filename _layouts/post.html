@@ -10,7 +10,7 @@ slug: single
         <h1 class="post-title">{{ page.title }}</h1>
         <span class="post-meta">
           <time class="post-date" datetime="{{ page.date | date:"%Y-%m-%d" }}">{{ page.date | date: "%b %-d, %Y" }}</time>
-          <span class="post-author">by {{ site.author.name }}</span>
+          <span class="post-author">by <a href="{{ site.baseurl }}/">{{ site.author.name }}</a></span>
         </span>
 
         <div class="post-categories">

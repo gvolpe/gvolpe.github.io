@@ -15,7 +15,6 @@ slug: single
 
         <div class="post-categories">
           <span class="post-meta">
-            <span class="cat-title">Categories:</span>
             {% for category in page.categories %}
             <a href="{{site.baseurl}}/blog/categories/#{{category|slugize}}" class="cat-link">{{category}}</a>
             {% unless forloop.last %}&nbsp;{% endunless %}

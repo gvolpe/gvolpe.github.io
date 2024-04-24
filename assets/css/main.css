@@ -9,8 +9,8 @@
 
 html, body, div, span, applet, object,
 iframe, h1, h2, h3, h4, h5, h6, p, blockquote,
-pre, a, abbr, acronym, address, big, cite,
-code, del, dfn, em, img, ins, kbd, q, s, samp,
+a, abbr, acronym, address, big, cite,
+del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var, b,
 u, i, center, dl, dt, dd, ol, ul, li, fieldset,
 form, label, legend, table, caption, tbody,
@@ -560,6 +560,12 @@ input, select, textarea {
 			text-decoration: none;
 		}
 
+  h1.post-title {
+		font-size: 2.5em;
+		letter-spacing: 0.01em;
+		padding-bottom: 0.2em;
+  }
+  
 	h2 {
 		font-size: 2.25em;
 		line-height: 1.25em;
@@ -568,6 +574,10 @@ input, select, textarea {
 
 	@media screen and (max-width: 736px) {
 
+    h1.post-title {
+      font-size: 1.7em;
+    }
+  
 		h2 {
 			font-size: 1.5em;
 		}
@@ -1005,6 +1015,15 @@ input, select, textarea {
 
 /* List */
 
+  .post-content ul {
+		list-style: disc;
+		padding-left: 1em;
+  }
+
+  .post-content ul li {
+    padding-left: 0.5em;
+  }
+
 	ul.default {
 		list-style: disc;
 		padding-left: 1em;
@@ -1188,11 +1207,15 @@ input, select, textarea {
 		margin-bottom: 1em;
 	}
 
-		header p {
-			display: block;
-			margin: 1em 0 0 0;
-			padding: 0 0 0.5em 0;
-		}
+	header.post-header {
+		margin-bottom: 0em;
+	}
+
+  header p {
+    display: block;
+    margin: 1em 0 0 0;
+    padding: 0 0 0.5em 0;
+  }
 
 	footer {
 		margin-top: 2em;
@@ -2047,6 +2070,11 @@ input, select, textarea {
 				transform: translateX(100%);
 			}
 
+		.main.style-post {
+			text-align: center;
+			padding: 2em 0 2em 0;
+		}
+
 		.main.style3 {
 			text-align: center;
 			padding: 6em 0 6em 0;
@@ -2070,6 +2098,33 @@ input, select, textarea {
 
 			.main.dark a {
 				color: inherit;
+			}
+
+			.main.dark a.cat-link {
+        color: #f3e7fe;
+		    font-style: italic;
+        font-size: 0.8em;
+			}
+
+			.main.dark a.cat-link-list {
+        text-decoration: none;
+			}
+
+      .main.dark a.cat-link-list:hover {
+        color: #e4cafb;
+      }
+
+      .main.dark a.cat-link-list:active {
+        color: #e4cafb;
+      }
+
+			.main.dark ul.cat-list {
+        margin-bottom: 0.5em;
+			}
+
+			.main.dark span.cat-title {
+        color: #f3e7fe;
+        font-size: 0.8em;
 			}
 
 			.main.dark .button.style2 {
@@ -2214,10 +2269,14 @@ input, select, textarea {
 			margin: 0;
 		}
 
-			#footer ul.menu li {
-				border-left-color: rgba(185, 186, 187, 0.2);
-				font-size: 0.9em;
-			}
+    #footer ul.menu li {
+      border-left-color: rgba(185, 186, 187, 0.2);
+      font-size: 0.9em;
+    }
+
+		#footer small {
+			font-size: 13px;
+		}
 
 		@media screen and (max-width: 1000px) {
 

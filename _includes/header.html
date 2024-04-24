@@ -1,14 +1,19 @@
 <header id="header">
-  <h1>Gabriel Volpe's blog</h1>
+  <h1>
+    {% if page.title and page.title != 'Blog' %}
+    <a href="{{ site.baseurl }}/blog">Gabriel Volpe's blog</a>
+    {% else %}
+    Gabriel Volpe's blog
+    {% endif %}
+  </h1>
   <div class="overlay">
     <div class="container">
       <nav>
         <ul>
           <li><a href="{{ site.base }}/">Home</a></li>
           {% for page in site.pages %}
-            {% if page.title and page.title != 'Home' %}
-            <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
-            {% else %}
+            {% if page.title and page.title != 'Home' and page.title != 'Blog' %}
+              <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
             {% endif %}
           {% endfor %}
         </ul>

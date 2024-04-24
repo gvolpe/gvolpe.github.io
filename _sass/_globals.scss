@@ -148,8 +148,8 @@ hr {
  * Blockquotes
  */
 blockquote {
-  color: $gray-color;
-  border-left: 4px solid $gray-color-light;
+  color: $white-color;
+  border-left: 2px solid $gray-color-light;
   padding-left: $spacing-unit / 2;
   font-size: 18px;
   letter-spacing: -1px;
@@ -165,14 +165,16 @@ blockquote {
  */
 pre,
 code {
-  font-size: 15px;
-  border: 1px solid $gray-color-light;
+  font-size: 12px;
+  //border: 1px solid $gray-color-light;
   border-radius: 3px;
-  background-color: #eef;
+  //background-color: #eef;
+  background-color: #faecda;
+  color: #39454b;
 }
 
 code {
-  padding: 1px 5px;
+  padding: 1px 3px;
 }
 
 pre {

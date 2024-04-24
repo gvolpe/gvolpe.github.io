@@ -29,7 +29,11 @@ body {
 // Correct `block` display not defined for `main` in IE 11.
 //
 
-article,
+article {
+  background-color: transparent;
+  color: black;
+}
+
 aside,
 details,
 figcaption,

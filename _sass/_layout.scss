@@ -21,8 +21,9 @@
 
 .card {
   padding: $spacing-unit;
-  background-color: #fff;
-  box-shadow: 0px 1px 2px rgba(#000, .2);
+	background: url("images/overlay.png"), url("../../images/one.jpg");
+  color: white;
+  box-shadow: 2px 1px 2px rgba(#000, .2);
 }
 
 .readmore {
@@ -165,7 +166,7 @@
 .post {
   .post-header {
     h1 {
-      margin-bottom: 10px;
+      //margin-bottom: 10px;
       // text-transform: uppercase;
       line-height: 1.3em;
       font-size: 1.8rem;
@@ -175,11 +176,17 @@
       color: $text-color;
       @include transition(color .2s linear);
 
-      &:hover,
-      &:focus {
-        color: $primary-color;
+      &:hover {
+        color: #e4cafb;
         text-decoration: none;
       }
+      &:focus {
+        text-decoration: none;
+      }
+    }
+
+    .post-meta {
+      color: inherit;
     }
   }
 
@@ -190,7 +197,6 @@
     font-family: $font-family-serif;
     margin-bottom: 1rem;
     font-style: italic;
-    color: #9a9a9a;
   }
 
   img {
@@ -351,13 +357,17 @@
 //
 // footer
 .footer {
-  border-top: 1px solid $gray-color-light;
-  background-color: $background-color;
-  margin-top: 30px;
-  padding: 30px 0;
+	background-size: 256px 256px, cover;
+  background-attachment: fixed, fixed;
+  background-position: top left, bottom left;
+	background-repeat: repeat, no-repeat;
+  //border-top: 1px solid $gray-color-light;
+  //background-color: $background-color;
+  margin-top: 0px;
+  padding: 0px;
 
   small {
-    color: darken($gray-color-light, 25%);
-    font-size: 12px;
+    color: darken($white-color, 15%);
+    font-size: 14px;
   }
 }

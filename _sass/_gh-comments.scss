@@ -6,7 +6,9 @@
 
 #gh-comment {
   text-align: left;
-  background-color:#E7E8E2;
+  font-size: 0.9em;
+  color: #ffffff;
+	background: url("images/overlay.png"), url("../../images/two.jpg");
   border:1px solid #b3b3b3;
   margin:2.5em 0;
   padding:10px;
@@ -19,6 +21,8 @@
 
 #gh-comment p {
   margin:0px;
+  font-family: serif;
+  font-size: 14px;
 }
 
 #gh-comment img {

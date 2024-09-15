@@ -1,0 +1,177 @@
+---
+layout: post
+title:  "NixOS server up in minutes!"
+date:   2024-09-15 23:00:00
+categories: nix nixos flakes garnix hosting
+github_comments_issueid: "31"
+---
+
+## Introduction
+
+The folks at [Garnix](https://garnix.io) have done it again! You can now deploy a [NixOS server](https://nixos.org/) in minutes, just by defining your system on a `flake.nix` and `git push`'ing your changes (Garnix needs to be enabled for the repo).
+
+In their latest blog post [Hands-on NixOS servers](https://garnix.io/blog/hosting-nixos), they explain all the necessary steps to deploy your own server, so I won't repeat things over. Furthermore, there's [official documentation](https://garnix.io/docs/hosting).
+
+Instead, I will explain how I used this opportunity to set up a web analytics server for this website.
+
+## Web Analytics
+
+I looked into the different open-source solutions that allow self-hosting, and ended up choosing [Plausible](https://plausible.io/), briefly defined as follows:
+
+> Plausible is intuitive, lightweight and open source web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. Made and hosted in the EU, powered by European-owned cloud infrastructure 🇪🇺
+
+You can find the source code for the self-hosting community edition [here](https://github.com/plausible/community-edition/).
+
+So, how do we set it up to run as a service with NixOS? Here are the relevant pieces:
+
+{% highlight nix %}
+let
+  host = "analytics.gvolpe.com";
+  internalPort = 8000;
+in
+{
+  imports = [ ./agenix.nix ];
+
+  services.plausible = {
+    enable = true;
+    adminUser = {
+      name = "admin";
+      email = "admin@garnix.io";
+      activate = true;
+      passwordFile = "/run/agenix/admin";
+    };
+    server = {
+      baseUrl = "https://${host}";
+      port = internalPort;
+      secretKeybaseFile = "/run/agenix/keybase";
+    };
+  };
+
+  services.nginx = {
+    enable = true;
+    virtualHosts."${host}" = {
+      locations."/".proxyPass = "http://localhost:${toString internalPort}";
+    };
+  };
+}
+{% endhighlight %}
+
+The Plausible server runs on `localhost:8000`, which is proxied via [nginx](https://nginx.org/en/) to ports 80 and 443 (the latter handled directly by Garnix).
+
+{% highlight nix %}
+{
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
+}
+{% endhighlight %}
+
+It also uses a [PostgreSQL](https://www.postgresql.org/) instance [auto-magically set up by its NixOS module](https://github.com/NixOS/nixpkgs/blob/345c263f2f53a3710abe117f28a5cb86d0ba4059/nixos/modules/services/web-apps/plausible.nix#L308) --- gotta love NixOS! 🤩
+
+### Secrets
+
+The Plausible service requires two secrets: the admin user's password, and the keybase secret. To set them up safely, we use [agenix](https://github.com/ryantm/agenix), as documented in the [Garnix docs](https://garnix.io/docs/hosting/secrets) --- though, keep in mind its caveats!
+
+Here's the `agenix.nix` file imported in the previous code snippet:
+
+{% highlight nix %}
+{ ... }:
+
+{
+  age = {
+    secrets = {
+      admin.file = ../secrets/admin.age;
+      keybase.file = ../secrets/keybase.age;
+    };
+    identityPaths = [
+      "/var/garnix/keys/repo-key"
+    ];
+  };
+}
+{% endhighlight %}
+
+This requires the agenix NixOS module to be imported first:
+
+{% highlight nix %}
+{
+  nixosConfigurations.web = nixpkgs.lib.nixosSystem {
+    modules = [
+      garnix-lib.nixosModules.garnix
+      agenix.nixosModules.default
+      ./hosts
+    ];
+  };
+}
+{% endhighlight %}
+
+Also note that every secret needs to be manually set up via `agenix` (see documentation), resulting in two encrypted files that can only be decrypted with the configured SSH keys.
+
+### Garnix configuration
+
+We can set up a [continuous deployment](https://garnix.io/docs/hosting/branch), so that our server is re-deployed on every commit to the main branch. Here's what we need to set in our `garnix.yaml` file:
+
+{% highlight yaml %}
+servers:
+  - configuration: web
+    deployment:
+      type: on-branch
+      branch: main
+{% endhighlight %}
+
+The configuration name `web` corresponds to the exposed NixOS configuration:
+
+{% highlight bash %}
+$ nix flake show
+git+file:///home/gvolpe/workspace/web-analytics
+├───nixosConfigurations
+│   └───web: NixOS configuration
+└───packages
+    └───x86_64-linux
+        └───default: package 'agenix-0.15.0'
+{% endhighlight %}
+
+And of course, we could deploy on every [pull request](https://garnix.io/docs/hosting/pr) too!
+
+### See it live!
+
+Nothing better than seeing the fruits of your work paying off!
+
+![analytics](../../images/analytics.png)
+
+You can see it [live here](https://analytics.gvolpe.com/gvolpe.com) --- these analytics are publicly available.
+
+NOTE: By default, signing up via the web is disabled; the only way to access it is with the "admin" user.
+
+## Persistence
+
+You can see the list of servers and their status in your [Garnix account](https://garnix.io/servers).
+
+![servers](../../images/hosting-garnix.png)
+
+I tried a few deployments until I got the service up and running, and by default, a new server with unique IP address would be provisioned on every commit to the configured branch.
+
+This is great for zero-downtime deployments, but Plausible persists its data in PostgreSQL, so we need that data to still be available on new deployments.
+
+Fortunately, Garnix [supports persistence](https://garnix.io/docs/hosting/persistence) via the following NixOS configuration:
+
+{% highlight nix %}
+{
+  garnix.server.persistence = {
+    enable = true;
+    name = "plausible";
+  };
+}
+{% endhighlight %}
+
+As long as the `name` remains the same, Garnix will deploy new commits to the same machine (same IP address). This is great for quick solutions, but for anything serious, please consider backing up your data.
+
+I might give [Borg](https://www.borgbackup.org/) a try soon enough, as it's [already packaged](https://search.nixos.org/options?channel=unstable&from=0&size=50&sort=relevance&type=packages&query=services.borgbackup) for Nix :)
+
+## Final words
+
+If you have followed my blog for a while, it shouldn't come as a surprise to see Garnix featured [once again](../categories/#garnix); they keep on delivering great features!
+
+I think of this one as **hosting and continuous deployment made simple™️**. Nevertheless, bear in mind that this feature is currently in beta, so please report any issues you may find.
+
+Have you tried Garnix yet? If not, what are you waiting for? 😉
+
+Best,
+Gabriel.

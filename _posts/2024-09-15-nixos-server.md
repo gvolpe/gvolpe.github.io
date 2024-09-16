@@ -12,11 +12,11 @@ The folks at [Garnix](https://garnix.io) have done it again! You can now deploy 
 
 In their latest blog post [Hands-on NixOS servers](https://garnix.io/blog/hosting-nixos), they explain all the necessary steps to deploy your own server, so I won't repeat things over. Furthermore, there's [official documentation](https://garnix.io/docs/hosting).
 
-Instead, I will explain how I used this opportunity to set up a web analytics server for this website.
+Instead, I will explain how I used this opportunity to set up a web analytics server for this blog.
 
 ## Web Analytics
 
-I looked into the different open-source solutions that allow self-hosting, and ended up choosing [Plausible](https://plausible.io/), briefly defined as follows:
+I first looked into the different open-source solutions that allow self-hosting, and ended up choosing [Plausible](https://plausible.io/), briefly defined as follows:
 
 > Plausible is intuitive, lightweight and open source web analytics. No cookies and fully compliant with GDPR, CCPA and PECR. Made and hosted in the EU, powered by European-owned cloud infrastructure 🇪🇺
 
@@ -56,7 +56,7 @@ in
 }
 {% endhighlight %}
 
-The Plausible server runs on `localhost:8000`, which is proxied via [nginx](https://nginx.org/en/) to ports 80 and 443 (the latter handled directly by Garnix).
+This configuration is written to `hosts/default.nix`. The Plausible server runs on `localhost:8000`, which is proxied via [nginx](https://nginx.org/en/) to ports 80 and 443 (the latter handled directly by Garnix).
 
 {% highlight nix %}
 {
@@ -65,6 +65,18 @@ The Plausible server runs on `localhost:8000`, which is proxied via [nginx](http
 {% endhighlight %}
 
 It also uses a [PostgreSQL](https://www.postgresql.org/) instance [auto-magically set up by its NixOS module](https://github.com/NixOS/nixpkgs/blob/345c263f2f53a3710abe117f28a5cb86d0ba4059/nixos/modules/services/web-apps/plausible.nix#L308) --- gotta love NixOS! 🤩
+
+Also note that I used a [custom domain](https://garnix.io/docs/hosting/custom-domain), but this is not a requirement. You can get started by setting it to a value that adheres to the following format:
+
+{% highlight bash %}
+<HOST>.<BRANCH>.<REPONAME>.<GITHUB ORG/USER>.garnix.me
+{% endhighlight %}
+
+So, for this example in particular, it would be as follows:
+
+{% highlight nix %}
+host = "web.main.web-analytics.gvolpe.garnix.me";
+{% endhighlight %}
 
 ### Secrets
 
@@ -102,11 +114,11 @@ This requires the agenix NixOS module to be imported first:
 }
 {% endhighlight %}
 
-Also note that every secret needs to be manually set up via `agenix` (see documentation), resulting in two encrypted files that can only be decrypted with the configured SSH keys.
+Also note that every secret needs to be manually set up via `agenix` (see documentation), resulting in two encrypted files that can only be decrypted with the supplied SSH keys.
 
 ### Garnix configuration
 
-We can set up a [continuous deployment](https://garnix.io/docs/hosting/branch), so that our server is re-deployed on every commit to the main branch. Here's what we need to set in our `garnix.yaml` file:
+We can opt for [continuous deployment](https://garnix.io/docs/hosting/branch), so that our server is re-deployed on every commit to the main branch. Here's what we need to set in our `garnix.yaml` file:
 
 {% highlight yaml %}
 servers:
@@ -132,9 +144,9 @@ And of course, we could deploy on every [pull request](https://garnix.io/docs/ho
 
 ### See it live!
 
-Nothing better than seeing the fruits of your work paying off!
+Sure enough, after a few hours of traffic, we can already see active metrics:
 
-![analytics](../../images/analytics.png)
+![analytics](../../images/plausible.png)
 
 You can see it [live here](https://analytics.gvolpe.com/gvolpe.com) --- these analytics are publicly available.
 
@@ -142,11 +154,11 @@ NOTE: By default, signing up via the web is disabled; the only way to access it 
 
 ## Persistence
 
-You can see the list of servers and their status in your [Garnix account](https://garnix.io/servers).
+Let's now discuss a crucial aspect of server deployments: *state*.
+
+I tried a few deployments until I got the service up and running, and by default, a new server with unique IP address would be provisioned on every commit to the configured branch, as we can see in the list of servers below (it can be accessed via your [Garnix account](https://garnix.io/servers)):
 
 ![servers](../../images/hosting-garnix.png)
-
-I tried a few deployments until I got the service up and running, and by default, a new server with unique IP address would be provisioned on every commit to the configured branch.
 
 This is great for zero-downtime deployments, but Plausible persists its data in PostgreSQL, so we need that data to still be available on new deployments.
 
@@ -172,6 +184,8 @@ If you have followed my blog for a while, it shouldn't come as a surprise to see
 I think of this one as **hosting and continuous deployment made simple™️**. Nevertheless, bear in mind that this feature is currently in beta, so please report any issues you may find.
 
 Have you tried Garnix yet? If not, what are you waiting for? 😉
+
+**DISCLAIMER**: I am not affiliated to Garnix; this is an independent review.
 
 Best,
 Gabriel.

@@ -66,7 +66,7 @@ This configuration is written to `hosts/default.nix`. The Plausible server runs 
 
 It also uses a [PostgreSQL](https://www.postgresql.org/) instance [auto-magically set up by its NixOS module](https://github.com/NixOS/nixpkgs/blob/345c263f2f53a3710abe117f28a5cb86d0ba4059/nixos/modules/services/web-apps/plausible.nix#L308) --- gotta love NixOS! 🤩
 
-Also note that I used a [custom domain](https://garnix.io/docs/hosting/custom-domain), but this is not a requirement. You can get started by setting it to a value that adheres to the following format:
+Moreover, note that I used a [custom domain](https://garnix.io/docs/hosting/custom-domain), but this is not a requirement. You can get started by setting it to a value that adheres to the following format:
 
 {% highlight bash %}
 <HOST>.<BRANCH>.<REPONAME>.<GITHUB ORG/USER>.garnix.me
@@ -177,6 +177,18 @@ As long as the `name` remains the same, Garnix will deploy new commits to the sa
 
 I might give [Borg](https://www.borgbackup.org/) a try soon enough, as it's [already packaged](https://search.nixos.org/options?channel=unstable&from=0&size=50&sort=relevance&type=packages&query=services.borgbackup) for Nix :)
 
+## Machine
+
+It is worth mentioning a few things about the **FREE machine** we get by default on the free account, which you can connect to via SSH with its assigned IP address.
+
+![ssh-machine](../../images/ssh-machine.png)
+
+We're obviously running NixOS! Furthermore, we have an Intel Xeon CPU with two cores and 4Gb of RAM, which I find very generous already, but what stands out the most to me is the free 40Gb of disk space!
+
+![ssh-monitor](../../images/ssh-monitor.png)
+
+Here we can observe a few services like Clickhouse and Postgres up and running, among other metrics.
+
 ## Final words
 
 If you have followed my blog for a while, it shouldn't come as a surprise to see Garnix featured [once again](../categories/#garnix); they keep on delivering great features!
@@ -189,3 +201,11 @@ Have you tried Garnix yet? If not, what are you waiting for? 😉
 
 Best,
 Gabriel.
+
+---
+
+### Addendum
+
+Well, apparently someone shared this blog-post on [Hacker News](https://news.ycombinator.com/item?id=41558865) and the metrics have blown up, so this was actually a great test for the Plausible server, thank you all! 🙏
+
+![hacker-news](../../images/hn-metrics.png)

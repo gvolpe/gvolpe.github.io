@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 16 Sep 2024 07:50:55 +0000</pubDate>
-    <lastBuildDate>Mon, 16 Sep 2024 07:50:55 +0000</lastBuildDate>
+    <pubDate>Tue, 17 Sep 2024 18:19:40 +0000</pubDate>
+    <lastBuildDate>Tue, 17 Sep 2024 18:19:40 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -69,7 +69,7 @@
 
 &lt;p&gt;It also uses a &lt;a href=&quot;https://www.postgresql.org/&quot;&gt;PostgreSQL&lt;/a&gt; instance &lt;a href=&quot;https://github.com/NixOS/nixpkgs/blob/345c263f2f53a3710abe117f28a5cb86d0ba4059/nixos/modules/services/web-apps/plausible.nix#L308&quot;&gt;auto-magically set up by its NixOS module&lt;/a&gt; — gotta love NixOS! 🤩&lt;/p&gt;
 
-&lt;p&gt;Also note that I used a &lt;a href=&quot;https://garnix.io/docs/hosting/custom-domain&quot;&gt;custom domain&lt;/a&gt;, but this is not a requirement. You can get started by setting it to a value that adheres to the following format:&lt;/p&gt;
+&lt;p&gt;Moreover, note that I used a &lt;a href=&quot;https://garnix.io/docs/hosting/custom-domain&quot;&gt;custom domain&lt;/a&gt;, but this is not a requirement. You can get started by setting it to a value that adheres to the following format:&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&amp;lt;HOST&amp;gt;.&amp;lt;BRANCH&amp;gt;.&amp;lt;REPONAME&amp;gt;.&amp;lt;GITHUB ORG/USER&amp;gt;.garnix.me&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
@@ -166,6 +166,18 @@ git+file:///home/gvolpe/workspace/web-analytics
 
 &lt;p&gt;I might give &lt;a href=&quot;https://www.borgbackup.org/&quot;&gt;Borg&lt;/a&gt; a try soon enough, as it’s &lt;a href=&quot;https://search.nixos.org/options?channel=unstable&amp;amp;from=0&amp;amp;size=50&amp;amp;sort=relevance&amp;amp;type=packages&amp;amp;query=services.borgbackup&quot;&gt;already packaged&lt;/a&gt; for Nix :)&lt;/p&gt;
 
+&lt;h2 id=&quot;machine&quot;&gt;Machine&lt;/h2&gt;
+
+&lt;p&gt;It is worth mentioning a few things about the &lt;strong&gt;FREE machine&lt;/strong&gt; we get by default on the free account, which you can connect to via SSH with its assigned IP address.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/ssh-machine.png&quot; alt=&quot;ssh-machine&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We’re obviously running NixOS! Furthermore, we have an Intel Xeon CPU with two cores and 4Gb of RAM, which I find very generous already, but what stands out the most to me is the free 40Gb of disk space!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/ssh-monitor.png&quot; alt=&quot;ssh-monitor&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Here we can observe a few services like Clickhouse and Postgres up and running, among other metrics.&lt;/p&gt;
+
 &lt;h2 id=&quot;final-words&quot;&gt;Final words&lt;/h2&gt;
 
 &lt;p&gt;If you have followed my blog for a while, it shouldn’t come as a surprise to see Garnix featured &lt;a href=&quot;../categories/#garnix&quot;&gt;once again&lt;/a&gt;; they keep on delivering great features!&lt;/p&gt;
@@ -178,6 +190,14 @@ git+file:///home/gvolpe/workspace/web-analytics
 
 &lt;p&gt;Best,
 Gabriel.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;addendum&quot;&gt;Addendum&lt;/h3&gt;
+
+&lt;p&gt;Well, apparently someone shared this blog-post on &lt;a href=&quot;https://news.ycombinator.com/item?id=41558865&quot;&gt;Hacker News&lt;/a&gt; and the metrics have blown up, so this was actually a great test for the Plausible server, thank you all! 🙏&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/hn-metrics.png&quot; alt=&quot;hacker-news&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sun, 15 Sep 2024 23:00:00 +0000</pubDate>
         <link>https://gvolpe.github.io/blog/nixos-server/</link>

@@ -2,6 +2,18 @@
 layout: default
 slug: single
 ---
+<script type="text/javascript">
+  document.getElementById("wheel").onclick = function() {
+    const elem = document.getElementById("projects");
+    if (elem != null) {
+      elem.id="accessible";
+    } else {
+      document.getElementById("accessible").id="projects";
+    }
+    return false;
+  };
+</script>
+
 <section id="projects" class="main style-post dark fullscreen">
   <div class="content">
     <div class="post-content">

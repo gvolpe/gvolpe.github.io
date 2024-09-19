@@ -2355,6 +2355,14 @@ input, select, textarea {
 		background-repeat: repeat, no-repeat;
 	}
 
+	#accessible {
+		background: #0f1514;
+		background-size: 256px 256px, cover;
+    background-attachment: fixed, fixed;
+    background-position: top left, bottom left;
+		background-repeat: repeat, no-repeat;
+	}
+
 /* Add Section style here */
 
 	/*#blog {*/

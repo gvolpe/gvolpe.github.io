@@ -3,12 +3,20 @@ layout: default
 slug: single
 ---
 <script type="text/javascript">
-  document.getElementById("wheel").onclick = function() {
-    const elem = document.getElementById("projects");
-    if (elem != null) {
-      elem.id="accessible";
-    } else {
-      document.getElementById("accessible").id="projects";
+  window.onload = function() {
+    document.getElementById("darkmode").checked=false;
+  };
+
+  function darkModeEvent(box) {
+    var light = document.getElementById("projects");
+    var dark = document.getElementById("accessible");
+
+    if (box.checked && light != null) {
+      light.id="accessible";
+    }
+
+    if (!box.checked && dark != null) {
+      dark.id="projects";
     }
     return false;
   };

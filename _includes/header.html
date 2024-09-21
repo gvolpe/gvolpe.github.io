@@ -6,8 +6,21 @@
     Gabriel Volpe's blog
     {% endif %}
   </h1>
+
   <div class="overlay">
     <div class="container">
+      {% if page.title != 'Blog' and page.title != 'Categories' %}
+      <div class="darkmode-div">
+        <input type="checkbox" id="darkmode" onchange="darkModeEvent(this);"/>
+        <label for="darkmode">
+          <div id="star">
+            <div class="star" id="star-1">★</div>
+            <div class="star" id="star-2">★</div>
+          </div>
+          <div id="moon"></div>
+        </label>
+      </div>
+      {% endif %}
       <nav>
         <ul>
           <li><a href="{{ site.base }}/">Home</a></li>
@@ -16,11 +29,10 @@
               <li><a href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
             {% endif %}
           {% endfor %}
-          <li><button id="wheel" style="background:#0f1514">Accessibility</button></li>
         </ul>
       </nav>
     </div>
-     
+
     {% if page.slug == 'home' %}
       <h2 class="txt-center">
         <strong>{{ site.description }}</strong>

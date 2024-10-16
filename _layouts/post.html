@@ -7,6 +7,16 @@ slug: single
     document.getElementById("darkmode").checked=false;
   };
 
+  window.onscroll = function() {
+    var docElem = document.documentElement;
+    var docBody = document.body;
+    var scrollTop = docElem['scrollTop'] || docBody['scrollTop'];
+    var scrollTop = docElem['scrollTop'] || docBody['scrollTop'];
+    var scrollBottom = (docElem['scrollHeight'] || docBody['scrollHeight']) - window.innerHeight;
+    var scrollPercent = scrollTop / scrollBottom * 100 + '%';
+    document.getElementById("progress-bar").style.setProperty("--scrollAmount", scrollPercent);
+  };
+
   function darkModeEvent(box) {
     var light = document.getElementById("projects");
     var dark = document.getElementById("accessible");

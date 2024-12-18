@@ -165,6 +165,9 @@ However, this means that the actual dotfile used by the software that lives unde
 {% highlight bash %}
 $ readlink -f ~/.config/neofetch/config.conf
 /nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf
+
+$ ls -la /nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf
+.r--r--r-- 17k root  1 Jan  1970 /nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf
 {% endhighlight %}
 
 The only way to make changes is by modifying your Nix configuration, running `home-manager switch` ⏳, and hoping that the changes you made were correct. Otherwise, it's rinse and repeat, which is less than ideal when you're tinkering around with dotfiles and want to tweak little things.
@@ -221,6 +224,9 @@ $ readlink /nix/store/qxvvj5v1w8za9wfb80cnl6g5ja7w9qzz-home-manager-files/.confi
 
 $ readlink /nix/store/d0cmjnz9advx1irqq1c6slrl0gjklipf-hm_electric.conf
 /home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf
+
+$ ls -la /home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf
+.rw-r--r-- 17k gvolpe 16 Dec 21:44 /home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf
 {% endhighlight %}
 
 We can now tweak our dotfiles as much as we want without Home Manager getting in the way. Once we're happy with the results, we may want to go back to the immutable version (or not).

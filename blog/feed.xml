@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 17 Dec 2024 20:22:54 +0000</pubDate>
-    <lastBuildDate>Tue, 17 Dec 2024 20:22:54 +0000</lastBuildDate>
+    <pubDate>Wed, 18 Dec 2024 07:40:59 +0000</pubDate>
+    <lastBuildDate>Wed, 18 Dec 2024 07:40:59 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -180,7 +180,10 @@
 &lt;p&gt;However, this means that the actual dotfile used by the software that lives under &lt;code&gt;~/.config/neofetch/config.conf&lt;/code&gt; now &lt;em&gt;belongs to Home Manager&lt;/em&gt; and you don’t have write permissions.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;readlink -f ~/.config/neofetch/config.conf
-/nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+/nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls -la /nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf
+.r--r--r-- 17k root  &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; Jan  &lt;span class=&quot;m&quot;&gt;1970&lt;/span&gt; /nix/store/21h3kkyipjdcsgv72vbd2i1h6vzcl0pk-hm_electric.conf&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;The only way to make changes is by modifying your Nix configuration, running &lt;code&gt;home-manager switch&lt;/code&gt; ⏳, and hoping that the changes you made were correct. Otherwise, it’s rinse and repeat, which is less than ideal when you’re tinkering around with dotfiles and want to tweak little things.&lt;/p&gt;
 
@@ -228,7 +231,10 @@
 /nix/store/d0cmjnz9advx1irqq1c6slrl0gjklipf-hm_electric.conf
 
 &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;readlink /nix/store/d0cmjnz9advx1irqq1c6slrl0gjklipf-hm_electric.conf
-/home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+/home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf
+
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;ls -la /home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf
+.rw-r--r-- 17k gvolpe &lt;span class=&quot;m&quot;&gt;16&lt;/span&gt; Dec 21:44 /home/gvolpe/workspace/nix-config/home/programs/neofetch/electric.conf&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;We can now tweak our dotfiles as much as we want without Home Manager getting in the way. Once we’re happy with the results, we may want to go back to the immutable version (or not).&lt;/p&gt;
 

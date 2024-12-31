@@ -18,7 +18,7 @@ slug: single
   };
 
   function darkModeEvent(box) {
-    var light = document.getElementById("projects");
+    var light = document.getElementById("blogpost");
     var dark = document.getElementById("accessible");
 
     if (box.checked && light != null) {
@@ -26,13 +26,13 @@ slug: single
     }
 
     if (!box.checked && dark != null) {
-      dark.id="projects";
+      dark.id="blogpost";
     }
     return false;
   };
 </script>
 
-<section id="projects" class="main style-post dark fullscreen">
+<section id="blogpost" class="main style-post dark fullscreen">
   <div class="content">
     <div class="post-content">
 

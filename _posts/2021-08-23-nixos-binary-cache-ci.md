@@ -10,7 +10,7 @@ What if I told you that you can save plenty of time and CPU-power by pre-buildin
 
 Well, it's possible, and it's what I'm [currently doing](https://github.com/gvolpe/nix-config) with my NixOS and [Home Manager](https://github.com/nix-community/home-manager) configurations.
 
-![badges](../images/ci-badges.png)
+![badges](../../images/ci-badges.png)
 
 Besides hosting your configuration on Github, you'll need a binary cache where the results of your build can be pushed to be re-used later on. One of the best free alternatives is [Cachix](https://www.cachix.org/), offering up to 10GB on their basic tier.
 
@@ -18,7 +18,7 @@ Besides hosting your configuration on Github, you'll need a binary cache where t
 
 My Home Manager configuration builds in about 5 minutes.
 
-![home](../images/ci-home.png)
+![home](../../images/ci-home.png)
 
 Here's the CI job definition for my home configuration.
 
@@ -134,7 +134,7 @@ All credits go to [Jonas Chevalier](https://github.com/zimbatm) for showing me t
 
 The system part is equally interesting but easier to build. It takes about 3 minutes.
 
-![nixos](../images/ci-nixos.png)
+![nixos](../../images/ci-nixos.png)
 
 The steps are pretty similar, except there is no need to set the priority flag for Cachix.
 

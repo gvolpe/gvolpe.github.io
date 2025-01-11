@@ -76,7 +76,7 @@ inference.
 
 ##### Arithmetic example
 
-Here's another example taken from the [Fun with Functional Dependencies](http://www.cse.chalmers.se/~hallgren/Papers/hallgren.pdf) paper by Thomas Hallgren. What's simpler that adding two values together?
+Here's another example taken from the [Fun with Functional Dependencies](http://www.cse.chalmers.se/~hallgren/Papers/hallgren.pdf) paper by Thomas Hallgren. What's simpler than adding two values together?
 
 {% highlight haskell %}
 class Add a b c | a b -> c where

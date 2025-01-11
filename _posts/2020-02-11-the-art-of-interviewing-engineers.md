@@ -24,7 +24,7 @@ It was at this stage where I've seen many companies fail. They commit the **most
 
 This is sort of a monarchy where you, the candidate, are judged by an individual who might not be as competent as two or more persons in doing so.
 
-I cannot enumerate the number of times I have disagreed with my colleagues while interviewing a candidate. We all have different points of view, so having at least one more brain in the room will open up the chance for debate and avoid ending up in a biased decision.
+I cannot enumerate the number of times I have disagreed with my colleagues while interviewing a candidate. We all have different points of view, so having at least one more brain in the room will open up the chance for debate and avoid ending up with a biased decision.
 
 Having two or more engineers applies to conducting any other interview, such as system design, code review, or behavioral assessment.
 

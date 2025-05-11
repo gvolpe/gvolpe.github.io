@@ -5,9 +5,461 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 22 Apr 2025 17:38:19 +0000</pubDate>
-    <lastBuildDate>Tue, 22 Apr 2025 17:38:19 +0000</lastBuildDate>
+    <pubDate>Sun, 11 May 2025 17:33:45 +0000</pubDate>
+    <lastBuildDate>Sun, 11 May 2025 17:33:45 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
+    
+      <item>
+        <title>Unison: Forex API &amp; Caching</title>
+        <description>&lt;p&gt;I have been following the &lt;a href=&quot;https://www.unison-lang.org/&quot;&gt;Unison programming language&lt;/a&gt; for as long as I can remember, given that &lt;a href=&quot;https://www.unison-lang.org/unison-computing/&quot;&gt;its authors&lt;/a&gt; are very well-known in the Scala ecosystem. Though, it took me a good few years to finally learn it by immersing myself into their amazing documentation and tutorials.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;TL;DR: I love it more and more every single day!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The language itself is easy to learn for anyone coming from a functional programming background. Even their implementation of &lt;a href=&quot;https://arxiv.org/pdf/1611.09259&quot;&gt;algebraic effects&lt;/a&gt; — called &lt;a href=&quot;https://www.unison-lang.org/docs/fundamentals/abilities/&quot;&gt;abilities&lt;/a&gt; — are quite straightforward. What sets the language apart from others is their interactive approach to writing code.&lt;/p&gt;
+
+&lt;p&gt;Unison stores all code on a local database (under &lt;code&gt;~/.unison&lt;/code&gt; by default), which can be shared with others on their platform: &lt;a href=&quot;https://share.unison-lang.org&quot;&gt;Unison Share&lt;/a&gt;. Thus, our code doesn’t live on files tracked on a git repository: instead, they need to be fetched from the database to be edited. This is incredibly different from what we, programmers, are used to. It took me a while to get comfortable with this process — forgetting about my vim fuzzy-finder in between — and I would even say it was more challenging than learning the language itself, but it clicked… eventually.&lt;/p&gt;
+
+&lt;p&gt;I will spare you the details, however, as I find it quite hard to convey with words how it feels to experience it. So I would leave that to you to explore and find out for yourself. Instead, I would like to share more about my experience using the features that excite me the most in the Unison multiverse.&lt;/p&gt;
+
+&lt;h2 id=&quot;learn-by-doing&quot;&gt;Learn by doing&lt;/h2&gt;
+
+&lt;p&gt;A while ago now (~6 years ago), I wrote an &lt;a href=&quot;https://github.com/gvolpe/exchange-rates&quot;&gt;exchange rates&lt;/a&gt; application in Haskell for fun that exposes an API endpoint to query specific currencies. Internally, it relies on a third-party API that’s rate-limited, so the results are cached in Redis with a configurable expiration time.&lt;/p&gt;
+
+&lt;p&gt;I thought this could be good candidate for a rewrite in the Unison language, leveraging their &lt;a href=&quot;https://www.unison.cloud/&quot;&gt;cloud infrastructure&lt;/a&gt; and native &lt;a href=&quot;https://www.unison.cloud/docs/storage-solutions/&quot;&gt;storage solutions&lt;/a&gt;, so I could get acquainted with the language and its radical approach to writing code. After all, learning by doing is always more fun and rewarding.&lt;/p&gt;
+
+&lt;p&gt;It all started by creating a new project via UCM: Unison Codebase Manager.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/ucm.png&quot; alt=&quot;ucm&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;And with me being a nix-head, of course I ended up creating a &lt;a href=&quot;https://github.com/gvolpe/unison-dev&quot;&gt;development shell&lt;/a&gt; that provides the &lt;code&gt;ucm&lt;/code&gt; program when I enter the directory where I write Unison code. All made possible thanks to &lt;a href=&quot;https://github.com/ceedubs/unison-nix/&quot;&gt;unison-nix&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-project&quot;&gt;The Project&lt;/h2&gt;
+
+&lt;p&gt;The requirements for this Foreign Exchange Rates API are rather simple. All we need is a single GET endpoint that returns the exchange rate between two supported currencies.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl https://gvolpe.unison-services.cloud/s/forex/api/rates?from&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;USD&lt;span class=&quot;p&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;EUR  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; jq
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&amp;quot;rate&amp;quot;&lt;/span&gt;: 0.8885
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And a healthcheck endpoint for good measure.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl https://gvolpe.unison-services.cloud/s/forex/api/healthcheck  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; jq
+&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;s2&quot;&gt;&amp;quot;db&amp;quot;&lt;/span&gt;: &lt;span class=&quot;s2&quot;&gt;&amp;quot;6fcf7ba3-4a3b-440e-a225-cc3d8d1917e8 (currencies)&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The response body is irrelevant here. We mostly care about the HTTP response status being 200 OK.&lt;/p&gt;
+
+&lt;p&gt;Internally, we will use a &lt;a href=&quot;https://www.exchangerate-api.com/docs/standard-requests&quot;&gt;third-party API&lt;/a&gt; that’s rate-limited to 1500 requests per month, and it requires an API key used as an authorization bearer token to authenticate HTTP requests.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/ext-api.png&quot; alt=&quot;ext-api&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The challenge will be to cache as many results as possible for a period of 24 hours (see &lt;a href=&quot;https://www.exchangerate-api.com/terms&quot;&gt;Data Caching Policy&lt;/a&gt;) to avoid stale data, but also to optimize the number of external HTTP requests we need to make, while keeping away from getting rate-limited.&lt;/p&gt;
+
+&lt;p&gt;In the next few sections, we’ll cover the main components of the &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex&quot;&gt;forex&lt;/a&gt; system. Feel free to follow along by navigating directly through the source code for a more interactive approach.&lt;/p&gt;
+
+&lt;h3 id=&quot;http-routes&quot;&gt;HTTP routes&lt;/h3&gt;
+
+&lt;p&gt;It all starts by defining the API endpoints that are combined via &lt;code&gt;&amp;lt;|&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;routes&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;HttpRequest&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;HttpResponse&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;routes&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;|&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getExchangeRate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;healthcheck&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It essentially returns a &lt;code&gt;HttpRequest -&amp;gt; HttpResponse&lt;/code&gt; function where the abilities expressed in &lt;code&gt;{}&lt;/code&gt; need to be handled. The &lt;code&gt;{Exception, Http, Remote, Log}&lt;/code&gt; abilities allow us to express what this program needs in order to run. The &lt;code&gt;Ask AppCtx&lt;/code&gt; should be familiar to functional programmers: it lets us carry context around functions. Finally, the &lt;code&gt;Cache Currency ForexResponse&lt;/code&gt; is the ability that lets us cache responses for each currency. We’ll dive deeper into this topic in the next few sections.&lt;/p&gt;
+
+&lt;p&gt;Let’s skip the &lt;code&gt;healthcheck&lt;/code&gt; endpoint for now and let’s look at the &lt;code&gt;GET /rates&lt;/code&gt; endpoint.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getExchangeRate&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getExchangeRate&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Optional&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flatMap&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ParseQuery&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Parser&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;queries&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;from&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;to&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;route&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;GET&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;api&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;rates&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queries&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flatMap&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flatMap&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toGenericException&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zip&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Throw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toEither&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We can observe the &lt;code&gt;Route&lt;/code&gt; ability here, which is eliminated in the &lt;code&gt;api.routes&lt;/code&gt; function by the &lt;code&gt;Route.run&lt;/code&gt; handler. This is essentially how abilities are handled in Unison. In a way, they are similar to interfaces for which we provide a specific implementation when the components are wired up.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;forex.handler&lt;/code&gt; function is responsible for building HTTP responses, capturing domain errors.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;kr&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ForexError&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;UnknownError&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Nat&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;InvalidApiKey&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ApiLimitReached&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;NotFound&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt;
+
+&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Either&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexError&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ExchangeRate&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;forex-service&quot;&gt;Forex Service&lt;/h3&gt;
+
+&lt;p&gt;Ultimately, we have the &lt;code&gt;service.forex&lt;/code&gt; function that, given two currencies (from and to, respectively), returns an &lt;code&gt;ExchangeRate&lt;/code&gt; with domain errors expressed via the &lt;code&gt;Throw&lt;/code&gt; ability.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ExchangeRate&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;isSome&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Cache hit!&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;from&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;to&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;ExchangeRate&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getOrBug&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;unreachable&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;warn&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&amp;quot;Cache miss. Making an external HTTP request.&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;from&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;to&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Optional&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ExchangeRate&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rate&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rate&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;None&lt;/span&gt;      &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;NotFound&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;cache 404&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It attempts to fetch the currency data from the cache via &lt;code&gt;Cache.get&lt;/code&gt;. If there’s no cached value, it falls-back to calling the third-party API via the &lt;code&gt;http.forex&lt;/code&gt; client — caching the response for subsequent use.&lt;/p&gt;
+
+&lt;p&gt;The &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex/code/main/latest/types/Cache&quot;&gt;Cache&lt;/a&gt; ability is defined as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;ability&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;where&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Optional&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;evict&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;expire&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The service only uses the first two functions, but it also allows us to remove a specific key or remove all key-values that have expired. We’ll dive into the internals of the handler shortly.&lt;/p&gt;
+
+&lt;h3 id=&quot;http-client&quot;&gt;HTTP client&lt;/h3&gt;
+
+&lt;p&gt;At last, we have the HTTP client that lets us fetch data from the third-party API.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ApiKey&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apiKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ask&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;uri&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;URI&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;https://v6.exchangerate-api.com/v6/latest/&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;HttpRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addHeader&lt;/span&gt;
+        &lt;span class=&quot;s&quot;&gt;&amp;quot;Authorization&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Bearer &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apiKey&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;HttpRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;uri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;HttpResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bodyText&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;External Forex Response: &amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;body&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Decoder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromJson&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
+          &lt;span class=&quot;kt&quot;&gt;Left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Failure&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;          &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ne&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;[]&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;UnknownError&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;500&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;JSON decoding failure&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;kt&quot;&gt;Right&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
+              &lt;span class=&quot;kt&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resp&lt;/span&gt;
+              &lt;span class=&quot;kt&quot;&gt;None&lt;/span&gt;   &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;NotFound&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot; -&amp;gt; &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;403&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;InvalidApiKey&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;404&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;NotFound&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;429&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ApiLimitReached&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;UnknownError&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;code&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In order to authorize requests, an API key is needed, which we can fetch from the context via the &lt;code&gt;Ask&lt;/code&gt; ability. We will soon learn about the rest of the data our application context holds.&lt;/p&gt;
+
+&lt;p&gt;Once the request is fired up, we pattern-match on the HTTP response status code and model each response accordingly. Domain errors are expressed via the &lt;code&gt;Throw&lt;/code&gt; ability.&lt;/p&gt;
+
+&lt;h3 id=&quot;deploy&quot;&gt;Deploy&lt;/h3&gt;
+
+&lt;p&gt;For the fun part, let’s see how easy it is to deploy our service to the &lt;a href=&quot;https://www.unison.cloud/&quot;&gt;cloud&lt;/a&gt;!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/deploy.png&quot; alt=&quot;deploy&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s ignore the &lt;code&gt;forex-cache-cleanser&lt;/code&gt; service for a minute, and let’s focus on the &lt;code&gt;forex&lt;/code&gt; service instead. We can observe the latest version of the service exposed at &lt;code&gt;https://gvolpe.unison-services.cloud/s/forex&lt;/code&gt; now points to a specific service hash showed right above. Unison will ensure this URL stays up-to-date.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;deploy&lt;/code&gt; function is our main entry point based on the &lt;code&gt;Cloud.main&lt;/code&gt; handler.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;IO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Cloud&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ignore&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;forex&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Database&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;currencies&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;Database&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;assign&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;apiKey&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cloud&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;submit&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ApiKey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fetch&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cacheConfig&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;CacheConfig&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;currencies&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hours&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;appCtx&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheConfig&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;apiKey&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;httpServiceHash&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Cloud&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deployHttp&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;req&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;provide&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;appCtx&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;persistent&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;routes&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;httpServiceName&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ServiceName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;forex&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ignore&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ServiceName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;assign&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;httpServiceName&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;httpServiceHash&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s where all the abilities need to be eliminated, resulting only in &lt;code&gt;{IO, Exception}&lt;/code&gt;, which are handled by the Unison runtime.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;Cache k v&lt;/code&gt; is eliminated by &lt;code&gt;Cache.persistent&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Ask ctx&lt;/code&gt; is eliminated by &lt;code&gt;Ask.provide&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Http, Log, Remote&lt;/code&gt; are eliminated by &lt;code&gt;Cloud.deployHttp&lt;/code&gt;, which introduces the &lt;code&gt;Cloud&lt;/code&gt; ability.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;Cloud&lt;/code&gt; is eliminated by the &lt;code&gt;Cloud.main&lt;/code&gt; handler.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now we can monitor our application logs in the Unison Cloud console.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/api-logs.png&quot; alt=&quot;forex&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Quite neat! Isn’t it? Now let’s move on to the next exciting topic.&lt;/p&gt;
+
+&lt;h3 id=&quot;caching&quot;&gt;Caching&lt;/h3&gt;
+
+&lt;p&gt;The main handler for the &lt;code&gt;Cache&lt;/code&gt; ability is based on an internal &lt;a href=&quot;https://share.unison-lang.org/@unison/cloud/code/main/latest/types/durable/Cell&quot;&gt;Cell&lt;/a&gt; — a table that stores a single durable value, which requires a &lt;a href=&quot;https://share.unison-lang.org/@unison/cloud/code/releases/20.7.2/latest/types/Database&quot;&gt;Database&lt;/a&gt; to be created.&lt;/p&gt;
+
+&lt;p&gt;Without further ado, let’s look at the implementation and later discuss the relevant pieces.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;persistent&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;persistent&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interactions&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;modify&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;delete&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;CacheConfig&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheName&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ask&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;expTime&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toBaseDuration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;hasNotExpired&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Boolean&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;hasNotExpired&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cases&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expTime&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cases&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pure&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;                          &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pure&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;       &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;lookup&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;hasNotExpired&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;Some&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;        &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;modify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+          &lt;span class=&quot;kt&quot;&gt;None&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;None&lt;/span&gt;          &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;None&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;lookup&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;ts&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;modify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;put&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;evict&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;           &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;modify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;delete&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expire&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;              &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;modify&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hasNotExpired&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interactions&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheName&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;empty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;A &lt;code&gt;Cache k v&lt;/code&gt; is internally stored as a &lt;code&gt;Map k (v, Instant)&lt;/code&gt; on a &lt;code&gt;Cell&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code&gt;Instant&lt;/code&gt; value represents the time when the value was written to the cache (see how &lt;code&gt;Cache.set&lt;/code&gt; is handled). When we look-up a key-value from the cache, we also look at the timestamp and check if it hasn’t expired yet. If it did, then the key-value is removed from the cache.&lt;/p&gt;
+
+&lt;p&gt;This method of &lt;a href=&quot;https://redis.io/glossary/cache-invalidation/&quot;&gt;cache invalidation&lt;/a&gt; (one of my favorite topics in software engineering) is also known as “passive”, where only data that’s being accessed is checked for expirations. However, in bigger systems, data that is not accessed can account for considerable storage space when neglected.&lt;/p&gt;
+
+&lt;p&gt;Arguably, in this simple application we don’t need an “active” cache invalidation method. In the original Forex application written in Haskell, cache expiration was already taken for granted, as Redis handles everything. However, I absolutely love a good challenge, and this brings up a great opportunity to further explore what Unison has got to offer.&lt;/p&gt;
+
+&lt;p&gt;To finish up with the implementation of this handler, the &lt;code&gt;evict&lt;/code&gt; function is based on &lt;code&gt;Map.delete&lt;/code&gt; whereas the &lt;code&gt;expire&lt;/code&gt; function is based on &lt;code&gt;Map.filter&lt;/code&gt;, filtering out the expired key-values from the internal map.&lt;/p&gt;
+
+&lt;h4 id=&quot;active-cache-invalidation&quot;&gt;Active Cache Invalidation&lt;/h4&gt;
+
+&lt;p&gt;A daily cron job calling &lt;code&gt;Cache.expire&lt;/code&gt; will be one valid way of implementing active cache invalidation. Now can we do this with Unison services that are deployed via the &lt;code&gt;Cloud&lt;/code&gt; handlers? Unfortunately, this only suits applications which follow a request-response cycle.&lt;/p&gt;
+
+&lt;p&gt;For repeated scheduled jobs or queueing systems, we can leverage the &lt;a href=&quot;https://share.unison-lang.org/@unison/cloud/code/releases/20.7.2/latest/types/Daemon&quot;&gt;Daemon&lt;/a&gt; ability, which is considered a low-level cloud utility and it’s a &lt;a href=&quot;https://www.unison.cloud/pricing/&quot;&gt;paid feature&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;We could start defining a simple scheduled job that calls itself every 24 hours.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;job&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;job&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;CacheConfig&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ask&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;durationText&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toBaseDuration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Next cache removal in &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;durationText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;[]&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;expire&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;warn&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Expired key-values have been removed&amp;quot;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;[]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;forever&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;However, there’s currently a big limitation and we can’t monitor daemon logs in the Unison Cloud console as we do with regular services; its API is limited to streaming to the &lt;code&gt;ucm&lt;/code&gt; console. For this reason, we’ll use a “logging service”, which the daemon can natively call via the &lt;code&gt;Services&lt;/code&gt; ability.&lt;/p&gt;
+
+&lt;p&gt;Firstly, we’ll create the program that will log the messages.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;kr&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;level&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Level&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Json&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logJson&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logJson&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cases&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;level&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;atLevel&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;lazyJson&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;level&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;json&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;We will then write a service named “forex-cache-cleanser” whose only resposibility is to run the &lt;code&gt;logJson&lt;/code&gt; program. The &lt;code&gt;Cloud.deploy&lt;/code&gt; handler can be used to deploy this service and get its hash.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;IO&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; 
+  &lt;span class=&quot;kt&quot;&gt;Cloud&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logServiceHash&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ServiceHash&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logServiceHash&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cloud&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logJson&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;logServiceName&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ServiceName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;forex-cache-cleanser&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;ignore&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ServiceName&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;assign&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logServiceName&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logServiceHash&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;provide&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;appCtx&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;persistent&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cacheCleanser&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logServiceHash&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Next, we invoke the &lt;code&gt;daemon.deploy&lt;/code&gt; function with the &lt;code&gt;cacheCleanser&lt;/code&gt; program that takes the logging service hash as input. It uses the &lt;code&gt;Daemon.deploy&lt;/code&gt; handler, which is analogous to &lt;code&gt;Cloud.deploy&lt;/code&gt; for regular services.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Environment&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Services&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cloud&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;program&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;cleanserDaemon&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;forex-cache-cleanser-daemon&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;cleanserHash&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;deploy&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cleanserDaemon&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;program&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;assign&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cleanserDaemon&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cleanserHash&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The final definition for the daily scheduled job is called &lt;code&gt;cacheCleanser&lt;/code&gt; and is defined as follows.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cacheCleanser&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;ServiceHash&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Services&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;daemon&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cacheCleanser&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logService&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Services&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;logMsg&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;logMsg&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toRFC2822&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;LogMsg&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Info&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;msg&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Json&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;timestamp&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Json&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)])&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;CacheConfig&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ask&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;durationText&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toText&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toBaseDuration&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Services&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;call&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logService&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logMsg&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Next cache removal in &amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;++&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;durationText&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sleep&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheExpiration&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;expire&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;call&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logService&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logMsg&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Expired key-values have been removed&amp;quot;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;forever&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;At last, we can now monitor the daemon logs in the Unison Cloud console.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/daemon-logs.png&quot; alt=&quot;daemon-logs&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is it! We’ve effectively implemented active cache invalidation by running a daily scheduled job using Unison’s Daemon API. It’s still early days, so I believe it will continue to evolve, and I’m personally hoping that in the near future we are able to easily monitor logs like we do with regular services.&lt;/p&gt;
+
+&lt;h3 id=&quot;testing&quot;&gt;Testing&lt;/h3&gt;
+
+&lt;p&gt;We couldn’t finish up this blog-post without talking about tests!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/tests-ok.png&quot; alt=&quot;tests-ok&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are a bunch of tests defined in this project, and the image above shows what it looks like to run the entire test suite in the UCM console. We can observe that 13 tests correspond to cached test results, whereas the remaining 5 tests were run once again.&lt;/p&gt;
+
+&lt;p&gt;The reason is that Unison doesn’t run tests until a function that’s being used changes its hash. When this is the case, all those tests affected by the hash change will be re-run. Otherwise, the tests results displayed in the console will be those that have been previously cached.&lt;/p&gt;
+
+&lt;p&gt;Here’s one of the tests for the HTTP client that expects a successful response.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verify&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;body&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;{&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&amp;quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;conversion_rates&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&amp;quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;: {&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&amp;quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;EUR&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&amp;quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;: 1.2, &lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&amp;quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;JPY&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\&amp;quot;&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;: 5.24}}&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;resp&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;HttpResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ok&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Body&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logAskThrow&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resp&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;USD&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;EUR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;expected&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;EUR&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;JPY&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;5.24&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)])&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ensureEqual&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;expected&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It invokes the &lt;code&gt;http.forex&lt;/code&gt; function, which has the following type signature (recap):&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;forex&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Throw&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexError&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In this case, we’re only interested in the &lt;code&gt;Http&lt;/code&gt; ability. We don’t want to deal with the other ones, so we can eliminate them with “stub” handlers defined under the &lt;code&gt;tests&lt;/code&gt; namespace, e.g.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;tests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logAsk&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;tests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logAsk&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;program&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Database&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Database&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Id&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;cfg&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;CacheConfig&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Duration&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;hours&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;ctx&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cfg&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ApiKey&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;provide&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ctx&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;program&lt;/span&gt;
+
+&lt;span class=&quot;nf&quot;&gt;tests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logAskThrow&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Throw&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;g&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;tests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;handler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;logAskThrow&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;program&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Throw&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toBug&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logAsk&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;program&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Here’s another interesting test that requires a different set of abilities.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getExchangeRate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cachedOk&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;api&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getExchangeRate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cachedOk&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;verify&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;keyValue&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;USD&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toMap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;EUR&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.25&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]))&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;route&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheRoute&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getExchangeRate&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keyValue&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;HttpRequest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;URI&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;parse&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;/api/rates?from=USD&amp;amp;to=EUR&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;runRoute&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;route&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;test&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ensureEqual&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;HttpResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;OK&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It verifies the result comes from the cache, for which we use the &lt;code&gt;Cache.inMemory&lt;/code&gt; handler.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;tests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cacheRoute&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Log&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ask&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AppCtx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Route&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Exception&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Remote&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;tests&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;builder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;cacheRoute&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;inMemory&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at1&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at2&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;stub&amp;#39;&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;logAsk&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;api&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;To summarize this section, the following image shows that tests can sometimes fail.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/unison/tests-fail.png&quot; alt=&quot;tests-fail&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Have a look at the other available tests and let me know if we can do better! One thing I miss compared to the usual Git repo approach, is having a CI/CD job running regression and smoke tests.&lt;/p&gt;
+
+&lt;h2 id=&quot;final-thoughts&quot;&gt;Final thoughts&lt;/h2&gt;
+
+&lt;p&gt;Quoting their official website, I couldn’t agree more with it.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Unison is a friendly programming language from the future: statically-typed, functional, and a lot of fun 😄
+&lt;img src=&quot;../../images/gifs/future.webp&quot; alt=&quot;future&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I will certainly continue to learn what this great language has to offer while having lots of fun. There are multiple applications that can be written in it, but if there’s an area where you should seriously consider it, is for building distributed systems deployed to their cloud infrastructure.&lt;/p&gt;
+
+&lt;p&gt;Last but not least, I would like to give a big shout out to the Unison team for all the great work they are doing. I had a few questions when going through the documentation and you guys have been awesome!&lt;/p&gt;
+
+&lt;p&gt;Go browse the &lt;code&gt;forex&lt;/code&gt; project and discover more: &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex&quot;&gt;https://share.unison-lang.org/@gvolpe/forex&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Best,
+Gabriel.&lt;/p&gt;
+</description>
+        <pubDate>Sun, 11 May 2025 13:00:00 +0000</pubDate>
+        <link>https://gvolpe.github.io/blog/unison-forex/</link>
+        <guid isPermaLink="true">https://gvolpe.github.io/blog/unison-forex/</guid>
+        
+        
+        <category>unison</category>
+        
+        <category>cloud</category>
+        
+        <category>programming</category>
+        
+        <category>cache</category>
+        
+      </item>
     
       <item>
         <title>Home Manager: dotfiles management</title>
@@ -2001,255 +2453,6 @@ Gabriel.&lt;/p&gt;
         <category>fp</category>
         
         <category>functional-programming</category>
-        
-      </item>
-    
-      <item>
-        <title>Flakes: NixOS and Home Manager migration</title>
-        <description>&lt;h3 id=&quot;table-of-contents&quot;&gt;Table of contents&lt;/h3&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;#introduction&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#how-it-started-nixos&quot;&gt;How it started: NixOS&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#next-step-home-manager&quot;&gt;Next step: Home Manager&lt;/a&gt;
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;#one-flake-to-rule-them-all&quot;&gt;One flake to rule them all!&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#home-manager-flake-output&quot;&gt;Home Manager flake output&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;#switching-configurations&quot;&gt;Switching configurations&lt;/a&gt;&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#flake-outputs&quot;&gt;Flake outputs&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;introduction&quot;&gt;Introduction&lt;/h3&gt;
-
-&lt;p&gt;I have recently migrated my entire NixOS and Home Manager (HM) &lt;a href=&quot;https://github.com/gvolpe/nix-config&quot;&gt;configuration&lt;/a&gt; — including programs, services, dotfiles, etc — over to the new kid on the block: &lt;a href=&quot;https://nixos.wiki/wiki/Flakes&quot;&gt;Nix flakes&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;It was not as difficult as I thought it would be but there were a lot of things I had to figure out on my own or by asking more experienced folks on the NixOS matrix channel.&lt;/p&gt;
-
-&lt;p&gt;So let me tell you the important bits of this migration story in this short blog post ;)&lt;/p&gt;
-
-&lt;h3 id=&quot;how-it-started-nixos&quot;&gt;How it started: NixOS&lt;/h3&gt;
-
-&lt;p&gt;I initially had my NixOS configuration under the &lt;code&gt;system&lt;/code&gt; directory and my Home Manager configuration under &lt;code&gt;home&lt;/code&gt;, as you can see in the Github repo. So I decided to do the migration step by step, starting with the former.&lt;/p&gt;
-
-&lt;p&gt;I created a &lt;code&gt;flake.nix&lt;/code&gt; file under &lt;code&gt;/etc/nixos&lt;/code&gt; with the following content.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;description =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;NixOS configuration&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-  inputs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;nixpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;url =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;nixpkgs/nixos-unstable&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-  &lt;span class=&quot;ss&quot;&gt;outputs =&lt;/span&gt; inputs &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; self&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; nixpkgs &lt;span class=&quot;p&quot;&gt;}:&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;system =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;x86_64-linux&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;ss&quot;&gt;nixosConfigurations =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;ss&quot;&gt;tongfang-amd =&lt;/span&gt; nixpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;lib&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;nixosSystem &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; system&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-          &lt;span class=&quot;ss&quot;&gt;specialArgs =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; inputs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-          &lt;span class=&quot;ss&quot;&gt;modules =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;l&quot;&gt;/machine/tongfang-amd&lt;/span&gt;
-            &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;l&quot;&gt;/configuration.nix&lt;/span&gt;
-          &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;I could then build my system using this flake! Easy, right?&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo nixos-rebuild switch --flake .#tongfang-amd&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;By default, &lt;code&gt;nixos-rebuild&lt;/code&gt; expects the configuration under &lt;code&gt;/etc/nixos&lt;/code&gt;. However, we can specify a different directory, as shown below.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo nixos-rebuild switch --flake &lt;span class=&quot;s1&quot;&gt;&amp;#39;/home/gvolpe/workspace/nix-config#tongfang-amd&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;It also turns out this flake can be built via &lt;code&gt;nix build&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nix build .#nixosConfigurations.tongfang-amd.config.system.build.toplevel
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;sudo result/bin/switch-to-configuration switch&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This means we can switch the system configuration from any directory by using either command!&lt;/p&gt;
-
-&lt;p&gt;That’s handy if you keep all your configurations in a single directory and these are tracked by a version control system (VCS) such as git.&lt;/p&gt;
-
-&lt;h3 id=&quot;next-step-home-manager&quot;&gt;Next step: Home Manager&lt;/h3&gt;
-
-&lt;p&gt;This was not as straightforward, as my HM configuration is a bit complex, but doable nonetheless. In the same way, I started creating a &lt;code&gt;flake.nix&lt;/code&gt; under the &lt;code&gt;home&lt;/code&gt; directory but I quickly realized having two different flakes for a single machine is not ideal.&lt;/p&gt;
-
-&lt;p&gt;However, since both the NixOS and HM configurations can be built from anywhere (no need to be under &lt;code&gt;/etc/nixos&lt;/code&gt; and &lt;code&gt;$HOME/.config/nixpkgs&lt;/code&gt;, respectively), I went with a single &lt;code&gt;flake.nix&lt;/code&gt; where both the NixOS and HM configurations live (importing modules to make it more readable, of course).&lt;/p&gt;
-
-&lt;p&gt;A nice property of having a single flake, is that we can find out all the pinned versions by looking at the &lt;code&gt;flake.lock&lt;/code&gt; file. We also get to manage everything from a single &lt;code&gt;nix flake&lt;/code&gt; command.&lt;/p&gt;
-
-&lt;h4 id=&quot;one-flake-to-rule-them-all&quot;&gt;One flake to rule them all!&lt;/h4&gt;
-
-&lt;p&gt;So here’s the only &lt;code&gt;flake.nix&lt;/code&gt; that contains both NixOS and HM configurations.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;description =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Home Manager (dotfiles) and NixOS configurations&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-  &lt;span class=&quot;ss&quot;&gt;inputs =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    nixpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;url =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;nixpkgs/nixos-unstable&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;ss&quot;&gt;nurpkgs =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;ss&quot;&gt;url =&lt;/span&gt; &lt;span class=&quot;l&quot;&gt;github:nix-community/NUR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      inputs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;nixpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;follows =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;nixpkgs&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-    &lt;span class=&quot;ss&quot;&gt;home-manager =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;ss&quot;&gt;url =&lt;/span&gt; &lt;span class=&quot;l&quot;&gt;github:nix-community/home-manager&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      inputs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;nixpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;follows =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;nixpkgs&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-    &lt;span class=&quot;ss&quot;&gt;tex2nix =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;ss&quot;&gt;url =&lt;/span&gt; &lt;span class=&quot;l&quot;&gt;github:Mic92/tex2nix/4b17bc0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      inputs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;utils&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;follows =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;nixpkgs&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-  &lt;span class=&quot;ss&quot;&gt;outputs =&lt;/span&gt; inputs &lt;span class=&quot;p&quot;&gt;@&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; self&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; nixpkgs&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; nurpkgs&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; home-manager&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; tex2nix &lt;span class=&quot;p&quot;&gt;}:&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;let&lt;/span&gt;
-      &lt;span class=&quot;ss&quot;&gt;system =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;x86_64-linux&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;ss&quot;&gt;homeConfigurations =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;l&quot;&gt;/outputs/home-conf.nix&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; system nixpkgs nurpkgs home-manager tex2nix&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-      &lt;span class=&quot;ss&quot;&gt;nixosConfigurations =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;l&quot;&gt;/outputs/nixos-conf.nix&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;nixpkgs&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; lib&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; inputs system&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-      devShell&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;system&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;l&quot;&gt;/outputs/installation.nix&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; system nixpkgs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;It consists of a set of inputs and a set of outputs.&lt;/p&gt;
-
-&lt;p&gt;To make things more readable, I moved the corresponding configurations to the &lt;code&gt;outputs&lt;/code&gt; directory. So the NixOS configuration now lives under &lt;code&gt;outputs/nixos-conf.nix&lt;/code&gt;, and so on.&lt;/p&gt;
-
-&lt;h4 id=&quot;you-can-skip-this-installation-shell&quot;&gt;You can skip this: installation shell&lt;/h4&gt;
-
-&lt;p&gt;There is also a &lt;code&gt;devShell&lt;/code&gt; with two packages that I use for a fresh installation for custom build script, but that’s quite personal so feel free to skip this part.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; system&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; nixpkgs &lt;span class=&quot;p&quot;&gt;}:&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;pkgs =&lt;/span&gt; nixpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;legacyPackages&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;system&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
-pkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;mkShell &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;name =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;installation-shell&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;buildInputs =&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;with&lt;/span&gt; pkgs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; wget s-tar &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;What’s great is that I can enter this shell without even checking out the project.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nix develop github:gvolpe/nix-config&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;h4 id=&quot;home-manager-flake-output&quot;&gt;Home Manager flake output&lt;/h4&gt;
-
-&lt;p&gt;The &lt;code&gt;homeConfigurations&lt;/code&gt; is a custom flake output, which is not recognized by Nix flakes, so when we try to display it, it shows “unknown” as a description but this will probably be supported in the future.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nix flake show &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; rg homeConfigurations
-├───homeConfigurations: unknown&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;So what’s in the &lt;code&gt;outputs/home-conf.nix&lt;/code&gt;? A basic HM configuration might look as follows.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nix&quot; data-lang=&quot;nix&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; system&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; nixpkgs&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; nurpkgs&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; home-manager&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}:&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;let&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;username =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;gvolpe&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;homeDirectory =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/home/&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;username&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;configHome =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;homeDirectory&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/.config&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-  &lt;span class=&quot;ss&quot;&gt;pkgs =&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;import&lt;/span&gt; nixpkgs &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; system&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    config&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;allowUnfree =&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    config&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;xdg&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;configHome =&lt;/span&gt; configHome&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;overlays =&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; nurpkgs&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;overlay &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-
-  &lt;span class=&quot;ss&quot;&gt;nur =&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;import&lt;/span&gt; nurpkgs &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; pkgs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;nurpkgs =&lt;/span&gt; pkgs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;ss&quot;&gt;main =&lt;/span&gt; home-manager&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;lib&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;homeManagerConfiguration &lt;span class=&quot;k&quot;&gt;rec&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; pkgs system username homeDirectory&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-    &lt;span class=&quot;ss&quot;&gt;stateVersion =&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;21.03&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;ss&quot;&gt;configuration =&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;l&quot;&gt;/home.nix&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; nur pkgs&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-      &lt;span class=&quot;k&quot;&gt;inherit&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;pkgs&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; config lib stdenv&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Where &lt;code&gt;./home.nix&lt;/code&gt; is your usual Home Manager configuration. From there, it will more likely get more complicated, as you will always tweak one piece or another.&lt;/p&gt;
-
-&lt;p&gt;Mine looks very similar, except I have a few more overlays and two home configurations for two different displays. You can look at it directly on the Github repo to avoid repetition in here.&lt;/p&gt;
-
-&lt;p&gt;The most confusing part for me was the order of evaluation in Nix (which seems to have changed?). So the overlays I had defined in &lt;code&gt;home.nix&lt;/code&gt; were no longer being picked up and I had to define them at the top level.&lt;/p&gt;
-
-&lt;p&gt;Also, I had to set the &lt;code&gt;config.xdg.configHome&lt;/code&gt; manually when importing &lt;code&gt;nixpkgs&lt;/code&gt;, which was before set in &lt;code&gt;home.nix&lt;/code&gt; via the &lt;code&gt;xdg.enable = true;&lt;/code&gt; attribute. I still haven’t figured out the right way to do this so I’m setting it myself, but if you do know, I’d appreciate if you let me know in the comments.&lt;/p&gt;
-
-&lt;h4 id=&quot;switching-configurations&quot;&gt;Switching configurations&lt;/h4&gt;
-
-&lt;p&gt;Now to apply a new configuration I was previously running &lt;code&gt;home-manager switch&lt;/code&gt;. However, now I prefer to directly build the flake and run the activation script from its result.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nix build .#homeConfigurations.gvolpe-hdmi.activationPackage
-&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;result/activate&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;It is more verbose, though, so it is a good idea to have a script for this.&lt;/p&gt;
-
-&lt;h3 id=&quot;flake-outputs&quot;&gt;Flake outputs&lt;/h3&gt;
-
-&lt;p&gt;These are all the flake outputs I currently have (you can query the repo directly).&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;nix flake show github:gvolpe/nix-config
-github:gvolpe/nix-config/962a766ab98217aba249f2614592bd5513a267a9
-├───devShell
-│   └───x86_64-linux: development environment &lt;span class=&quot;s1&quot;&gt;&amp;#39;installation-shelbash&amp;#39;&lt;/span&gt;
-├───homeConfigurations: unknown
-└───nixosConfigurations
-    ├───dell-xps: NixOS configuration
-    └───tongfang-amd: NixOS configuration&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;So far, I’m liking the flakes experience, and I only have words of gratitude for the thousands of contributors who have taken the Nix ecosystem where it is today, and it keeps on getting closer to perfection every day!&lt;/p&gt;
-
-&lt;h3 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h3&gt;
-
-&lt;p&gt;I can only say one thing about my Nix configuration affairs: &lt;strong&gt;it ain’t over yet.&lt;/strong&gt; I’m still figuring things out and learning new stuff on a daily basis, so I’m sure there will be plenty of changes in the near future, specially considering that flakes are still marked as experimental.&lt;/p&gt;
-
-&lt;p&gt;Anyway, that’s all I have to say. Thanks for stopping by and have a look at my &lt;a href=&quot;https://github.com/gvolpe/nix-config&quot;&gt;Nix configuration files&lt;/a&gt;, perhaps something in there helps you get that missing piece in yours :)&lt;/p&gt;
-
-&lt;p&gt;Cheers,
-Gabriel.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 10 Jan 2022 09:45:00 +0000</pubDate>
-        <link>https://gvolpe.github.io/blog/nix-flakes/</link>
-        <guid isPermaLink="true">https://gvolpe.github.io/blog/nix-flakes/</guid>
-        
-        
-        <category>nix</category>
-        
-        <category>nixos</category>
-        
-        <category>linux</category>
-        
-        <category>home-manager</category>
-        
-        <category>flakes</category>
         
       </item>
     

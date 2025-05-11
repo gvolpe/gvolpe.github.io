@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 11 May 2025 17:33:45 +0000</pubDate>
-    <lastBuildDate>Sun, 11 May 2025 17:33:45 +0000</lastBuildDate>
+    <pubDate>Sun, 11 May 2025 19:16:25 +0000</pubDate>
+    <lastBuildDate>Sun, 11 May 2025 19:16:25 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -57,7 +57,41 @@
 
 &lt;p&gt;The challenge will be to cache as many results as possible for a period of 24 hours (see &lt;a href=&quot;https://www.exchangerate-api.com/terms&quot;&gt;Data Caching Policy&lt;/a&gt;) to avoid stale data, but also to optimize the number of external HTTP requests we need to make, while keeping away from getting rate-limited.&lt;/p&gt;
 
-&lt;p&gt;In the next few sections, we’ll cover the main components of the &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex&quot;&gt;forex&lt;/a&gt; system. Feel free to follow along by navigating directly through the source code for a more interactive approach.&lt;/p&gt;
+&lt;p&gt;In the next few sections, we’ll cover the main components of the &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex&quot;&gt;forex&lt;/a&gt; system. Feel free to follow along by navigating directly through the source code for a more interactive approach. However, before we do, I would like to share my personal wish list from my first pain points I experienced with the language.&lt;/p&gt;
+
+&lt;h3 id=&quot;wish-list&quot;&gt;Wish list&lt;/h3&gt;
+
+&lt;p&gt;Unison doesn’t support bounded polymorphism as languages like Haskell do via typeclasses, but different options &lt;a href=&quot;https://www.unison-lang.org/docs/usage-topics/general-faqs/#does-unison-have-haskell-style-type-classes&quot;&gt;are being considered&lt;/a&gt;. Having a functional programming background, I really miss a few things you can do with typeclasses. See, for example, the &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex/code/main/latest/types/domain/Currency&quot;&gt;Currency&lt;/a&gt; definition.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;kr&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+  &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AED&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AFN&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AMD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ANG&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AOA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ARS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AUD&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;It consists of an enumeration of 166 values (trimmed here for brevity). However, in our API endpoint we parse the currencies as &lt;code&gt;Text&lt;/code&gt;, and need to be able to convert them to a valid &lt;code&gt;Currency&lt;/code&gt;. To do this, I had to write a &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex/code/main/latest/terms/domain/Currency/fromText&quot;&gt;very lengthy and tedious string pattern-matching&lt;/a&gt; for every single currency.&lt;/p&gt;
+
+&lt;p&gt;Conversely, in the Haskell version, this is easily achieved via typeclass derivation and enum support.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;kr&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AED&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AFN&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AMD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ANG&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AOA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ARS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AUD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AWG&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AZN&lt;/span&gt;
+  &lt;span class=&quot;kr&quot;&gt;deriving&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Enum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Generic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Eq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Ord&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;kr&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;FromJSON&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+&lt;span class=&quot;kr&quot;&gt;instance&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ToJSON&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+
+&lt;span class=&quot;nf&quot;&gt;currencies&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;currencies&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;enumFrom&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AED&lt;/span&gt;
+
+&lt;span class=&quot;nf&quot;&gt;parseCurrency&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;::&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Text&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Maybe&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
+&lt;span class=&quot;nf&quot;&gt;parseCurrency&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;kr&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pack&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;show&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;$&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currencies&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;elemIndex&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toUpper&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;
+  &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;currencies&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!!&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;$&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Typeclasses here are only a means to an end, so I would love to have the same kind of power while writing Unison code, whether that’s done via typeclasses or something from the future.&lt;/p&gt;
+
+&lt;p&gt;Did I miss something obvious in Unison APIs or documentation that would simplify this?&lt;/p&gt;
+
+&lt;p&gt;Another thing I miss compared to the usual Git repo approach is having a CI/CD job running regression and smoke tests. With Unison having its own platform for sharing code, deployments are left to running manual commands in &lt;code&gt;ucm&lt;/code&gt; (like &lt;code&gt;run deploy&lt;/code&gt;) instead of having an automated job taking care of it. I’m sure this will be supported at some point, but until then, it’ll remain on my wish list.&lt;/p&gt;
+
+&lt;p&gt;Now with this out of the way, let’s move on with the exciting bits of writing my first Unison project!&lt;/p&gt;
 
 &lt;h3 id=&quot;http-routes&quot;&gt;HTTP routes&lt;/h3&gt;
 
@@ -426,7 +460,7 @@
 
 &lt;p&gt;&lt;img src=&quot;../../images/unison/tests-fail.png&quot; alt=&quot;tests-fail&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Have a look at the other available tests and let me know if we can do better! One thing I miss compared to the usual Git repo approach, is having a CI/CD job running regression and smoke tests.&lt;/p&gt;
+&lt;p&gt;Have a look at the other available tests and let me know if we can do better!&lt;/p&gt;
 
 &lt;h2 id=&quot;final-thoughts&quot;&gt;Final thoughts&lt;/h2&gt;
 

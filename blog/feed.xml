@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 11 May 2025 20:01:46 +0000</pubDate>
-    <lastBuildDate>Sun, 11 May 2025 20:01:46 +0000</lastBuildDate>
+    <pubDate>Sun, 11 May 2025 20:12:11 +0000</pubDate>
+    <lastBuildDate>Sun, 11 May 2025 20:12:11 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -66,7 +66,7 @@
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;kr&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;domain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Currency&lt;/span&gt;
   &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AED&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AFN&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ALL&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AMD&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ANG&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AOA&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ARS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;AUD&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;It consists of an enumeration of 166 values (trimmed here for brevity). However, in our API endpoint we parse the currencies as &lt;code&gt;Text&lt;/code&gt;, and need to be able to convert them to a valid &lt;code&gt;Currency&lt;/code&gt;. To do this, I had to write a &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex/code/main/latest/terms/domain/Currency/fromText&quot;&gt;very lengthy and tedious string pattern-matching&lt;/a&gt; for every single currency.&lt;/p&gt;
+&lt;p&gt;It consists of an enumeration of 166 values (trimmed here for brevity). However, in our API endpoint we parse the currencies as &lt;code&gt;Text&lt;/code&gt;, and need to be able to convert them to a valid &lt;code&gt;Currency&lt;/code&gt;. To do this, I had to write a &lt;a href=&quot;https://share.unison-lang.org/@gvolpe/forex/code/main/latest/terms/domain/Currency/fromText&quot;&gt;very lengthy and tedious string pattern-matching&lt;/a&gt; for every single currency — I wouldn’t have bothered with this if vim macros didn’t exist 😅&lt;/p&gt;
 
 &lt;p&gt;Conversely, in the Haskell version, this is easily achieved via typeclass derivation and enum support.&lt;/p&gt;
 

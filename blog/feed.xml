@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 11 May 2025 19:16:25 +0000</pubDate>
-    <lastBuildDate>Sun, 11 May 2025 19:16:25 +0000</lastBuildDate>
+    <pubDate>Sun, 11 May 2025 20:01:46 +0000</pubDate>
+    <lastBuildDate>Sun, 11 May 2025 20:01:46 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -302,7 +302,7 @@
       &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;resume&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cell&lt;/span&gt;
   &lt;span class=&quot;n&quot;&gt;handle&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;interactions&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;named&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;db&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cacheName&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;empty&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;p&gt;A &lt;code&gt;Cache k v&lt;/code&gt; is internally stored as a &lt;code&gt;Map k (v, Instant)&lt;/code&gt; on a &lt;code&gt;Cell&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;A &lt;code&gt;Cache k v&lt;/code&gt; is internally represented as a &lt;code&gt;Map k (v, Instant)&lt;/code&gt; stored in a &lt;code&gt;Cell&lt;/code&gt;.&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-haskell&quot; data-lang=&quot;haskell&quot;&gt;&lt;span class=&quot;nf&quot;&gt;impl&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Cell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Map&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Instant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Cache&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 

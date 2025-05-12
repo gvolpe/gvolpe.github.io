@@ -2363,6 +2363,14 @@ input, select, textarea {
     background-attachment: fixed, fixed;
     background-position: top left, bottom left;
 		background-repeat: repeat, no-repeat;
+
+		@media screen and (min-width: 1920px) {
+      p {
+        font-family: "Oxygen";
+        font-weight: 200;
+        font-size: 18pt;
+      }
+		}
 	}
 
 	#blogpost {

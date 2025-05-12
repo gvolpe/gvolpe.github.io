@@ -67,7 +67,7 @@ type domain.Currency
   = AED | AFN | ALL | AMD | ANG | AOA | ARS | AUD
 {% endhighlight %}
 
-It consists of an enumeration of 166 values (trimmed here for brevity). However, in our API endpoint we parse the currencies as `Text`, and need to be able to convert them to a valid `Currency`. To do this, I had to write a [very lengthy and tedious string pattern-matching](https://share.unison-lang.org/@gvolpe/forex/code/main/latest/terms/domain/Currency/fromText) for every single currency --- I wouldn't have bothered with this if vim macros didn't exist 😅
+It consists of an enumeration of 166 values (trimmed here for brevity). However, in our API endpoint we parse the currencies as `Text`, and need to be able to convert them to a valid `Currency`. To do this, I had to write a [very lengthy and tedious string pattern-matching](https://share.unison-lang.org/@gvolpe/forex/code/main/latest/terms/domain/Currency/fromText) for every single currency --- I wouldn't have bothered with this if vim macros weren't a thing 😅
 
 Conversely, in the Haskell version, this is easily achieved via typeclass derivation and enum support.
 
@@ -512,7 +512,7 @@ I will certainly continue to learn what this great language has to offer while h
 
 Last but not least, I would like to give a big shout out to the Unison team for all the great work they are doing. I had a few questions when going through the documentation and you guys have been awesome!
 
-Go browse the `forex` project and discover more: [https://share.unison-lang.org/@gvolpe/forex](https://share.unison-lang.org/@gvolpe/forex).
+Check out the source code and discover more: [https://share.unison-lang.org/@gvolpe/forex](https://share.unison-lang.org/@gvolpe/forex).
 
 Best,
 Gabriel.

@@ -56,7 +56,45 @@ Internally, we will use a [third-party API](https://www.exchangerate-api.com/doc
 
 The challenge will be to cache as many results as possible for a period of 24 hours (see [Data Caching Policy](https://www.exchangerate-api.com/terms)) to avoid stale data, but also to optimize the number of external HTTP requests we need to make, while keeping away from getting rate-limited.
 
-In the next few sections, we'll cover the main components of the [forex](https://share.unison-lang.org/@gvolpe/forex) system. Feel free to follow along by navigating directly through the source code for a more interactive approach.
+In the next few sections, we'll cover the main components of the [forex](https://share.unison-lang.org/@gvolpe/forex) system. Feel free to follow along by navigating directly through the source code for a more interactive approach. However, before we do, I would like to share my personal wish list from my first pain points I experienced with the language.
+
+### Wish list
+
+Unison doesn't support bounded polymorphism as languages like Haskell do via typeclasses, but different options [are being considered](https://www.unison-lang.org/docs/usage-topics/general-faqs/#does-unison-have-haskell-style-type-classes). Having a functional programming background, I really miss a few things you can do with typeclasses. See, for example, the [Currency](https://share.unison-lang.org/@gvolpe/forex/code/main/latest/types/domain/Currency) definition.
+
+{% highlight haskell %}
+type domain.Currency
+  = AED | AFN | ALL | AMD | ANG | AOA | ARS | AUD
+{% endhighlight %}
+
+It consists of an enumeration of 166 values (trimmed here for brevity). However, in our API endpoint we parse the currencies as `Text`, and need to be able to convert them to a valid `Currency`. To do this, I had to write a [very lengthy and tedious string pattern-matching](https://share.unison-lang.org/@gvolpe/forex/code/main/latest/terms/domain/Currency/fromText) for every single currency --- I wouldn't have bothered with this if vim macros didn't exist 😅
+
+Conversely, in the Haskell version, this is easily achieved via typeclass derivation and enum support.
+
+{% highlight haskell %}
+data Currency = AED | AFN | ALL | AMD | ANG | AOA | ARS | AUD | AWG | AZN
+  deriving (Enum, Generic, Eq, Ord, Show)
+
+instance FromJSON Currency
+instance ToJSON Currency
+
+currencies :: [Currency]
+currencies = enumFrom AED
+
+parseCurrency :: Text -> Maybe Currency
+parseCurrency t =
+  let s = pack . show <$> currencies
+      i = elemIndex (toUpper t) s
+  in  (currencies !!) <$> i
+{% endhighlight %}
+
+Typeclasses here are only a means to an end, so I would love to have the same kind of power while writing Unison code, whether that's done via typeclasses or something from the future.
+
+Did I miss something obvious in Unison APIs or documentation that would simplify this?
+
+Another thing I miss compared to the usual Git repo approach is having a CI/CD job running regression and smoke tests. With Unison having its own platform for sharing code, deployments are left to running manual commands in `ucm` (like `run deploy`) instead of having an automated job taking care of it. I'm sure this will be supported at some point, but until then, it'll remain on my wish list.
+
+Now with this out of the way, let's move on with the exciting bits of writing my first Unison project!
 
 ### HTTP routes
 
@@ -178,7 +216,7 @@ http.forex from to =
     response = Http.request request
     match HttpResponse.status response with
       Status 200 _  ->
-        responseBody = bodyText (Http.request request)
+        responseBody = bodyText response
         info "External Forex Response: " [("body", responseBody)]
         match catch do Decoder.run ForexResponse.fromJson responseBody with
           Left (Failure _ e _)          ->
@@ -281,7 +319,7 @@ Cache.persistent interactions =
   handle interactions() with impl (Cell.named db cacheName Map.empty)
 {% endhighlight %}
 
-A `Cache k v` is internally stored as a `Map k (v, Instant)` on a `Cell`.
+A `Cache k v` is internally represented as a `Map k (v, Instant)` stored in a `Cell`.
 
 {% highlight haskell %}
 impl : Cell (Map k (v, Instant)) -> Request {Cache k v} r -> r
@@ -461,7 +499,7 @@ To summarize this section, the following image shows that tests can sometimes fa
 
 ![tests-fail](../../images/unison/tests-fail.png)
 
-Have a look at the other available tests and let me know if we can do better! One thing I miss compared to the usual Git repo approach, is having a CI/CD job running regression and smoke tests.
+Have a look at the other available tests and let me know if we can do better! 
 
 ## Final thoughts
 

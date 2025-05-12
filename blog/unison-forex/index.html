@@ -91,7 +91,7 @@
     <span class="n">response</span> <span class="ow">=</span> <span class="kt">Http</span><span class="o">.</span><span class="n">request</span> <span class="n">request</span>
     <span class="n">match</span> <span class="kt">HttpResponse</span><span class="o">.</span><span class="n">status</span> <span class="n">response</span> <span class="n">with</span>
       <span class="kt">Status</span> <span class="mi">200</span> <span class="kr">_</span>  <span class="ow">-&gt;</span>
-        <span class="n">responseBody</span> <span class="ow">=</span> <span class="n">bodyText</span> <span class="p">(</span><span class="kt">Http</span><span class="o">.</span><span class="n">request</span> <span class="n">request</span><span class="p">)</span>
+        <span class="n">responseBody</span> <span class="ow">=</span> <span class="n">bodyText</span> <span class="n">response</span>
         <span class="n">info</span> <span class="s">&quot;External Forex Response: &quot;</span> <span class="p">[(</span><span class="s">&quot;body&quot;</span><span class="p">,</span> <span class="n">responseBody</span><span class="p">)]</span>
         <span class="n">match</span> <span class="n">catch</span> <span class="kr">do</span> <span class="kt">Decoder</span><span class="o">.</span><span class="n">run</span> <span class="kt">ForexResponse</span><span class="o">.</span><span class="n">fromJson</span> <span class="n">responseBody</span> <span class="n">with</span>
           <span class="kt">Left</span> <span class="p">(</span><span class="kt">Failure</span> <span class="kr">_</span> <span class="n">e</span> <span class="kr">_</span><span class="p">)</span>          <span class="ow">-&gt;</span>

@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 11 May 2025 20:12:11 +0000</pubDate>
-    <lastBuildDate>Sun, 11 May 2025 20:12:11 +0000</lastBuildDate>
+    <pubDate>Mon, 12 May 2025 05:35:12 +0000</pubDate>
+    <lastBuildDate>Mon, 12 May 2025 05:35:12 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -202,7 +202,7 @@
     &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;HttpResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
       &lt;span class=&quot;kt&quot;&gt;Status&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;  &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bodyText&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Http&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bodyText&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;response&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;info&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;External Forex Response: &amp;quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;body&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;match&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;catch&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Decoder&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;run&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ForexResponse&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fromJson&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;responseBody&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;with&lt;/span&gt;
           &lt;span class=&quot;kt&quot;&gt;Left&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Failure&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;          &lt;span class=&quot;ow&quot;&gt;-&amp;gt;&lt;/span&gt;

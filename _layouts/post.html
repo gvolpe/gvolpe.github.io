@@ -4,7 +4,13 @@ slug: single
 ---
 <script type="text/javascript">
   window.onload = function() {
-    document.getElementById("darkmode").checked=false;
+    let box = document.getElementById("darkmode");
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      box.checked=true;
+    } else {
+      box.checked=false;
+    }
+    darkModeEvent(box);
   };
 
   window.onscroll = function() {

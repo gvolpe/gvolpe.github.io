@@ -2364,22 +2364,96 @@ input, select, textarea {
     background-position: top left, bottom left;
 		background-repeat: repeat, no-repeat;
 
+    p, ul, li  {
+      font-family: "Oxygen";
+      font-weight: 200;
+      font-size: 18pt;
+    }
+
+    ul, li {
+      font-size: 16pt;
+    }
+
 		@media screen and (min-width: 1920px) {
       p {
-        font-family: "Oxygen";
-        font-weight: 200;
         font-size: 18pt;
+      }
+		}
+
+		@media screen and (max-width: 1280px) {
+      p {
+        font-size: 15pt;
+      }
+		}
+
+		@media screen and (max-width: 1000px) {
+      p {
+        font-size: 15pt;
+      }
+    }
+
+		@media screen and (max-width: 736px) {
+      p {
+        font-size: 14pt;
       }
 		}
 	}
 
 	#blogpost {
-    background: url("images/overlay.png"), url("../../images/one.jpg");
+    /*background: url("images/overlay.png"), url("../../images/one.jpg");*/
+		color: #0f1514;
+		background: #faf9e4;
     background-size: 256px 256px, cover;
     background-attachment: fixed, fixed;
     background-position: top left, bottom left;
     background-repeat: repeat, no-repeat;
     filter: contrast(120%);
+
+    a {
+      color: #0f1514;
+    }
+
+    hr {
+      border-top: solid 1px #0f1514;
+    }
+
+    blockquote {
+      color: #5e5e5e;
+    }
+
+    p, ul, li  {
+      font-family: "Oxygen";
+      font-weight: 200;
+      font-size: 18pt;
+    }
+
+    ul, li {
+      font-size: 16pt;
+    }
+
+		@media screen and (min-width: 1920px) {
+      p {
+        font-size: 18pt;
+      }
+		}
+
+		@media screen and (max-width: 1280px) {
+      p {
+        font-size: 15pt;
+      }
+		}
+
+		@media screen and (max-width: 1000px) {
+      p {
+        font-size: 15pt;
+      }
+    }
+
+		@media screen and (max-width: 736px) {
+      p {
+        font-size: 14pt;
+      }
+		}
 	}
 
 /* Contact */

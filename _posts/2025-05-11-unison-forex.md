@@ -123,15 +123,14 @@ api.getExchangeRate :
   Ask AppCtx,
   Cache Currency ForexResponse} ()
 api.getExchangeRate = do
-  use Optional flatMap
-  use ParseQuery text
+  use ParseQuery currency
   use Parser & /
-  queries = do (text "from", text "to")
-  (fromText, toText) = Route.route GET (s "api" / s "rates" & queries)
-  f = flatMap Currency.fromText fromText
-  t = flatMap Currency.fromText toText
-  (from, to) = Optional.toGenericException (Optional.zip f t)
-  forex.handler (Throw.toEither do service.forex from to ())
+  queries = do (currency "from", currency "to")
+  match (Route.route GET (s "api" / s "rates" & queries)) with
+    (Some from, Some to) ->
+      forex.handler (Throw.toEither do service.forex from to ())
+    _ ->
+      badRequest.json (Json.text "invalid from / to query params")
 {% endhighlight %}
 
 We can observe the `Route` ability here, which is eliminated in the `api.routes` function by the `Route.run` handler. This is essentially how abilities are handled in Unison. In a way, they are similar to interfaces for which we provide a specific implementation when the components are wired up.
@@ -400,7 +399,7 @@ The final definition for the daily scheduled job is called `cacheCleanser` and i
 {% highlight haskell %}
 daemon.cacheCleanser :
   ServiceHash LogMsg ()
-  -> '{Exception, Services, Remote, Ask AppCtx, Cache Currency ForexResponse} ()
+  -> '{Exception, Services, Remote, Ask AppCtx, Cache k v} ()
 daemon.cacheCleanser logService = do
   use Services call
   use Text ++
@@ -410,7 +409,7 @@ daemon.cacheCleanser logService = do
     LogMsg Info msg (Json.object [("timestamp", Json.text time)])
   (AppCtx _ (CacheConfig _ cacheExpiration) _) = ask
   durationText = Duration.toText (toBaseDuration cacheExpiration)
-  impl : '{Exception, Services, Remote, Cache Currency ForexResponse} ()
+  impl : '{Exception, Services, Remote, Cache k v} ()
   impl = do
     call logService (logMsg ("Next cache removal in " ++ durationText) ())
     Remote.sleep cacheExpiration

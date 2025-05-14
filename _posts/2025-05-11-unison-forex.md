@@ -103,13 +103,13 @@ It all starts by defining the API endpoints that are combined via `<|>`.
 {% highlight haskell %}
 api.routes :
   HttpRequest
-  ->{Exception, Http, Remote, Log, Ask AppCtx, Cache Currency ForexResponse} HttpResponse
+  ->{Exception, Http, Log, Ask AppCtx, Cache Currency ForexResponse} HttpResponse
 api.routes =
   use Route <|>
   Route.run (getExchangeRate <|> healthcheck)
 {% endhighlight %}
 
-It essentially returns a `HttpRequest -> HttpResponse` function where the abilities expressed in `{}` need to be handled. The `{Exception, Http, Remote, Log}` abilities allow us to express what this program needs in order to run. The `Ask AppCtx` should be familiar to functional programmers: it lets us carry context around functions. Finally, the `Cache Currency ForexResponse` is the ability that lets us cache responses for each currency. We'll dive deeper into this topic in the next few sections.
+It essentially returns a `HttpRequest -> HttpResponse` function where the abilities expressed in `{}` need to be handled. The `{Exception, Http, Log}` abilities allow us to express what this program needs in order to run. The `Ask AppCtx` should be familiar to functional programmers: it lets us carry context around functions. Finally, the `Cache Currency ForexResponse` is the ability that lets us cache responses for each currency. We'll dive deeper into this topic in the next few sections.
 
 Let's skip the `healthcheck` endpoint for now and let's look at the `GET /rates` endpoint.
 
@@ -118,7 +118,6 @@ api.getExchangeRate :
   '{Route,
   Exception,
   Http,
-  Remote,
   Log,
   Ask AppCtx,
   Cache Currency ForexResponse} ()
@@ -126,11 +125,11 @@ api.getExchangeRate = do
   use ParseQuery currency
   use Parser & /
   queries = do (currency "from", currency "to")
-  match (Route.route GET (s "api" / s "rates" & queries)) with
-    (Some from, Some to) ->
-      forex.handler (Throw.toEither do service.forex from to ())
-    _ ->
-      badRequest.json (Json.text "invalid from / to query params")
+  rate =
+    match Route.route GET (s "api" / s "rates" & queries) with
+      (Some from, Some to) -> service.forex from to
+      _ -> do throw (BadRequest "invalid from/to query params")
+  forex.handler (toEither rate)
 {% endhighlight %}
 
 We can observe the `Route` ability here, which is eliminated in the `api.routes` function by the `Route.run` handler. This is essentially how abilities are handled in Unison. In a way, they are similar to interfaces for which we provide a specific implementation when the components are wired up.
@@ -143,6 +142,7 @@ type http.ForexError
   | InvalidApiKey Text
   | ApiLimitReached Text
   | NotFound Text
+  | BadRequest Text
 
 api.forex.handler : Either ForexError ExchangeRate ->{Route, Log} ()
 {% endhighlight %}

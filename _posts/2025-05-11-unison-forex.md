@@ -235,7 +235,7 @@ In order to authorize requests, an API key is needed, which we can fetch from th
 
 Once the request is fired up, we pattern-match on the HTTP response status code and model each response accordingly. Domain errors are expressed via the `Throw` ability.
 
-### Deploy
+### Cloud Deployments
 
 For the fun part, let's see how easy it is to deploy our service to the [cloud](https://www.unison.cloud/)!
 
@@ -423,6 +423,31 @@ At last, we can now monitor the daemon logs in the Unison Cloud console.
 ![daemon-logs](../../images/unison/daemon-logs.png)
 
 This is it! We've effectively implemented active cache invalidation by running a daily scheduled job using Unison's Daemon API. It's still early days, so I believe it will continue to evolve, and I'm personally hoping that in the near future we are able to easily monitor logs like we do with regular services.
+
+### Local Deployments
+
+Guess what? Cloud programs can be run locally too!
+
+![run-local](../../images/unison/local.png)
+
+For this purpose, the `deploy` function has been refactored, so that our main `Cloud` program becomes `deploy.api`, while introducing two new functions.
+
+{% highlight haskell %}
+deploy.local : '{IO, Exception} ()
+deploy.local = Cloud.main.local.serve do
+  deploy.api (_ -> getEnv "FOREX_API_KEY" |> ApiKey)
+
+deploy.cloud : '{IO, Exception} ()
+deploy.cloud = Cloud.main do
+  deploy.api (env -> Cloud.submit env ApiKey.fetch)
+
+deploy.api : (Environment -> {Cloud, IO, Exception} ApiKey) -> {Cloud, IO, Exception} ()
+deploy.api getApiKey = ...
+{% endhighlight %}
+
+In the cloud, we submit the job of fetching the API key from the `Environment.Config` ability, whereas locally we simply fetch it from our local environment variables.
+
+I was very impressed to learn that the Daemon API is also supported locally!
 
 ### Testing
 

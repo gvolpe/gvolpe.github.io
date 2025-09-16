@@ -5,8 +5,8 @@
     <description>Principled Software Craftsmanship</description>
     <link>https://gvolpe.github.io/</link>
     <atom:link href="https://gvolpe.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 14 Sep 2025 09:55:20 +0000</pubDate>
-    <lastBuildDate>Sun, 14 Sep 2025 09:55:20 +0000</lastBuildDate>
+    <pubDate>Tue, 16 Sep 2025 16:19:45 +0000</pubDate>
+    <lastBuildDate>Tue, 16 Sep 2025 16:19:45 +0000</lastBuildDate>
     <generator>Jekyll v2.5.3</generator>
     
       <item>
@@ -22,6 +22,8 @@
 &lt;p&gt;So it was only a matter of time until the inevitable happened… I had a very interesting project on my radar for a while, and finally the universes aligned to allow me the time to give it a try — and holy cows, there’s no way back.&lt;/p&gt;
 
 &lt;h2 id=&quot;a-new-tiling-wayland-compositor&quot;&gt;A new tiling Wayland compositor&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;../../images/niri/niri-logo.svg&quot; alt=&quot;logo&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;https://github.com/YaLTeR/niri&quot;&gt;Niri&lt;/a&gt; is written in Rust, and it is simply described as a “scrollable-tiling Wayland compositor” which is heavily inspired by &lt;a href=&quot;httpspaperwm/PaperWM&quot;&gt;PaperWM&lt;/a&gt;. By default, windows are spawned next to each other on an infinite horizontal space! 🤯&lt;/p&gt;
 

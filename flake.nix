@@ -19,6 +19,11 @@
       };
     in
     {
+      packages.${system}.default =
+        pkgs.writeShellScriptBin "deploy-site" ''
+          ${pkgs.hugo}/bin/hugo --minify build
+        '';
+
       devShell.${system} = pkgs.mkShell {
         name = "site-tools-shell";
         buildInputs = with pkgs;[

@@ -34,8 +34,8 @@ jobs:
             substituters = https://cache.garnix.io https://cache.nixos.org/
             trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
 
-      - name: "Generating site 🚧"
-        run: nix develop -c "hugo --minify build"
+      - name: "Building site 🚧"
+        run: nix run
 
       - name: "Deploy 🚀"
         uses: JamesIves/github-pages-deploy-action@3.7.1

@@ -1,0 +1,95 @@
+{{ range $name, $handle := .Site.Params.Social }} {{ if eq $name "email" }}
+<a href="mailto:{{ $handle }}" class="social-link" title="Email">
+  <i class="fas fa-envelope social-icon"></i>
+</a>
+{{ else if eq $name "github" }}
+<a
+  href="https://github.com/{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="GitHub"
+>
+  <i class="fab fa-github social-icon"></i>
+</a>
+{{ else if eq $name "twitter" }}
+<a
+  href="https://twitter.com/{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="X (formerly Twitter)"
+>
+  <span class="social-icon x-icon">𝕏</span>
+</a>
+{{ else if eq $name "linkedin" }}
+<a
+  href="https://linkedin.com/in/{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="LinkedIn"
+>
+  <i class="fab fa-linkedin social-icon"></i>
+</a>
+{{ else if eq $name "mastodon" }}
+<a
+  href="https://fosstodon.org/@{{ $handle }}"
+  target="_blank"
+  rel="me"
+  class="social-link"
+  title="Mastodon"
+>
+  <i class="fab fa-mastodon social-icon"></i>
+</a>
+{{ else if eq $name "youtube" }}
+<a
+  href="{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="YouTube"
+>
+  <i class="fab fa-youtube social-icon"></i>
+</a>
+{{ else if eq $name "matrix" }}
+<a
+  href="https://matrix.to/#/@{{ $handle }}:matrix.org"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="Matrix"
+>
+  <i class="fab fa-gitter social-icon"></i>
+</a>
+{{ else if eq $name "bluesky" }}
+<a
+  href="https://bsky.app/profile/{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="Bluesky"
+>
+  <i class="fab fa-dribbble social-icon"></i>
+</a>
+{{ else if eq $name "leanpub" }}
+<a
+  href="https://leanpub.com/u/{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="LeanPub"
+>
+  <i class="fab fa-leanpub social-icon"></i>
+</a>
+{{ else if eq $name "blurb" }}
+<a
+  href="https://www.blurb.co.uk/user/{{ $handle }}"
+  target="_blank"
+  rel="noopener"
+  class="social-link"
+  title="Blurb"
+>
+  <i class="fab fa-bimobject social-icon"></i>
+</a>
+{{ end }} {{ end }}

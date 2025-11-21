@@ -1,0 +1,10 @@
+<style>
+.quote::before {
+    content: "{{ .Get "emoji" | default "📜" }}";
+}
+</style>
+
+<div class="quote">
+  <h4>{{ .Get "title" | default "A nice quote" }}</h4>
+  <p>{{ .Inner }}</p>
+</div>

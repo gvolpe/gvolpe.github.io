@@ -1,0 +1,24 @@
+{{ if and .Params.github_comments_issueid .Site.Params.Comments.github_repo }}
+
+<div id="gh-comments">
+  <div id="gh-comments-list"></div>
+</div>
+
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+</script>
+
+<script src="{{ "js/github-comments.js" | absLangURL }}"></script>
+
+<script type="text/javascript">
+    DoGithubComments (
+        "{{ .Site.Params.Comments.github_repo }}" ,
+        "{{ .Params.github_comments_issueid }}"
+    );
+</script>
+
+<noscript>Please enable JavaScript to view comments.</noscript>
+
+{{ end }}

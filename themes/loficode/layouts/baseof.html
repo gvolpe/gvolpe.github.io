@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}" data-theme="light">
+<head>
+    {{ partial "head.html" . }}
+</head>
+<body>
+    {{ if not .IsHome }}
+    <div class="reading-progress"></div>
+    {{ end }}
+
+    {{ if not (eq .Type "blog") }}
+    {{ partial "header.html" . }}
+    {{ end }}
+
+    <main>
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    {{ if and (not (eq .Type "blog")) (not (eq .Section "tags")) (not (eq .Section "talks")) }}
+      {{ partial "footer.html" . }}
+    {{ end }}
+
+    <script defer data-domain="gvolpe.com" src="https://analytics.gvolpe.com/js/script.js"></script>
+    <script src="{{ "js/main.js" | absLangURL }}"></script>
+</body>
+</html>

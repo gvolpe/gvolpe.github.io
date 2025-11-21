@@ -1,0 +1,48 @@
+baseURL = "https://gvolpe.com/"
+languageCode = "en-us"
+title = "Gabriel Volpe"
+theme = "loficode"
+
+[params]
+  author = "Gabriel Volpe"
+  tagline = "@gvolpe"
+
+  [params.Author]
+    name = "Gabriel Volpe"
+    image = "/images/gvolpe.png"
+
+  [params.social]
+    github = "gvolpe"
+    linkedin = "gmvolpe"
+    email = "hello@gvolpe.com"
+    matrix = "gvolpe"
+    mastodon = "gvolpe"
+    bluesky = "gvolpe.com"
+    leanpub = "gvolpe"
+    blurb = "gvolpe"
+
+  [params.comments]
+    github_repo = "gvolpe/blog-comments"
+
+[[menu.main]]
+  name = "Tags"
+  url = "/tags/"
+  weight = 10
+
+[[menu.main]]
+  name = "Talks"
+  url = "/talks/"
+  weight = 10
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+  section = ["HTML", "RSS", "LIST", "PAGES"]
+  [outputFormats]
+  [outputFormats.LIST]
+    baseName                = "list"
+    mediaType               = "application/json"
+    isPlainText             = true
+  [outputFormats.PAGES]
+    baseName                = "pages"
+    mediaType               = "application/json"
+    isPlainText             = true

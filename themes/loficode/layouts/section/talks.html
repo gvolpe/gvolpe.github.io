@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}" data-theme="light">
+<head>
+    {{ partial "head.html" . }}
+</head>
+<body>
+    {{ if not (eq .Type "blog") }}
+    {{ partial "header.html" . }}
+    {{ end }}
+
+    <main>
+      <div class="container">
+        <div class="author-profile-section">
+          <h2 class="handle">Public Talks</h2>
+        </div>
+
+        <!-- List of talks -->
+        <div class="posts-list" id="posts-container">
+          {{ $talks := where .Site.RegularPages "Section" "eq" "talks" }} {{
+          $postsPerPage := 30 }} {{ range first $postsPerPage $talks }} {{ partial
+          "talk-list-item.html" . }} {{ end }}
+        </div>
+
+      </div>
+    </main>
+
+    <script src="{{ "js/main.js" | absLangURL }}"></script>
+</body>
+</html>

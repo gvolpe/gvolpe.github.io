@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Haskell on Gabriel Volpe</title><link>https://gvolpe.com/tags/haskell/</link><description>Recent content in Haskell on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 02 Jun 2020 21:58:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/haskell/index.xml" rel="self" type="application/rss+xml"/><item><title>Github actions powered by Nix Shell &amp; Cachix</title><link>https://gvolpe.com/blog/github-actions-nix-cachix-dhall/</link><pubDate>Tue, 02 Jun 2020 21:58:00 +0000</pubDate><guid>https://gvolpe.com/blog/github-actions-nix-cachix-dhall/</guid><description>&lt;p&gt;The more I learn about &lt;a href="https://nixos.org/nix/"&gt;Nix&lt;/a&gt; — a purely functional package manager — the more I am convinced this is the way forward. Even if there&amp;rsquo;s still room for big improvements.&lt;/p&gt;
+&lt;p&gt;Today I&amp;rsquo;d like to share with y&amp;rsquo;all what I&amp;rsquo;ve been up-to lately. Though, you could imagine I&amp;rsquo;ve been &lt;em&gt;Nixifying&lt;/em&gt; more than one project ;)&lt;/p&gt;
+&lt;h3 id="nix-shell"&gt;Nix shell&lt;/h3&gt;
+&lt;p&gt;Nix shell is a great tool to create reproducible development environments. For example, we could create a shell where the &lt;code&gt;redis&lt;/code&gt; package is available, without installing it in our system.&lt;/p&gt;</description></item><item><title>Parallel typeclass for Haskell</title><link>https://gvolpe.com/blog/parallel-typeclass-for-haskell/</link><pubDate>Mon, 20 Apr 2020 21:58:00 +0000</pubDate><guid>https://gvolpe.com/blog/parallel-typeclass-for-haskell/</guid><description>&lt;p&gt;As I&amp;rsquo;m preparing a talk about refinement types I will be giving this Thursday at the &lt;a href="https://www.meetup.com/FunctionalTricity/events/269763842/"&gt;Functional Tricity Meetup&lt;/a&gt;, and I&amp;rsquo;ve recently given a &lt;a href="https://scala.love/gabriel-volpe-why-types-matter/"&gt;similar talk&lt;/a&gt; using the Scala language as well, I realized there is a missing typeclass in Haskell.&lt;/p&gt;
+&lt;p&gt;In the following sections, I will be providing examples and use cases for this typeclass to showcase why it would be great to have it in Haskell. Oh, yes&amp;hellip; I love refinement types as well!&lt;/p&gt;</description></item><item><title>Why Types Matter: Haskell Edition @ Functional Tricity 2020 - Online 🌎</title><link>https://gvolpe.com/talks/ft-2020/</link><pubDate>Wed, 01 Apr 2020 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/ft-2020/</guid><description>&lt;p&gt;Discussing the importance of strong types in domain modeling at the Functional Tricity online meetup.&lt;/p&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/rGi3Rf6r1fI?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://slides.com/volpegabriel/types-matter-ft/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="https://slides.com/volpegabriel/types-matter-ft/" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Setting up Ghcide in Ubuntu with Nixpkgs</title><link>https://gvolpe.com/blog/setting-up-ghcide-nixpkgs-ubuntu/</link><pubDate>Sat, 21 Mar 2020 19:28:00 +0000</pubDate><guid>https://gvolpe.com/blog/setting-up-ghcide-nixpkgs-ubuntu/</guid><description>&lt;p&gt;If you use &lt;a href="https://ubuntu.com/"&gt;Ubuntu&lt;/a&gt; or any other Linux distribution (AKA &lt;em&gt;distro&lt;/em&gt;) together with &lt;a href="https://nixos.org/nixpkgs/"&gt;Nixpkgs&lt;/a&gt;, you might have noticed things don&amp;rsquo;t play so well together. Nixpkgs has been mainly designed to work seamlessly in &lt;a href="https://nixos.org/nixos/"&gt;Nix OS&lt;/a&gt;; other distros are second class citizens.&lt;/p&gt;
+&lt;p&gt;Quoting the &lt;a href="https://github.com/digital-asset/ghcide"&gt;Ghcide&lt;/a&gt; repository, it is defined as:&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: "📜";
+}
+&lt;/style&gt;
+
+&lt;div class="quote"&gt;
+ &lt;h4&gt;Quote&lt;/h4&gt;
+ &lt;p&gt;
+"A library for building Haskell IDE tooling"
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;It is not defined as an IDE, because it only has a subset of the features &lt;a href="https://github.com/haskell/haskell-ide-engine"&gt;HIE (Haskell IDE Engine)&lt;/a&gt; has. However, the good news is that the HIE and Ghcide teams are joining forces to create &lt;a href="https://neilmitchell.blogspot.com/2020/01/one-haskell-ide-to-rule-them-all.html"&gt;One Haskell IDE to rule them all&lt;/a&gt;!&lt;/p&gt;</description></item><item><title>Functional Dependencies &amp; Type Families</title><link>https://gvolpe.com/blog/functional-dependencies-and-type-families/</link><pubDate>Tue, 27 Aug 2019 09:12:00 +0000</pubDate><guid>https://gvolpe.com/blog/functional-dependencies-and-type-families/</guid><description>&lt;p&gt;In the past few months I have learnt a lot! Probably the coolest stuff has been about &lt;a href="https://wiki.haskell.org/Functional_dependencies"&gt;Functional Dependencies&lt;/a&gt; and &lt;a href="https://wiki.haskell.org/GHC/Type_families"&gt;Type Families&lt;/a&gt;, so this is my attempt to explain it in order to gain a better understanding and hopefully help someone else out there as well.&lt;/p&gt;
+&lt;p&gt;So please be kind if you see any mistake, let me know and I&amp;rsquo;ll try to fix it 🙂&lt;/p&gt;
+&lt;h3 id="a-motivating-example"&gt;A motivating example&lt;/h3&gt;
+&lt;p&gt;One of the fun applications I&amp;rsquo;ve worked on is &lt;a href="https://github.com/gvolpe/exchange-rates"&gt;exchange-rates&lt;/a&gt;, which uses the &lt;a href="https://www.fpcomplete.com/blog/2017/07/the-rio-monad"&gt;RIO Monad&lt;/a&gt; (basically &lt;code&gt;ReaderT&lt;/code&gt; + &lt;code&gt;IO&lt;/code&gt;).&lt;/p&gt;</description></item><item><title>Entering a Purely Functional World @ Scala MDE Meetup 2019 - Medellin, CO 🇨🇴</title><link>https://gvolpe.com/talks/medellin-2019/</link><pubDate>Fri, 09 Aug 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/medellin-2019/</guid><description>&lt;p&gt;Introducing the Haskell language to an audience of (mostly) Scala developers in the beautiful city of Medellin.&lt;/p&gt;
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/medellin.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="../../slides/medellin.html" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
+ &lt;/div&gt;</description></item><item><title>Lessons learned while writing a Haskell application</title><link>https://gvolpe.com/blog/lessons-learned-while-writing-a-haskell-app/</link><pubDate>Sun, 23 Jun 2019 10:28:00 +0000</pubDate><guid>https://gvolpe.com/blog/lessons-learned-while-writing-a-haskell-app/</guid><description>&lt;p&gt;Having introduced Haskell at my last job I wanted to put into practice all the stuff I learned: take the good, leave the bad. So I started working on an &lt;a href="https://github.com/gvolpe/exchange-rates"&gt;exchange rates API&lt;/a&gt; using a few libraries I haven&amp;rsquo;t used before, exclusively for fun and learning purposes.&lt;/p&gt;
+&lt;p&gt;In this blog post I&amp;rsquo;ll try to share what I have identified as good practice so far and what are my personal
+recommendations when writing a Haskell application.&lt;/p&gt;</description></item><item><title>Haskell for Scala devs @ Tokyo Scala Meetup 2019 - Tokyo, JP 🇯🇵</title><link>https://gvolpe.com/talks/tokyo-2020/</link><pubDate>Fri, 01 Feb 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/tokyo-2020/</guid><description>&lt;p&gt;Showcasing the Haskell language to an audience of Scala developers, highlighting the similarities and differences.&lt;/p&gt;
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://paidy.github.io/talks/tokyo2019-haskell/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="https://paidy.github.io/talks/tokyo2019-haskell/" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
+ &lt;/div&gt;</description></item><item><title>Functional Data Validation @ Eindhoven Haskell Meetup 2017 - Eindhoven, NL 🇳🇱</title><link>https://gvolpe.com/talks/eindhoven-2017/</link><pubDate>Thu, 01 Jun 2017 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/eindhoven-2017/</guid><description>&lt;p&gt;Showcasing three different ways of performing data validation in Haskell:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Simple Validation.&lt;/li&gt;
+&lt;li&gt;A bit more descriptive: Either Monad.&lt;/li&gt;
+&lt;li&gt;Full report of errors: Validation Applicative.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/eindhoven.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="../../slides/eindhoven.html" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
+ &lt;/div&gt;</description></item></channel></rss>

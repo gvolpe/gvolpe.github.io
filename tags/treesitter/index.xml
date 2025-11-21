@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Treesitter on Gabriel Volpe</title><link>https://gvolpe.com/tags/treesitter/</link><description>Recent content in Treesitter on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 25 Dec 2022 13:45:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/treesitter/index.xml" rel="self" type="application/rss+xml"/><item><title>Neovim meets Nix flakes</title><link>https://gvolpe.com/blog/neovim-meets-nix-flakes/</link><pubDate>Sun, 25 Dec 2022 13:45:00 +0000</pubDate><guid>https://gvolpe.com/blog/neovim-meets-nix-flakes/</guid><description>&lt;p&gt;It is no secret that &lt;a href="https://neovim.io/"&gt;Neovim&lt;/a&gt; is my favorite text editor. I use it on a daily basis for multiple purposes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;To write Scala code (and the occasional Typescript) for &lt;code&gt;$work&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;To write the extensive text and code for &lt;a href="https://leanpub.com/u/gvolpe"&gt;my books&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;To fine-tune my ever-changing &lt;a href="https://github.com/gvolpe/nix-config"&gt;NixOS configuration&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;To write blog posts such as this one.&lt;/li&gt;
+&lt;li&gt;For the casual Haskell and Rust code I sometimes need to write.&lt;/li&gt;
+&lt;li&gt;Literally for any other text file I need to explore and modify.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All this functionality is enabled by many plugins configured and tailored to my needs. Now there exist a bunch of plugin managers to handle the installation of plugins, from the classic &lt;a href="https://github.com/junegunn/vim-plug"&gt;vim-plug&lt;/a&gt; to the more esoteric &lt;a href="https://github.com/folke/lazy.nvim"&gt;lazy.nvim&lt;/a&gt;.&lt;/p&gt;</description></item></channel></rss>

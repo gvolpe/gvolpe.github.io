@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Ide on Gabriel Volpe</title><link>https://gvolpe.com/tags/ide/</link><description>Recent content in Ide on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sat, 21 Mar 2020 19:28:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/ide/index.xml" rel="self" type="application/rss+xml"/><item><title>Setting up Ghcide in Ubuntu with Nixpkgs</title><link>https://gvolpe.com/blog/setting-up-ghcide-nixpkgs-ubuntu/</link><pubDate>Sat, 21 Mar 2020 19:28:00 +0000</pubDate><guid>https://gvolpe.com/blog/setting-up-ghcide-nixpkgs-ubuntu/</guid><description>&lt;p&gt;If you use &lt;a href="https://ubuntu.com/"&gt;Ubuntu&lt;/a&gt; or any other Linux distribution (AKA &lt;em&gt;distro&lt;/em&gt;) together with &lt;a href="https://nixos.org/nixpkgs/"&gt;Nixpkgs&lt;/a&gt;, you might have noticed things don&amp;rsquo;t play so well together. Nixpkgs has been mainly designed to work seamlessly in &lt;a href="https://nixos.org/nixos/"&gt;Nix OS&lt;/a&gt;; other distros are second class citizens.&lt;/p&gt;
+&lt;p&gt;Quoting the &lt;a href="https://github.com/digital-asset/ghcide"&gt;Ghcide&lt;/a&gt; repository, it is defined as:&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: "📜";
+}
+&lt;/style&gt;
+
+&lt;div class="quote"&gt;
+ &lt;h4&gt;Quote&lt;/h4&gt;
+ &lt;p&gt;
+"A library for building Haskell IDE tooling"
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;It is not defined as an IDE, because it only has a subset of the features &lt;a href="https://github.com/haskell/haskell-ide-engine"&gt;HIE (Haskell IDE Engine)&lt;/a&gt; has. However, the good news is that the HIE and Ghcide teams are joining forces to create &lt;a href="https://neilmitchell.blogspot.com/2020/01/one-haskell-ide-to-rule-them-all.html"&gt;One Haskell IDE to rule them all&lt;/a&gt;!&lt;/p&gt;</description></item></channel></rss>

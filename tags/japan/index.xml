@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Japan on Gabriel Volpe</title><link>https://gvolpe.com/tags/japan/</link><description>Recent content in Japan on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Fri, 01 Feb 2019 09:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/japan/index.xml" rel="self" type="application/rss+xml"/><item><title>Haskell for Scala devs @ Tokyo Scala Meetup 2019 - Tokyo, JP 🇯🇵</title><link>https://gvolpe.com/talks/tokyo-2020/</link><pubDate>Fri, 01 Feb 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/tokyo-2020/</guid><description>&lt;p&gt;Showcasing the Haskell language to an audience of Scala developers, highlighting the similarities and differences.&lt;/p&gt;
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://paidy.github.io/talks/tokyo2019-haskell/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="https://paidy.github.io/talks/tokyo2019-haskell/" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
+ &lt;/div&gt;</description></item></channel></rss>

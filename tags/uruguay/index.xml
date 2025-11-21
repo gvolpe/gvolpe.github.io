@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Uruguay on Gabriel Volpe</title><link>https://gvolpe.com/tags/uruguay/</link><description>Recent content in Uruguay on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sat, 14 Dec 2019 09:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/uruguay/index.xml" rel="self" type="application/rss+xml"/><item><title>Why Functional Programming? @ MVD Scala Meetup 2019 - Montevideo, UY 🇺🇾</title><link>https://gvolpe.com/talks/mvd-2019/</link><pubDate>Sat, 14 Dec 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/mvd-2019/</guid><description>&lt;p&gt;Discussing a bit of functional programming history, going through Lambda Calculus and LISP specification, among others.&lt;/p&gt;
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/mvd.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="../../slides/mvd.html" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
+ &lt;/div&gt;</description></item></channel></rss>

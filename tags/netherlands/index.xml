@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Netherlands on Gabriel Volpe</title><link>https://gvolpe.com/tags/netherlands/</link><description>Recent content in Netherlands on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Thu, 01 Jun 2017 09:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/netherlands/index.xml" rel="self" type="application/rss+xml"/><item><title>Functional Data Validation @ Eindhoven Haskell Meetup 2017 - Eindhoven, NL 🇳🇱</title><link>https://gvolpe.com/talks/eindhoven-2017/</link><pubDate>Thu, 01 Jun 2017 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/eindhoven-2017/</guid><description>&lt;p&gt;Showcasing three different ways of performing data validation in Haskell:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Simple Validation.&lt;/li&gt;
+&lt;li&gt;A bit more descriptive: Either Monad.&lt;/li&gt;
+&lt;li&gt;Full report of errors: Validation Applicative.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/eindhoven.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;
+ &lt;br/&gt;
+ &lt;div&gt;
+ &lt;p&gt;View slides in fullscreen &lt;a href="../../slides/eindhoven.html" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
+ &lt;/div&gt;</description></item></channel></rss>

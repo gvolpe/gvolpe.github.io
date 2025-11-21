@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nixbuild on Gabriel Volpe</title><link>https://gvolpe.com/tags/nixbuild/</link><description>Recent content in Nixbuild on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Mon, 13 Feb 2023 22:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/nixbuild/index.xml" rel="self" type="application/rss+xml"/><item><title>Nix remote builds</title><link>https://gvolpe.com/blog/nix-remote-builds/</link><pubDate>Mon, 13 Feb 2023 22:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/nix-remote-builds/</guid><description>&lt;p&gt;Remote builds enable interesting use cases and experiments. Besides building for different architectures, another use case that comes to mind would be having a low-resource machine building a derivation that would require heavy CPU usage (e.g. a Rust application) on the fly, without having to rely on CI builds or binary caches, effectively used as a development environment.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s what the &lt;a href="https://nixos.org/manual/nix/stable/advanced-topics/distributed-builds.html"&gt;NixOS official documentation&lt;/a&gt; has to say on the topic:&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: "📜";
+}
+&lt;/style&gt;
+
+&lt;div class="quote"&gt;
+ &lt;h4&gt;Remote Builds&lt;/h4&gt;
+ &lt;p&gt;
+"Nix supports remote builds, where a local Nix installation can forward Nix builds to other machines. This allows multiple builds to be performed in parallel and allows Nix to perform multi-platform builds in a semi-transparent way. For instance, if you perform a build for a &lt;code&gt;86_64-darwin&lt;/code&gt; on an &lt;code&gt;i686-linux&lt;/code&gt; machine, Nix can automatically forward the build to a &lt;code&gt;x86_64-darwin&lt;/code&gt; machine, if available."
+&lt;/p&gt;</description></item></channel></rss>

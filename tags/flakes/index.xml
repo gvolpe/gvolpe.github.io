@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Flakes on Gabriel Volpe</title><link>https://gvolpe.com/tags/flakes/</link><description>Recent content in Flakes on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 17 Dec 2024 23:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/flakes/index.xml" rel="self" type="application/rss+xml"/><item><title>Home Manager: dotfiles management</title><link>https://gvolpe.com/blog/home-manager-dotfiles-management/</link><pubDate>Tue, 17 Dec 2024 23:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/home-manager-dotfiles-management/</guid><description>&lt;h2 id="what-is-home-manager"&gt;What is Home Manager?&lt;/h2&gt;
+&lt;p&gt;Quoting the official description from their &lt;a href="https://github.com/nix-community/home-manager/"&gt;website&lt;/a&gt;:&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: "📜";
+}
+&lt;/style&gt;
+
+&lt;div class="quote"&gt;
+ &lt;h4&gt;Home Manager&lt;/h4&gt;
+ &lt;p&gt;
+"This project provides a basic system for managing a user environment using the Nix package manager together with the Nix libraries found in Nixpkgs. It allows declarative configuration of user specific (non-global) packages and dotfiles."
+&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Wait a minute! If you had been following my blog for a while, you know a lot has been written about Home Manager already, so why am I going back to basics? Mainly because I noticed plenty of confusion out in the wild, thus I would like to demystify some of the misconceptions that exist, and provide you with ideas and examples so that you can reap the benefits of this magnificent tool.&lt;/p&gt;</description></item><item><title>NixOS server up in minutes!</title><link>https://gvolpe.com/blog/nixos-server/</link><pubDate>Sun, 15 Sep 2024 23:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/nixos-server/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;The folks at &lt;a href="https://garnix.io"&gt;Garnix&lt;/a&gt; have done it again! You can now deploy a &lt;a href="https://nixos.org/"&gt;NixOS server&lt;/a&gt; in minutes, just by defining your system on a &lt;code&gt;flake.nix&lt;/code&gt; and &lt;code&gt;git push&lt;/code&gt;&amp;lsquo;ing your changes (Garnix needs to be enabled for the repo).&lt;/p&gt;
+&lt;p&gt;In their latest blog post &lt;a href="https://garnix.io/blog/hosting-nixos"&gt;Hands-on NixOS servers&lt;/a&gt;, they explain all the necessary steps to deploy your own server, so I won&amp;rsquo;t repeat things over. Furthermore, there&amp;rsquo;s &lt;a href="https://garnix.io/docs/hosting"&gt;official documentation&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Instead, I will explain how I used this opportunity to set up a web analytics server for this blog.&lt;/p&gt;</description></item><item><title>Flake Schemas</title><link>https://gvolpe.com/blog/flake-schemas/</link><pubDate>Tue, 09 Apr 2024 20:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/flake-schemas/</guid><description>&lt;p&gt;Flake schemas were &lt;a href="https://determinate.systems/posts/flake-schemas/"&gt;introduced by Determinate Systems&lt;/a&gt; (written by &lt;a href="https://github.com/edolstra"&gt;Eelco Dolstra&lt;/a&gt; &amp;mdash; creator of Nix) about half a year ago now (August 2023), which is quite a promising feature, but what is the current status? Is it usable yet?&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/NixOS/nix/pull/8892"&gt;PR&lt;/a&gt; that introduces flake schemas was submitted to &lt;code&gt;NixOS/nix&lt;/code&gt; the same day the announcement was made, and it sadly remains in DRAFT mode until today. However, if you look at the comments, some expert users reported using this feature successfully, so I thought it was about time to give it a shot myself.&lt;/p&gt;</description></item><item><title>Private Nix flake 🔒</title><link>https://gvolpe.com/blog/private-flake/</link><pubDate>Tue, 27 Feb 2024 22:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/private-flake/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;I blogged about &lt;a href="../garnix"&gt;Garnix&lt;/a&gt; before, and it&amp;rsquo;s the solution I&amp;rsquo;ve been using ever since for continuous integration. However, one thing I was missing was that private flakes were unsupported, so I had to live with a private local flake that I was commenting out on my public flake for a long time.&lt;/p&gt;
+&lt;p&gt;Github Actions does support building private flakes by providing an access token, but it&amp;rsquo;s not very secure if your builds end up on a public cache anyway (not my case, though)&amp;hellip; Garnix recently added &lt;a href="https://garnix.io/docs/private_inputs"&gt;support for private inputs&lt;/a&gt;, but it comes with some limitations (mainly due to security), so I could not take advantage of this new feature.&lt;/p&gt;</description></item><item><title>Nix remote builds</title><link>https://gvolpe.com/blog/nix-remote-builds/</link><pubDate>Mon, 13 Feb 2023 22:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/nix-remote-builds/</guid><description>&lt;p&gt;Remote builds enable interesting use cases and experiments. Besides building for different architectures, another use case that comes to mind would be having a low-resource machine building a derivation that would require heavy CPU usage (e.g. a Rust application) on the fly, without having to rely on CI builds or binary caches, effectively used as a development environment.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s what the &lt;a href="https://nixos.org/manual/nix/stable/advanced-topics/distributed-builds.html"&gt;NixOS official documentation&lt;/a&gt; has to say on the topic:&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: "📜";
+}
+&lt;/style&gt;
+
+&lt;div class="quote"&gt;
+ &lt;h4&gt;Remote Builds&lt;/h4&gt;
+ &lt;p&gt;
+"Nix supports remote builds, where a local Nix installation can forward Nix builds to other machines. This allows multiple builds to be performed in parallel and allows Nix to perform multi-platform builds in a semi-transparent way. For instance, if you perform a build for a &lt;code&gt;86_64-darwin&lt;/code&gt; on an &lt;code&gt;i686-linux&lt;/code&gt; machine, Nix can automatically forward the build to a &lt;code&gt;x86_64-darwin&lt;/code&gt; machine, if available."
+&lt;/p&gt;</description></item><item><title>Garnix CI</title><link>https://gvolpe.com/blog/garnix/</link><pubDate>Tue, 07 Feb 2023 21:45:00 +0000</pubDate><guid>https://gvolpe.com/blog/garnix/</guid><description>&lt;p&gt;&lt;a href="https://garnix.io/"&gt;Garnix&lt;/a&gt; is a continuous integration (CI) service for Nix flakes that has been in Beta for a while.&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: "📜";
+}
+&lt;/style&gt;
+
+&lt;div class="quote"&gt;
+ &lt;h4&gt;In their own words&lt;/h4&gt;
+ &lt;p&gt;
+"With Nix-specific optimizations, Garnix makes CI with Nix fast — a few seconds for no-op changes. Easy to setup, too — if you have a flake.nix, you are ready to go. And we provide the build results as a cache, so you don't have to build things locally. To top it all up, we run on 100% renewable energy. Because CI should bring you peace of mind."
+Notice the extensions we had to enable to make this compile.
+&lt;/p&gt;</description></item><item><title>Neovim meets Nix flakes</title><link>https://gvolpe.com/blog/neovim-meets-nix-flakes/</link><pubDate>Sun, 25 Dec 2022 13:45:00 +0000</pubDate><guid>https://gvolpe.com/blog/neovim-meets-nix-flakes/</guid><description>&lt;p&gt;It is no secret that &lt;a href="https://neovim.io/"&gt;Neovim&lt;/a&gt; is my favorite text editor. I use it on a daily basis for multiple purposes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;To write Scala code (and the occasional Typescript) for &lt;code&gt;$work&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;To write the extensive text and code for &lt;a href="https://leanpub.com/u/gvolpe"&gt;my books&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;To fine-tune my ever-changing &lt;a href="https://github.com/gvolpe/nix-config"&gt;NixOS configuration&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;To write blog posts such as this one.&lt;/li&gt;
+&lt;li&gt;For the casual Haskell and Rust code I sometimes need to write.&lt;/li&gt;
+&lt;li&gt;Literally for any other text file I need to explore and modify.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All this functionality is enabled by many plugins configured and tailored to my needs. Now there exist a bunch of plugin managers to handle the installation of plugins, from the classic &lt;a href="https://github.com/junegunn/vim-plug"&gt;vim-plug&lt;/a&gt; to the more esoteric &lt;a href="https://github.com/folke/lazy.nvim"&gt;lazy.nvim&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Flakes: NixOS and Home Manager migration</title><link>https://gvolpe.com/blog/nix-flakes/</link><pubDate>Mon, 10 Jan 2022 09:45:00 +0000</pubDate><guid>https://gvolpe.com/blog/nix-flakes/</guid><description>&lt;p&gt;I have recently migrated my entire NixOS and Home Manager (HM) &lt;a href="https://github.com/gvolpe/nix-config"&gt;configuration&lt;/a&gt; &amp;mdash; including programs, services, dotfiles, etc &amp;mdash; over to the new kid on the block: &lt;a href="https://nixos.wiki/wiki/Flakes"&gt;Nix flakes&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It was not as difficult as I thought it would be but there were a lot of things I had to figure out on my own or by asking more experienced folks on the NixOS matrix channel.&lt;/p&gt;
+&lt;p&gt;So let me tell you the important bits of this migration story in this short blog post ;)&lt;/p&gt;</description></item></channel></rss>

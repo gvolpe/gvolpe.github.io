@@ -68,7 +68,7 @@
                               {{ $maxCups := 5 }}
                               {{ $cupsToShow := .ReadingTime }}
                               {{ if gt .ReadingTime $maxCups }}{{ $cupsToShow = $maxCups }}{{ end }}
-                              {{ range (seq $cupsToShow) }}{{ $coffees = print $coffees "☕" }}{{ end }}
+                              {{ range (seq $cupsToShow) }}{{ $coffees = print $coffees "📚" }}{{ end }}
                               {{ $coffees }} {{ .ReadingTime }} min read
                             {{ else }}
                               🎙️ Public Talk

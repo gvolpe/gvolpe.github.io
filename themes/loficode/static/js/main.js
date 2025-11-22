@@ -1007,7 +1007,7 @@
                         }</a></h4>
                         <div class="related-meta">
                           ${relatedPost.dateFormatted} •
-                          ${"☕".repeat(
+                          ${"📚".repeat(
                             Math.max(1, Math.ceil(relatedPost.readingTime / 3))
                           )} ${relatedPost.readingTime} min read
                         </div>
@@ -1384,14 +1384,12 @@
 
   // Console easter egg
   console.log(`
-    ☕ Welcome to LofiCode! ☕
+    🤖 Welcome to @gvolpe's blog! 🤖
 
-    You found the console! Here are some keyboard shortcuts:
+    You found the console! Any issues can be reported here:
 
-    't' - Toggle theme (light/dark)
-    'm' - Mute/unmute ambient sounds
+    * https://github.com/gvolpe/gvolpe.github.io/issues
 
-    Built with love, coffee, and way too many interruptions.
-    Happy coding! ✨
+    Happy blog-surgfing! 🏄✨
     `);
 })();

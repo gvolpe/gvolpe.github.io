@@ -63,12 +63,16 @@
                         <h4><a href="{{ .Permalink }}">{{ .Title }}</a></h4>
                         <div class="related-meta">
                             {{ .Date.Format "2006.01.02" }} •
-                            {{ $coffees := "" }}
-                            {{ $maxCups := 5 }}
-                            {{ $cupsToShow := .ReadingTime }}
-                            {{ if gt .ReadingTime $maxCups }}{{ $cupsToShow = $maxCups }}{{ end }}
-                            {{ range (seq $cupsToShow) }}{{ $coffees = print $coffees "☕" }}{{ end }}
-                            {{ $coffees }} {{ .ReadingTime }} min read
+                            {{ if eq .Section "blog" }}
+                              {{ $coffees := "" }}
+                              {{ $maxCups := 5 }}
+                              {{ $cupsToShow := .ReadingTime }}
+                              {{ if gt .ReadingTime $maxCups }}{{ $cupsToShow = $maxCups }}{{ end }}
+                              {{ range (seq $cupsToShow) }}{{ $coffees = print $coffees "☕" }}{{ end }}
+                              {{ $coffees }} {{ .ReadingTime }} min read
+                            {{ else }}
+                              🎙️ Public Talk
+                            {{ end }}
                         </div>
                     </div>
                     {{ end }}

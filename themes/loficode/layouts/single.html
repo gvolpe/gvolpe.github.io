@@ -1,8 +1,12 @@
 {{ define "main" }}
 <!-- Full-screen post layout to match SPA overlay -->
-<div class="post-overlay active">
+<div id="post-overlay-id" class="post-overlay active">
+    {{ if eq .Type "blog" }}
+    <div class="reading-progress"></div>
+    {{ end }}
+
     <div class="post-overlay-backdrop"></div>
-    <div class="post-overlay-content" style="position: relative; min-height: 100vh; padding: 0; transform: translateY(0);">
+    <div id="post-overlay-content-id" class="post-overlay-content" style="position: relative; min-height: 100vh; padding: 0; transform: translateY(0);">
         <div class="post-overlay-header">
             <div class="post-overlay-title">
                 <a href="/" class="overlay-site-title">{{ .Site.Title }}</a>
@@ -102,7 +106,7 @@
             </nav>
         </article>
 
-        {{ if eq .Type "posts" }}
+        {{ if eq .Type "blog" }}
         <aside class="sidebar">
             <nav class="toc">
                 <h4>Contents</h4>

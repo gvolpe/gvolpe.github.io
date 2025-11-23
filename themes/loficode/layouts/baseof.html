@@ -4,10 +4,6 @@
     {{ partial "head.html" . }}
 </head>
 <body>
-    {{ if not .IsHome }}
-    <div class="reading-progress"></div>
-    {{ end }}
-
     {{ if not (eq .Type "blog") }}
     {{ partial "header.html" . }}
     {{ end }}

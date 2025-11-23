@@ -66,15 +66,19 @@
 
   // Reading progress (for blog posts)
   const readingProgress = document.querySelector(".reading-progress");
-  if (readingProgress) {
-    function updateReadingProgress() {
-      const article = document.querySelector(".post-content");
-      if (!article) return;
+  const article = document.querySelector(".post-content");
 
-      const scrolled = window.scrollY;
-      const articleTop = article.offsetTop;
-      const articleHeight = article.offsetHeight;
-      const windowHeight = window.innerHeight;
+  if (readingProgress && article) {
+    const overlay = document.querySelector("#post-overlay-id");
+    const content = document.querySelector("#post-overlay-content-id");
+    if (!overlay || !content) return;
+
+    const articleTop = article.offsetTop;
+    const articleHeight = article.offsetHeight;
+    const windowHeight = window.innerHeight;
+
+    function updateReadingProgress() {
+      const scrolled = content.scrollTop;
 
       const progress = Math.max(
         0,
@@ -87,8 +91,7 @@
       readingProgress.style.width = progress + "%";
     }
 
-    window.addEventListener("scroll", updateReadingProgress);
-    updateReadingProgress(); // Initial call
+    overlay.addEventListener("scroll", updateReadingProgress, true);
   }
 
   // Copy code functionality for shortcodes
@@ -242,7 +245,8 @@
   // Generate TOC if we're on a blog post
   if (document.querySelector(".post-body")) {
     generateTOC();
-    window.addEventListener("scroll", updateTOC);
+    const overlay = document.querySelector("#post-overlay-id");
+    overlay.addEventListener("scroll", updateTOC, true);
     updateTOC(); // Initial call
   }
 

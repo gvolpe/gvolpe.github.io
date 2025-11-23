@@ -280,7 +280,11 @@ nav {
     position: relative;
 }
 
-.books a img {
+.books a {
+    text-decoration: none;
+}
+
+.books img {
     border-radius: 12px;
 }
 
@@ -756,7 +760,7 @@ nav {
     }
 
     .social-links {
-        gap: 0.2rem;
+        gap: 0rem;
     }
 
     .social-link {

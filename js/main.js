@@ -1,6 +1,6 @@
 // LofiCode Main JavaScript
 
-(function () {
+(function() {
   "use strict";
 
   // Theme toggle functionality with auto-detection
@@ -79,12 +79,21 @@
 
     function updateReadingProgress() {
       const scrolled = content.scrollTop;
+      var factor = 0;
+
+      if (scrolled < 10) {
+        factor = 0.1;
+      } else if (scrolled < 100) {
+        factor = 0.05;
+      } else if (scrolled < 200) {
+        factor = 0.02;
+      }
 
       const progress = Math.max(
         0,
         Math.min(
           100,
-          ((scrolled - articleTop + windowHeight) / articleHeight) * 100
+          (((scrolled - articleTop + windowHeight) / articleHeight) - factor) * 100
         )
       );
 
@@ -286,7 +295,7 @@
 
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", function (e) {
+    anchor.addEventListener("click", function(e) {
       e.preventDefault();
       const target = document.querySelector(this.getAttribute("href"));
       if (target) {
@@ -400,17 +409,16 @@
       const resultsHTML = results
         .map(
           (post) => `
-        <div class="search-result-item" onclick="handleSearchResultClick('${
-          post.url
-        }')">
+        <div class="search-result-item" onclick="handleSearchResultClick('${post.url
+            }')">
           <div class="search-result-title">${highlightText(
-            post.title,
-            query
-          )}</div>
+              post.title,
+              query
+            )}</div>
           <div class="search-result-excerpt">${highlightText(
-            truncateText(post.excerpt, 120),
-            query
-          )}</div>
+              truncateText(post.excerpt, 120),
+              query
+            )}</div>
           <div class="search-result-meta">
             <span>${post.date}</span>
             <span>${post.tags.join(", ")}</span>
@@ -969,90 +977,83 @@
                   <span class="post-date">${post.dateFormatted}</span>
                   <div class="reading-time-post">
                     <span class="coffee-cups">${"📚".repeat(
-                      Math.max(1, Math.min(5, Math.ceil(post.readingTime / 3)))
-                    )}</span>
+        Math.max(1, Math.min(5, Math.ceil(post.readingTime / 3)))
+      )}</span>
                     <span>${post.readingTime} min read</span>
                   </div>
                 </div>
                 <h1 class="post-title">${post.title}</h1>
-                ${
-                  post.subtitle
-                    ? `<p class="post-subtitle">${post.subtitle}</p>`
-                    : ""
-                }
-                ${
-                  post.tags && post.tags.length > 0
-                    ? `
+                ${post.subtitle
+          ? `<p class="post-subtitle">${post.subtitle}</p>`
+          : ""
+        }
+                ${post.tags && post.tags.length > 0
+          ? `
                   <div class="post-tags-header">
                     ${post.tags
-                      .map((tag) => `<a href="/tags/${tag.toLowerCase().replace(/\s+/g, '-')}" class="post-tag">${tag}</a>`)
-                      .join("")}
+            .map((tag) => `<a href="/tags/${tag.toLowerCase().replace(/\s+/g, '-')}" class="post-tag">${tag}</a>`)
+            .join("")}
                   </div>
                 `
-                    : ""
-                }
+          : ""
+        }
               </header>
               <div class="post-body">
                 ${post.content}
               </div>
 
-              ${
-                relatedPosts.length > 0
-                  ? `
+              ${relatedPosts.length > 0
+          ? `
                 <div class="related-posts">
                   <h3>Related Content</h3>
                   <div class="related-grid">
                     ${relatedPosts
-                      .map(
-                        (relatedPost) => `
+            .map(
+              (relatedPost) => `
                       <div class="related-post">
-                        <h4><a href="${relatedPost.url}" data-spa-link>${
-                          relatedPost.title
-                        }</a></h4>
+                        <h4><a href="${relatedPost.url}" data-spa-link>${relatedPost.title
+                }</a></h4>
                         <div class="related-meta">
                           ${relatedPost.dateFormatted} •
                           ${"📚".repeat(
-                            Math.max(1, Math.ceil(relatedPost.readingTime / 3))
-                          )} ${relatedPost.readingTime} min read
+                  Math.max(1, Math.ceil(relatedPost.readingTime / 3))
+                )} ${relatedPost.readingTime} min read
                         </div>
                       </div>
                     `
-                      )
-                      .join("")}
+            )
+            .join("")}
                   </div>
                 </div>
               `
-                  : ""
-              }
+          : ""
+        }
 
-              ${
-                navigation.prev || navigation.next
-                  ? `
+              ${navigation.prev || navigation.next
+          ? `
                 <nav class="post-navigation">
-                  ${
-                    navigation.prev
-                      ? `
+                  ${navigation.prev
+            ? `
                     <div class="nav-previous">
                       <span class="nav-label">← Previous</span>
                       <a href="${navigation.prev.url}" data-spa-link class="nav-title">${navigation.prev.title}</a>
                     </div>
                   `
-                      : "<div></div>"
-                  }
-                  ${
-                    navigation.next
-                      ? `
+            : "<div></div>"
+          }
+                  ${navigation.next
+            ? `
                     <div class="nav-next">
                       <span class="nav-label">Next →</span>
                       <a href="${navigation.next.url}" data-spa-link class="nav-title">${navigation.next.title}</a>
                     </div>
                   `
-                      : "<div></div>"
-                  }
+            : "<div></div>"
+          }
                 </nav>
               `
-                  : ""
-              }
+          : ""
+        }
             </article>
 
             <aside class="sidebar">
@@ -1324,7 +1325,7 @@
 
     // Calculate coffee cups for reading time (max 5 cups)
     const cupsToShow = Math.min(post.readingTime, 5);
-    const coffeeCups = "☕".repeat(cupsToShow);
+    const coffeeCups = "📚".repeat(cupsToShow);
 
     // Create mood badge if mood exists
     const moodBadge = post.mood ? `<span class="post-mood">${post.mood}</span>` : '';
@@ -1366,8 +1367,18 @@
 
       <div class="post-meta-sidebar">
         <div class="reading-time-vaporwave">
-          <span class="coffee-cups">${coffeeCups}</span>
-          <span>${post.readingTime} min</span>
+          <span class="coffee-cups">
+            {{ if eq .Params.type "conf" }}
+            <i class="fab fa-avianex social-icon"></i>
+            {{ end }}
+            {{ if eq .Params.type "meetup" }}
+            <i class="fab fa-meetup social-icon"></i>
+            {{ end }}
+            {{ if eq .Section "blog" }}
+              ${coffeeCups}
+              <span>${post.readingTime} min</span>
+            {{ end }}
+          </span>
         </div>
       </div>
     `;

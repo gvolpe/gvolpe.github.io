@@ -23,6 +23,11 @@
 &lt;p&gt;The &lt;a href="https://github.com/NixOS/nix/pull/8892"&gt;PR&lt;/a&gt; that introduces flake schemas was submitted to &lt;code&gt;NixOS/nix&lt;/code&gt; the same day the announcement was made, and it sadly remains in DRAFT mode until today. However, if you look at the comments, some expert users reported using this feature successfully, so I thought it was about time to give it a shot myself.&lt;/p&gt;</description></item><item><title>Private Nix flake 🔒</title><link>https://gvolpe.com/blog/private-flake/</link><pubDate>Tue, 27 Feb 2024 22:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/private-flake/</guid><description>&lt;h2 id="introduction"&gt;Introduction&lt;/h2&gt;
 &lt;p&gt;I blogged about &lt;a href="../garnix"&gt;Garnix&lt;/a&gt; before, and it&amp;rsquo;s the solution I&amp;rsquo;ve been using ever since for continuous integration. However, one thing I was missing was that private flakes were unsupported, so I had to live with a private local flake that I was commenting out on my public flake for a long time.&lt;/p&gt;
 &lt;p&gt;Github Actions does support building private flakes by providing an access token, but it&amp;rsquo;s not very secure if your builds end up on a public cache anyway (not my case, though)&amp;hellip; Garnix recently added &lt;a href="https://garnix.io/docs/private_inputs"&gt;support for private inputs&lt;/a&gt;, but it comes with some limitations (mainly due to security), so I could not take advantage of this new feature.&lt;/p&gt;</description></item><item><title>Functional Event-Driven Architecture @ Scalar 2023 - Warsaw, PL 🇵🇱</title><link>https://gvolpe.com/talks/scalar-2023/</link><pubDate>Tue, 14 Mar 2023 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scalar-2023/</guid><description>&lt;p&gt;Coming back to the stages after a few absent years from the circuit to introduce a new book: &lt;a href="https://leanpub.com/feda"&gt;Functional Event-Driven Architecture - Powered by Scala 3&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/scalar-signify-2023.jpg" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
+&lt;h2 id="recording"&gt;Recording&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/s2VgqF-aMPA?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
  &lt;/div&gt;
@@ -181,6 +186,10 @@ Notice the extensions we had to enable to make this compile.
  &lt;div&gt;
  &lt;p&gt;View slides in fullscreen &lt;a href="../../slides/mvd.html" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
  &lt;/div&gt;</description></item><item><title>FP Design Pattern @ SUGAR Meetup 2019 - Buenos Aires, AR 🇦🇷</title><link>https://gvolpe.com/talks/sugar-2019/</link><pubDate>Mon, 09 Dec 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/sugar-2019/</guid><description>&lt;p&gt;Discussing excerpts from my book &lt;a href="leanpub.com/pfp-scala"&gt;Practical FP in Scala&lt;/a&gt; back in my hometown.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/sugar.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/sugar.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
@@ -192,6 +201,10 @@ Notice the extensions we had to enable to make this compile.
 &lt;p&gt;So please be kind if you see any mistake, let me know and I&amp;rsquo;ll try to fix it 🙂&lt;/p&gt;
 &lt;h3 id="a-motivating-example"&gt;A motivating example&lt;/h3&gt;
 &lt;p&gt;One of the fun applications I&amp;rsquo;ve worked on is &lt;a href="https://github.com/gvolpe/exchange-rates"&gt;exchange-rates&lt;/a&gt;, which uses the &lt;a href="https://www.fpcomplete.com/blog/2017/07/the-rio-monad"&gt;RIO Monad&lt;/a&gt; (basically &lt;code&gt;ReaderT&lt;/code&gt; + &lt;code&gt;IO&lt;/code&gt;).&lt;/p&gt;</description></item><item><title>Entering a Purely Functional World @ Scala MDE Meetup 2019 - Medellin, CO 🇨🇴</title><link>https://gvolpe.com/talks/medellin-2019/</link><pubDate>Fri, 09 Aug 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/medellin-2019/</guid><description>&lt;p&gt;Introducing the Haskell language to an audience of (mostly) Scala developers in the beautiful city of Medellin.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/medellin.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/medellin.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
@@ -224,6 +237,10 @@ recommendations when writing a Haskell application.&lt;/p&gt;</description></ite
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; c&lt;span style="color:#f92672"&gt;.&lt;/span&gt;putStrLn&lt;span style="color:#f92672"&gt;(&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span style="color:#f92672"&gt;)&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; c&lt;span style="color:#f92672"&gt;.&lt;/span&gt;putStrLn&lt;span style="color:#f92672"&gt;(&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Every time we call &lt;code&gt;Console[F]&lt;/code&gt; what we are doing is invoking the &amp;ldquo;summoner&amp;rdquo; method normally defined as follows:&lt;/p&gt;</description></item><item><title>Haskell for Scala devs @ Tokyo Scala Meetup 2019 - Tokyo, JP 🇯🇵</title><link>https://gvolpe.com/talks/tokyo-2020/</link><pubDate>Fri, 01 Feb 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/tokyo-2020/</guid><description>&lt;p&gt;Showcasing the Haskell language to an audience of Scala developers, highlighting the similarities and differences.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/haskell-scala.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://paidy.github.io/talks/tokyo2019-haskell/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
@@ -231,14 +248,33 @@ recommendations when writing a Haskell application.&lt;/p&gt;</description></ite
  &lt;br/&gt;
  &lt;div&gt;
  &lt;p&gt;View slides in fullscreen &lt;a href="https://paidy.github.io/talks/tokyo2019-haskell/" target="_blank"&gt;here&lt;/a&gt;.&lt;/p&gt;
- &lt;/div&gt;</description></item><item><title>Cats Effect: Tagless Final &amp; Beyond! @ Scala eXchange 2018 - London, UK 🇬🇧</title><link>https://gvolpe.com/talks/scala-exchange-2018/</link><pubDate>Thu, 13 Dec 2018 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scala-exchange-2018/</guid><description>&lt;p&gt;Since the first introduction of Cats Effect, many things have changed and this has taken its design and performance to a whole new level.&lt;/p&gt;
+ &lt;/div&gt;</description></item><item><title>Cats Effect: Tagless Final &amp; Beyond! @ Scala eXchange 2018 - London, UK 🇬🇧</title><link>https://gvolpe.com/talks/scala-exchange-2018/</link><pubDate>Thu, 13 Dec 2018 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scala-exchange-2018/</guid><description>&lt;p&gt;Since the first introduction of Cats Effect, many things have changed and this has taken its design and performance to a whole new level, making complex problems seemingly trivial in production systems.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/scalax.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;p&gt;Join Gabriel to learn how to deal with side effects in a pure functional way while abstracting over the effect type to take composition to the next level. Starting with a review of the basic concepts, you will explore the most important features, such as synchronous and asynchronous computations, error handling, safe resource management, concurrency, parallelism and cancellation.&lt;/p&gt;</description></item><item><title>Classy Lenses @ Scale By The Bay 2018 - San Francisco, US 🇺🇸</title><link>https://gvolpe.com/talks/sbtb-2018/</link><pubDate>Thu, 22 Nov 2018 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/sbtb-2018/</guid><description>&lt;p&gt;Presenting at the &amp;ldquo;unconference&amp;rdquo; of the Scale By The Bay conference in America, in front of a remarkable crowd.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/sbtb.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/UUX5KvPgejM?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
  &lt;/div&gt;</description></item><item><title>Cats Effect: The IO Monad for Scala @ Scala IO 2018 - Lyon, FR 🇫🇷</title><link>https://gvolpe.com/talks/scalaio-2018/</link><pubDate>Fri, 09 Nov 2018 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scalaio-2018/</guid><description>&lt;p&gt;Discussing the Cats Effect library and its benefits, including a few advanced examples taken from our production usage at Paidy.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/scalaio.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/8_TWM2t97r4?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
+ &lt;/div&gt;</description></item><item><title>Building a REST API with HTTP4S @ Scala Matsuri 2018 - Tokyo, JP 🇯🇵</title><link>https://gvolpe.com/talks/scala-matsuri-2018/</link><pubDate>Fri, 16 Mar 2018 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scala-matsuri-2018/</guid><description>&lt;p&gt;An improvised talk about API designs with Http4s while abstracting over the effectType. Given at the unconference of the &lt;a href="https://2018.scalamatsuri.org/"&gt;Scala Matsuri 2018&lt;/a&gt; event.&lt;/p&gt;
+&lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/pGfj_l-h3M8?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
  &lt;/div&gt;</description></item><item><title>Cats Effect: The IO Monad @ Dublin Scala Meetup 2017 - Dublin, IE 🇮🇪</title><link>https://gvolpe.com/talks/dublin-2017/</link><pubDate>Wed, 01 Nov 2017 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/dublin-2017/</guid><description>&lt;p&gt;Showcasing the IO Monad for Scala with the Cats Effect library to an audience of Scala developers.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/dublin.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/dublin.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
@@ -252,6 +288,10 @@ recommendations when writing a Haskell application.&lt;/p&gt;</description></ite
 &lt;li&gt;A bit more descriptive: Either Monad.&lt;/li&gt;
 &lt;li&gt;Full report of errors: Validation Applicative.&lt;/li&gt;
 &lt;/ul&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/haskell.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/eindhoven.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;

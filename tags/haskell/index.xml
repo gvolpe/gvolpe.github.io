@@ -32,6 +32,10 @@
 &lt;p&gt;So please be kind if you see any mistake, let me know and I&amp;rsquo;ll try to fix it 🙂&lt;/p&gt;
 &lt;h3 id="a-motivating-example"&gt;A motivating example&lt;/h3&gt;
 &lt;p&gt;One of the fun applications I&amp;rsquo;ve worked on is &lt;a href="https://github.com/gvolpe/exchange-rates"&gt;exchange-rates&lt;/a&gt;, which uses the &lt;a href="https://www.fpcomplete.com/blog/2017/07/the-rio-monad"&gt;RIO Monad&lt;/a&gt; (basically &lt;code&gt;ReaderT&lt;/code&gt; + &lt;code&gt;IO&lt;/code&gt;).&lt;/p&gt;</description></item><item><title>Entering a Purely Functional World @ Scala MDE Meetup 2019 - Medellin, CO 🇨🇴</title><link>https://gvolpe.com/talks/medellin-2019/</link><pubDate>Fri, 09 Aug 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/medellin-2019/</guid><description>&lt;p&gt;Introducing the Haskell language to an audience of (mostly) Scala developers in the beautiful city of Medellin.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/medellin.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/medellin.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
@@ -42,6 +46,10 @@
  &lt;/div&gt;</description></item><item><title>Lessons learned while writing a Haskell application</title><link>https://gvolpe.com/blog/lessons-learned-while-writing-a-haskell-app/</link><pubDate>Sun, 23 Jun 2019 10:28:00 +0000</pubDate><guid>https://gvolpe.com/blog/lessons-learned-while-writing-a-haskell-app/</guid><description>&lt;p&gt;Having introduced Haskell at my last job I wanted to put into practice all the stuff I learned: take the good, leave the bad. So I started working on an &lt;a href="https://github.com/gvolpe/exchange-rates"&gt;exchange rates API&lt;/a&gt; using a few libraries I haven&amp;rsquo;t used before, exclusively for fun and learning purposes.&lt;/p&gt;
 &lt;p&gt;In this blog post I&amp;rsquo;ll try to share what I have identified as good practice so far and what are my personal
 recommendations when writing a Haskell application.&lt;/p&gt;</description></item><item><title>Haskell for Scala devs @ Tokyo Scala Meetup 2019 - Tokyo, JP 🇯🇵</title><link>https://gvolpe.com/talks/tokyo-2020/</link><pubDate>Fri, 01 Feb 2019 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/tokyo-2020/</guid><description>&lt;p&gt;Showcasing the Haskell language to an audience of Scala developers, highlighting the similarities and differences.&lt;/p&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/haskell-scala.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="https://paidy.github.io/talks/tokyo2019-haskell/" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;
@@ -55,6 +63,10 @@ recommendations when writing a Haskell application.&lt;/p&gt;</description></ite
 &lt;li&gt;A bit more descriptive: Either Monad.&lt;/li&gt;
 &lt;li&gt;Full report of errors: Validation Applicative.&lt;/li&gt;
 &lt;/ul&gt;
+&lt;div class="thumbnail"&gt;
+ &lt;img src="../../images/talks/haskell.png" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
+&lt;/div&gt;
+
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
  &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" src="../../slides/eindhoven.html" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="Slides"&gt;&lt;/iframe&gt;

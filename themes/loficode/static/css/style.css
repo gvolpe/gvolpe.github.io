@@ -1626,7 +1626,7 @@ p a {
 }
 
 .pagination-btn {
-    background: white;
+    background: var(--bg-card);
     border: 2px solid var(--border-color);
     color: var(--text-primary);
     padding: 0.75rem 1.25rem;
@@ -1640,14 +1640,14 @@ p a {
 }
 
 .pagination-btn:hover {
-    background: var(--accent-secondary);
+    background: var(--accent-tertiary);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px var(--glow-color);
 }
 
 .pagination-info {
-    background: var(--accent-secondary);
+    background: var(--accent-primary);
     color: white;
     padding: 0.75rem 1.25rem;
     border-radius: 20px;

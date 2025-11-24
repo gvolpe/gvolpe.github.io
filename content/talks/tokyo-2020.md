@@ -7,6 +7,8 @@ tags: ["haskell", "scala", "japan"]
 
 Showcasing the Haskell language to an audience of Scala developers, highlighting the similarities and differences.
 
+{{< thumbnail "../../images/talks/haskell-scala.png" >}}
+
 ## Slides
 
 {{< slides "https://paidy.github.io/talks/tokyo2019-haskell/" >}}

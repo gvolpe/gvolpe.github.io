@@ -7,6 +7,8 @@ tags: ["haskell", "scala", "colombia"]
 
 Introducing the Haskell language to an audience of (mostly) Scala developers in the beautiful city of Medellin.
 
+{{< thumbnail "../../images/talks/medellin.png" >}}
+
 ## Slides
 
 {{< slides "../../slides/medellin.html" >}}

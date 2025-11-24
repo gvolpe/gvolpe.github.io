@@ -1325,7 +1325,7 @@
 
     // Calculate coffee cups for reading time (max 5 cups)
     const cupsToShow = Math.min(post.readingTime, 5);
-    const coffeeCups = "☕".repeat(cupsToShow);
+    const coffeeCups = "📚".repeat(cupsToShow);
 
     // Create mood badge if mood exists
     const moodBadge = post.mood ? `<span class="post-mood">${post.mood}</span>` : '';
@@ -1367,8 +1367,18 @@
 
       <div class="post-meta-sidebar">
         <div class="reading-time-vaporwave">
-          <span class="coffee-cups">${coffeeCups}</span>
-          <span>${post.readingTime} min</span>
+          <span class="coffee-cups">
+            {{ if eq .Params.type "conf" }}
+            <i class="fab fa-avianex social-icon"></i>
+            {{ end }}
+            {{ if eq .Params.type "meetup" }}
+            <i class="fab fa-meetup social-icon"></i>
+            {{ end }}
+            {{ if eq .Section "blog" }}
+              ${coffeeCups}
+              <span>${post.readingTime} min</span>
+            {{ end }}
+          </span>
         </div>
       </div>
     `;

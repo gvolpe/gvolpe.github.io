@@ -5,11 +5,11 @@ type: conf
 tags: ["scala", "england"]
 ---
 
-Since the first introduction of Cats Effect, many things have changed and this has taken its design and performance to a whole new level.
+Since the first introduction of Cats Effect, many things have changed and this has taken its design and performance to a whole new level, making complex problems seemingly trivial in production systems.
+
+{{< thumbnail "../../images/talks/scalax.png" >}}
 
 Join Gabriel to learn how to deal with side effects in a pure functional way while abstracting over the effect type to take composition to the next level. Starting with a review of the basic concepts, you will explore the most important features, such as synchronous and asynchronous computations, error handling, safe resource management, concurrency, parallelism and cancellation.
-
-In addition, Gabriel will demonstrate how these abstractions make complex problems trivial in their current production systems.
 
 ## Slides
 

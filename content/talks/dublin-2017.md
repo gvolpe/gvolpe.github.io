@@ -7,6 +7,8 @@ tags: ["scala", "ireland"]
 
 Showcasing the IO Monad for Scala with the Cats Effect library to an audience of Scala developers.
 
+{{< thumbnail "../../images/talks/dublin.png" >}}
+
 ## Slides
 
 {{< slides "../../slides/dublin.html" >}}

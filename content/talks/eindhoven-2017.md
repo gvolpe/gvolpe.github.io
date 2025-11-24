@@ -11,6 +11,8 @@ Showcasing three different ways of performing data validation in Haskell:
 - A bit more descriptive: Either Monad.
 - Full report of errors: Validation Applicative.
 
+{{< thumbnail "../../images/talks/haskell.png" >}}
+
 ## Slides
 
 {{< slides "../../slides/eindhoven.html" >}}

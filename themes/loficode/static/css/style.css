@@ -2692,7 +2692,7 @@ footer {
     left: 0;
     width: 0%;
     height: 3px;
-    background: var(--profile-gradient);
+    background: var(--btn-gradient);
     z-index: 10000;
     transition: width 0.1s ease;
     box-shadow: 0 0 10px var(--glow-color);

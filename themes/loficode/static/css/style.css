@@ -3023,6 +3023,11 @@ footer {
         align-items: flex-start;
         gap: 0.25rem;
     }
+
+    .ambient-bar {
+        display: none;
+    }
+
 }
 
 /* Post Images */

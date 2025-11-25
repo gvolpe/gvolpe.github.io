@@ -2,6 +2,11 @@
 <html lang="{{ .Site.LanguageCode }}" data-theme="light">
 <head>
     {{ partial "head.html" . }}
+    <script
+      type="text/javascript"
+      defer data-domain="gvolpe.com"
+      src="{{ "js/plausible.js" | absLangURL }}"
+    ></script>
 </head>
 <body>
     {{ if not (eq .Type "blog") }}
@@ -16,11 +21,6 @@
       {{ partial "footer.html" . }}
     {{ end }}
 
-    <script 
-      type="text/javascript"
-      defer data-domain="gvolpe.com" 
-      src="https://analytics.gvolpe.com/js/script.js"
-    ></script>
     <script src="{{ "js/main.js" | absLangURL }}"></script>
 </body>
 </html>

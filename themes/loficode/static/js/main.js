@@ -321,7 +321,12 @@
   // Load search data (posts) - works on all pages
   async function loadSearchData() {
     if (searchData.length === 0) {
-      const posts = window.spa.pagesData;
+      let posts = [];
+
+      if (window.spa && window.spa.pagesData) {
+        posts = window.spa.pagesData;
+      }
+
       if (posts.length > 0) {
         searchData = Array.from(posts).map((post) => {
           return {
@@ -341,8 +346,6 @@
   function toggleSearch() {
     isSearchOpen = !isSearchOpen;
 
-    loadSearchData();
-
     if (isSearchOpen) {
       searchForm.classList.add("active");
       setTimeout(() => {
@@ -356,6 +359,8 @@
       // Reset post visibility
       resetPostVisibility();
     }
+
+    loadSearchData();
   }
 
   // Reset post visibility and filters

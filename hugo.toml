@@ -20,6 +20,7 @@ theme = "loficode"
     bluesky = "gvolpe.com"
     leanpub = "gvolpe"
     blurb = "gvolpe"
+    unison = "gvolpe"
 
   [params.comments]
     github_repo = "gvolpe/blog-comments"

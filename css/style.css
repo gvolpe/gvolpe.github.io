@@ -2561,6 +2561,16 @@ footer {
     left: 0 !important;
     right: 0 !important;
     z-index: 10000 !important;
+
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 20px var(--shadow-color);
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
 }
 
 .post-overlay.active {

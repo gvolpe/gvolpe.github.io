@@ -1373,16 +1373,8 @@
       <div class="post-meta-sidebar">
         <div class="reading-time-vaporwave">
           <span class="coffee-cups">
-            {{ if eq .Params.type "conf" }}
-            <i class="fab fa-avianex social-icon"></i>
-            {{ end }}
-            {{ if eq .Params.type "meetup" }}
-            <i class="fab fa-meetup social-icon"></i>
-            {{ end }}
-            {{ if eq .Section "blog" }}
-              ${coffeeCups}
-              <span>${post.readingTime} min</span>
-            {{ end }}
+            ${coffeeCups}
+            <span>${post.readingTime} min</span>
           </span>
         </div>
       </div>

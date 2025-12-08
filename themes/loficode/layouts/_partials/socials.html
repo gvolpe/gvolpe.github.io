@@ -78,9 +78,13 @@
   target="_blank"
   rel="noopener"
   class="social-link"
+  style="border-radius:100%;"
   title="Unison Share"
 >
-  <i class="fab fa-dribbble social-icon"></i>
+  <i class="fab social-icon">
+  {{ partial "unison.html" . }}
+  </i>
+  <!--<i class="fab fa-dribbble social-icon"></i>-->
 </a>
 {{ else if eq $name "leanpub" }}
 <a

@@ -711,6 +711,11 @@ nav {
     opacity: 0.9;
 }
 
+/* cannot use text-shadow on an svg */
+svg {
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
 /*[> Email - Orange/Red <]*/
 /*.social-link[title="Email"] .social-icon {*/
     /*color: #6f42c1;*/

@@ -1,0 +1,168 @@
+@keyframes showEmail {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.email-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.email-container {
+    animation: showEmail 700ms;
+    width:100%;
+    position: relative;
+    border-radius: 16px;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+}
+
+.email-container::before {
+    content: '';
+    position: relative;
+    top: 0;
+    left: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 255, 0.03) 2px,
+        rgba(0, 255, 255, 0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+}
+
+.email-container::after {
+    content: '';
+    position: relative;
+    top: 0;
+    left: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.2) 100%);
+    pointer-events: none;
+    z-index: 11;
+}
+
+/* Main Container */
+.inner-email-container {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    text-align: center;
+}
+
+/* Git Log Section */
+.git-log-section {
+    width: 100%;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px var(--shadow-color);
+    overflow: hidden;
+}
+
+.git-log-header {
+    background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    padding: 1rem 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.git-log-content {
+    padding: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.git-commit {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.git-commit:hover {
+    background: rgba(255, 0, 128, 0.05);
+    transform: translateX(4px);
+}
+
+.commit-hash {
+    color: var(--accent-secondary);
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.commit-message {
+    flex: 1;
+    color: var(--text-primary);
+}
+
+.commit-message a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.commit-message a:hover {
+    color: var(--accent-primary);
+}
+
+.commit-date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    min-width: 120px;
+    text-align: right;
+}
+
+dialog {
+    border: none;
+    border-radius: 16px;
+    background: var(--bg-primary);
+    margin: 0;
+    transform: translateX(-50%);
+    left: 50%;
+    top: 40%;
+}
+
+dialog button {
+    color: var(--text-primary);
+    font-size: 1.4rem;
+    border: none;
+    background: transparent;
+}
+
+dialog button:hover {
+    color: var(--accent-primary);
+}
+
+
+.close-dialog {
+    margin-left: 17%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .commit-date {
+        display: none;
+    }
+
+    .git-log-header {
+      font-size: 0.75rem;
+    }
+
+    dialog button {
+        font-size: 0.9rem;
+    }
+}

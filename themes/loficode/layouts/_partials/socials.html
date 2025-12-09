@@ -1,5 +1,5 @@
 {{ range $name, $handle := .Site.Params.Social }} {{ if eq $name "email" }}
-<a href="mailto:{{ $handle }}" class="social-link" title="Email">
+<a class="social-link" title="Email" onclick="showContact()">
   <i class="fas fa-envelope social-icon"></i>
 </a>
 {{ else if eq $name "github" }}

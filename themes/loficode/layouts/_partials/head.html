@@ -59,6 +59,9 @@
   referrerpolicy="no-referrer" />
 
 <!-- Styles -->
+{{ if .IsHome }}
+  <link rel="stylesheet" href="{{ "css/email.css" | absLangURL }}">
+{{ end }}
 <link rel="stylesheet" href="{{ "css/style.css" | absLangURL }}">
 
 <!-- RSS -->

@@ -1,0 +1,28 @@
+<dialog>
+  <div class="email-flex">
+    <div class="email-container">
+       <div class="inner-email-container">
+          <div class="git-log-section">
+            <div class="git-log-header">
+                <i class="fab fa-git-alt"></i>
+                git config user.email
+                <div class="close-dialog">
+                  <button
+                    id="close-dialog-btn"
+                    class="fa-regular fa-circle-xmark"
+                    onClick="document.querySelector('dialog').close();">
+                  </button>
+                </div>
+            </div>
+            <div class="git-log-content" id="gitLogContent" autofocus>
+                <div class="git-commit">
+                    <span class="commit-hash">user.email</span>
+                    <div class="commit-message"><a id="dec-contact"/></div>
+                    <span class="commit-date">re:contact</span>
+                </div>
+            </div>
+          </div>
+       </div>
+    </div>
+  </div>
+</dialog>

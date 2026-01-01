@@ -1,0 +1,690 @@
+<!doctype html><html lang=en-us data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=https://gvolpe.com/images/favicon.png><title>Immich Photos on S3 object storage - Gabriel Volpe</title><meta name=description content="As someone who loves going for adventures abroad, the memories I&rsquo;ve captured behind the lens have become extremely valuable to me. I&rsquo;ve learned to …"><meta property="og:title" content="Immich Photos on S3 object storage"><meta property="og:description" content="As someone who loves going for adventures abroad, the memories I&rsquo;ve captured behind the lens have become extremely valuable to me. I&rsquo;ve learned to …"><meta property="og:type" content="article"><meta property="og:url" content="https://gvolpe.com/blog/immich-photos/"><meta property="og:site_name" content="Gabriel Volpe"><meta name=twitter:card content="summary_large_image"><meta name=twitter:title content="Immich Photos on S3 object storage"><meta name=twitter:description content="As someone who loves going for adventures abroad, the memories I&rsquo;ve captured behind the lens have become extremely valuable to me. I&rsquo;ve learned to …"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin=anonymous referrerpolicy=no-referrer><link rel=stylesheet href=https://gvolpe.com/css/style.css><script defer src=https://analytics.gvolpe.com/script.js data-website-id=d1402dba-c29e-4232-abe6-159c15ae2ff7></script></head><body><main><div id=post-overlay-id class="post-overlay active"><div class=reading-progress></div><div class=post-overlay-backdrop></div><div id=post-overlay-content-id class=post-overlay-content style=position:relative;min-height:100vh;padding:0;transform:translateY(0)><div class=post-overlay-header><div class=post-overlay-title><a href=/ class=overlay-site-title>Gabriel Volpe</a></div><button class=post-overlay-close aria-label="Close post" onclick='window.location.href="/"'>
+<i class="fas fa-times"></i></button></div><div class=post-layout><article class=post-content><header class=post-header><div class=post-meta><span class=post-date>2026.01.01</span><div class=reading-time-post><span class=coffee-cups>📚📚📚📚📚
+</span><span>31 min read</span></div></div><h1 class=post-title>Immich Photos on S3 object storage</h1><div class=post-tags-header><a href=https://gvolpe.com/tags/borg class=post-tag>borg</a>
+<a href=https://gvolpe.com/tags/cloud class=post-tag>cloud</a>
+<a href=https://gvolpe.com/tags/immich class=post-tag>immich</a>
+<a href=https://gvolpe.com/tags/nixos class=post-tag>nixos</a>
+<a href=https://gvolpe.com/tags/s3ql class=post-tag>s3ql</a></div></header><div class=post-body><p>As someone who loves going for adventures abroad, the <a href=https://gvolpe.com/classy-lens>memories</a> I&rsquo;ve captured behind the lens have become extremely valuable to me. I&rsquo;ve learned to appreciate that I can still cherish those memories many years later, regardless of whether the source was a DSLR, a smartphone, or a GoPro. The feelings these precious memories rekindle are priceless; as a tech person, it&rsquo;s only reasonable to seek out a &lsquo;safe haven&rsquo; for them.</p><p><img src=../../images/immich/torres-del-paine.jpg alt=tdp>
+<em>Snap from a 2020 mid-summer hike in Torres Del Paine, Chile 🇨🇱</em></p><p>Up until now, that place was Google Photos. As much as that hurt the privacy-freak in me, I have come to accept that for a very long time, there was no real competition. However, the landscape has changed drastically in recent years. Privacy-focused and open-source solutions like <a href=https://ente.io/>Ente</a> and <a href=https://immich.app/>Immich</a> have entered the space (among <a href=https://meichthys.github.io/foss_photo_libraries/>many others</a>), offering viable alternatives for those looking to reclaim their data.</p><p><strong>Ente</strong> is impressive on paper. They offer <em>end-to-end encryption</em> and <em>three copies of your data spread across three different countries</em> &mdash; including an <a href=https://ente.io/help/photos/faq/security-and-privacy#data-storage-location>underground fallout shelter in France</a>. While it’s possible to self-host Ente (especially with the help of <a href="https://search.nixos.org/options?channel=unstable&amp;query=services.ente">NixOS</a>), the service is primarily designed around its excellent paid cloud plans.</p><p><strong>Immich</strong>, on the other hand, is built from the ground up for self-hosting. While they <a href=https://docs.immich.app/FAQ/#are-you-open-to-commercial-partnerships-and-collaborations>may be working</a> on a cloud offering, the current focus is on giving users total control over their deployment environment. The good news is that it&rsquo;s incredibly easy to spin up a production-ready Immich instance via the <a href="https://search.nixos.org/options?channel=unstable&amp;query=services.immich">NixOS</a> module.</p><p>After running both for a while, I found myself leaning toward Immich; its UI/UX feels much more polished, and it resembles the Google Photos experience so closely that the transition felt almost seamless.</p><p>The ultimate deciding factor, however, was the migration. When you have hundreds of gigabytes on the line, the import process needs to be bulletproof. <a href=https://github.com/simulot/immich-go>Immich-go</a> handled my rather big Google Takeout library with ease, whereas my experience with Ente’s migration tool was a bit <a href=https://github.com/ente-io/ente/issues/8259>unfortunate</a>.</p><p>Ready to dive into the full journey of self-hosting Immich? Buckle up! 🛠️</p><h2 id=immich>Immich</h2><p>We&rsquo;ll begin with the easiest piece of the puzzle: getting Immich up and running behind an Nginx proxy on NixOS.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  host <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;immich-domain.org&#34;</span>;
+</span></span><span style=display:flex><span>  port <span style=color:#f92672>=</span> <span style=color:#ae81ff>2283</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>tmpfiles<span style=color:#f92672>.</span>rules <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;d /var/cache/immich/matplotlib 0700 immich immich -&#34;</span>
+</span></span><span style=display:flex><span>  ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    immich <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>inherit</span> port;
+</span></span><span style=display:flex><span>      enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      accelerationDevices <span style=color:#f92672>=</span> [ ];
+</span></span><span style=display:flex><span>      database <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        enableVectors <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        enableVectorChord <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        createDB <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>      machine-learning <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        environment<span style=color:#f92672>.</span>MPLCONFIGDIR <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/cache/immich/matplotlib&#34;</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>      mediaLocation <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/lib/immich&#34;</span>;
+</span></span><span style=display:flex><span>      openFirewall <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>      redis<span style=color:#f92672>.</span>enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      <span style=color:#75715e># settings can be set directly in the UI</span>
+</span></span><span style=display:flex><span>      settings <span style=color:#f92672>=</span> <span style=color:#66d9ef>null</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    nginx <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      clientMaxBodySize <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;500M&#34;</span>;
+</span></span><span style=display:flex><span>      virtualHosts<span style=color:#f92672>.</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>host<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        forceSSL <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        enableACME <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        locations <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          <span style=color:#e6db74>&#34;/&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            proxyPass <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://localhost:</span><span style=color:#e6db74>${</span>toString port<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>That&rsquo;s pretty much all it takes. However, we&rsquo;re still a long way off from reaching a final verdict, as setting up a reliable storage system requires some heavy lifting.</p><h3 id=storage>Storage</h3><p>Immich stores media files in a regular Unix-compatible file system (EXT4, ZFS, APFS, etc.). Ente, on the other hand, uses S3 object storage. This was a huge point in favor of Ente, making it even harder to make a decision.</p><p>The main advantage of using S3 object storage is that it&rsquo;s so much cheaper than raw disk space in cloud services. Immich native S3 support is a <a href=https://github.com/immich-app/immich/discussions/23745>heavily requested feature</a>, so hopefully it becomes a reality some day.</p><p>To circumvent this issue, I decided to go down the rabbit hole and implement the most technically challenging solution: setting up <a href=https://github.com/s3ql/s3ql>S3QL</a> as the file system, because why not? 😁</p><style>.quote::before{content:var(--quote-emoji)}</style><div class=quote style="--quote-emoji:'📜'"><h4>S3QL</h4><p>"S3QL is a file system that stores all its data online using storage services like Google Storage, Amazon S3, or OpenStack. It provides a virtual drive of dynamic, infinite capacity that can be accessed from any computer with internet access. S3QL is a full featured UNIX file system that is conceptually indistinguishable from a local file system like ext4. Furthermore, S3QL has additional features like compression encryption, data de-duplication, immutable trees and snapshotting which make it especially suitable for online backup and archival."</p></div><p>S3QL requires our storage provider to support &ldquo;immediate consistency&rdquo; to <a href=https://www.rath.org/s3ql-docs/durability.html>avoid data loss</a>, as some providers only offer eventual consistency. However, since all my NixOS virtual machines run on Hetzner and they offer <a href=https://docs.hetzner.com/storage/object-storage/overview/>S3-compatible object storage</a> with these guarantees (i.e. they run a <a href=https://ceph.io/en/>Ceph</a> cluster) at good prices, it was a no-brainer.</p><p><img src=../../images/immich/buckets.png alt=buckets></p><p>The main media storage is located in Finland, which falls under the <code>eu-central</code> network zone, whereas the replica bucket is located in Germany, which shares the same network zone.</p><style>.quote::before{content:var(--quote-emoji)}</style><div class=quote style="--quote-emoji:'🤑'"><h4>S3 Object Storage</h4><p>"Internal traffic within the same network zone is free of charge. See <a href=https://docs.hetzner.com/storage/object-storage/overview#pricing target=_blank>Pricing</a> details."</p></div><p>This is a <em>crucial factor</em>, as it means we can replicate all our data from Finland over to Germany (pretty much) for free!</p><p>Another key element is <em>proximity</em> between the compute instance (Immich server) and the S3 bucket &mdash; i.e. they should be in the same location to reduce latency. Since S3QL is a FUSE-based file system, every I/O request travels from the kernel to user-space and then over the network; even minor latency jitter and routing resets can disrupt the mount.</p><p>During an Immich startup, the application performs thousands of <code>stat()</code> and <code>read()</code> file system calls. If S3QL is simultaneously flushing metadata or processing deletes, even a 100ms lag spike can lead to <code>NoSuchBucket</code> errors, causing the mount to panic and crash.</p><p>For this reason, both the Immich server and the main S3 bucket are located in the same datacenter in Helsinki.</p><h2 id=s3ql-file-system>S3QL file system</h2><p>Managing the S3QL file system is possibly the most challenging part. It took me multiple attempts to ensure a reproducible approach that can survive restarts and can be replicated on a brand new machine.</p><p>After much trial and error, I came up with a <a href=https://github.com/gvolpe/s3ql.nix>custom NixOS module</a> that sets up a few <a href=https://systemd.io/>systemd</a> services that are responsible for managing the intricacies of mounting such a file system, so that it can be easily used.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  services<span style=color:#f92672>.</span>s3ql <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    settings <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      bucket <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3c://hel1.your-objectstorage.com/source-bucket/s3ql&#34;</span>;
+</span></span><span style=display:flex><span>        name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hzfi&#34;</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>      cache <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        directory <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/mnt/s3ql-cache/.s3ql&#34;</span>;
+</span></span><span style=display:flex><span>        size <span style=color:#f92672>=</span> <span style=color:#ae81ff>30000000</span>; <span style=color:#75715e># 30 GBs</span>
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>      mountpoint <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/mnt/s3ql&#34;</span>;
+</span></span><span style=display:flex><span>      skipMkfs <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Behind the scenes, a few things are happening. First of all, it defines a <em>.mount</em> unit that encodes information about a file system mount point controlled and supervised by systemd.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>s3ql;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>tmpfiles<span style=color:#f92672>.</span>rules <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;d </span><span style=color:#e6db74>${</span>cfg<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>mountpoint<span style=color:#e6db74>}</span><span style=color:#e6db74> 0755 root root -&#34;</span>
+</span></span><span style=display:flex><span>  ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>mounts <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>      name <span style=color:#f92672>=</span> cfg<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>mountUnitName;
+</span></span><span style=display:flex><span>      requires <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;s3ql-mount.service&#34;</span> ];
+</span></span><span style=display:flex><span>      after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;s3ql-mount.service&#34;</span> ];
+</span></span><span style=display:flex><span>      where <span style=color:#f92672>=</span> cfg<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>mountpoint;
+</span></span><span style=display:flex><span>      what <span style=color:#f92672>=</span> cfg<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>bucket<span style=color:#f92672>.</span>url;
+</span></span><span style=display:flex><span>      type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;none&#34;</span>; <span style=color:#75715e># the mounting is done by the service</span>
+</span></span><span style=display:flex><span>      wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;multi-user.target&#34;</span> ];
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  ];
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Which sets up the requirements for the next three systemd services: <code>s3ql-auth</code>, <code>s3ql-fs</code> and <code>s3ql-mount</code>.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> pkgs<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>s3ql;
+</span></span><span style=display:flex><span>  authService <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3ql-auth.service&#34;</span>;
+</span></span><span style=display:flex><span>  fsService <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3ql-fs.service&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    s3ql-auth <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3ql authfile setup&#34;</span>;
+</span></span><span style=display:flex><span>      serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>        RemainAfterExit <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        User <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>        Group <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>        ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>authScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    s3ql-fs <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3ql mkfs/fsck manager: run only once if uninitialized&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      requires <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;network-online.target&#34;</span> authService ];
+</span></span><span style=display:flex><span>      after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;network-online.target&#34;</span> authService ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      unitConfig<span style=color:#f92672>.</span>DefaultDependencies <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>      stopIfChanged <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>        RemainAfterExit <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        User <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>        Group <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>        ExecCondition <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>execConditionScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>        ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>fsckScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>        TimeoutStartSec <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        Restart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;on-failure&#34;</span>;
+</span></span><span style=display:flex><span>        RestartSec <span style=color:#f92672>=</span> <span style=color:#ae81ff>60</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    s3ql-mount <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3ql mount file system&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      before <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;multi-user.target&#34;</span> ];
+</span></span><span style=display:flex><span>      wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;multi-user.target&#34;</span> ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      requires <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;network-online.target&#34;</span> fsService ];
+</span></span><span style=display:flex><span>      after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;network-online.target&#34;</span> fsService <span style=color:#e6db74>&#34;network.target&#34;</span> ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      unitConfig<span style=color:#f92672>.</span>DefaultDependencies <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>      stopIfChanged <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;simple&#34;</span>;
+</span></span><span style=display:flex><span>        RemainAfterExit <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#  prevent systemd from killing sub-threads/wrappers to that s3ql can perform a clean unmount</span>
+</span></span><span style=display:flex><span>        KillMode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;process&#34;</span>;
+</span></span><span style=display:flex><span>        KillSignal <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;SIGINT&#34;</span>;
+</span></span><span style=display:flex><span>        SuccessExitStatus <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;0 1 SIGINT&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        ExecCondition <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>execConditionScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>        ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>mountScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>        ExecStartPost <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>mountWaitScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>        ExecStop <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;-</span><span style=color:#e6db74>${</span>pkgs<span style=color:#f92672>.</span>s3ql<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/umount.s3ql </span><span style=color:#e6db74>${</span>cfg<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>mountpoint<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        MountFlags <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;shared&#34;</span>;
+</span></span><span style=display:flex><span>        User <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>        Group <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># give it time to download metadata from S3 when remounting</span>
+</span></span><span style=display:flex><span>        TimeoutStartSec <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># give it time to upload metadata to S3 before systemd kills it</span>
+</span></span><span style=display:flex><span>        TimeoutStopSec <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;5min&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># ensures systemd can track the FUSE process</span>
+</span></span><span style=display:flex><span>        NotifyAccess <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;all&#34;</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The authentication service sets up a file with the required secrets for these commands (details are omitted for brevity).</p><p>The <code>s3ql-fs</code> service is responsible for setting up the file system via the <code>mkfs.s3ql</code> and <code>fsck.s3ql</code> commands. On the other hand, the <code>s3ql-mount</code> service is the most delicate one: it mounts the file system via <code>mount.s3ql</code> and ensures it&rsquo;s gracefully unmounted when the systemd unit is stopped (e.g. on redeployments).</p><p>To begin with, the file system needs to be created when a new S3 bucket is being initialized.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo -n <span style=color:#e6db74>&#34;</span>$S3_PASSPHRASE<span style=color:#e6db74>&#34;</span> | mkfs.s3ql <span style=color:#e6db74>${</span>cfg.settings.bucket.url<span style=color:#e6db74>}</span> --authfile <span style=color:#e6db74>${</span>authfile<span style=color:#e6db74>}</span>
+</span></span></code></pre></div><p>Once that&rsquo;s done, we should avoid this command as that can fail in spectacular ways. The NixOS module has a fail-safe mechanism that deals with this issue, which guarantees it is executed exactly once.</p><p>However, if the file system is ever unmounted ungracefully (e.g. power shutdown), it may be necessary to re-run the <code>s3ql-fs</code> service (deleting the safety flag under <code>/var/lib</code>), which runs the <code>fsck.s3ql</code> command.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>fsck.s3ql --authfile <span style=color:#e6db74>${</span>authfile<span style=color:#e6db74>}</span> --batch --force-remote --log syslog <span style=color:#e6db74>${</span>cfg.settings.bucket.url<span style=color:#e6db74>}</span>
+</span></span></code></pre></div><p>It forces the remote metadata onto this file system &mdash; i.e. it makes the remote S3 bucket the source of truth. Once the <code>s3ql-fs</code> service has run, it&rsquo;s time for the next service in line, as declared by the <code>requires</code> and <code>after</code> sections.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>mkdir -p <span style=color:#e6db74>${</span>cfg.settings.mountpoint<span style=color:#e6db74>}</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>mount.s3ql <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --allow-other <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --authfile <span style=color:#e6db74>${</span>authfile<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --cachedir <span style=color:#e6db74>${</span>cfg.settings.cache.directory<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --cachesize <span style=color:#e6db74>${</span>toString cfg.settings.cache.size<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --fg <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --threads <span style=color:#e6db74>${</span>toString cfg.settings.threads<span style=color:#e6db74>}</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  --log syslog <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>  <span style=color:#e6db74>${</span>cfg.settings.bucket.url<span style=color:#e6db74>}</span> <span style=color:#e6db74>${</span>cfg.settings.mountpoint<span style=color:#e6db74>}</span>
+</span></span></code></pre></div><p>It&rsquo;s only two lines: create the mount point directory (optional) and run <code>mount.s3ql</code>. The <code>--allow-other</code> flag is critical here, as we want to grant read and write access to the Immich service.</p><p>Setting both the cache size and directory is highly recommended too, as that can fill up the disk pretty quickly. In my case, I went with a dedicated external 50 GBs volume after I ran out of disk space during the first week 😆</p><p>And that&rsquo;s a wrap! It certainly wasn&rsquo;t a piece of cake, though now the NixOS module hides a lot of the complexity of managing an S3QL file system. Finding the right configuration for the systemd unit took a lot of trial and error attempts to better understand the process. For instance, the <code>KillMode = "process";</code> setting ensures that sub-threads are not killed by systemd when the unit is stopped, as one of those threads is responsible for uploading metadata to the remote S3 bucket. If this is interrupted, we end up with a dirty file system that would refuse to be mounted unless we run <code>fsck.s3ql</code> once again, which can take ages when the bucket size is hundreds of GBs big.</p><p>Now with the S3QL file system in place, we can update the Immich service&rsquo;s configuration as follows:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>immich;
+</span></span><span style=display:flex><span>  s3qlService <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3ql-mount.service&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkIf cfg<span style=color:#f92672>.</span>enable {
+</span></span><span style=display:flex><span>    immich-machine-learning <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      requires <span style=color:#f92672>=</span> [ s3qlService ];
+</span></span><span style=display:flex><span>      after <span style=color:#f92672>=</span> [ s3qlService ];
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>    immich-server <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      requires <span style=color:#f92672>=</span> [ s3qlService ];
+</span></span><span style=display:flex><span>      after <span style=color:#f92672>=</span> [ s3qlService ];
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    immich<span style=color:#f92672>.</span>mediaLocation <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>s3ql<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>mountpoint<span style=color:#e6db74>}</span><span style=color:#e6db74>/immich&#34;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The systemd units are modified so that they are not started until the S3QL file system is successfully mounted. Ultimately, the media location needs to be writable by the Immich service, which is ensured by the <a href=https://github.com/NixOS/nixpkgs/blob/3e2499d5539c16d0d173ba53552a4ff8547f4539/nixos/modules/services/web-apps/immich.nix#L462>NixOS module</a>.</p><h2 id=backups>Backups</h2><p>So far so good. We have our Immich service successfully running, persisting all our photos and videos on a remote S3 bucket without it even knowing thanks to S3QL. Furthermore, our data is de-duplicated and compressed without quality loss, further reducing the storage capacity requirements.</p><p>Everything&rsquo;s great, until something goes wrong&mldr; Think about file system corruption, S3 bucket deletion, or any issues with our cloud provider &mdash; whatever happens, we must be prepared for a disaster recovery scenario.</p><style>.quote::before{content:var(--quote-emoji)}</style><div class=quote style="--quote-emoji:'💡'"><h4>Important</h4><p>Backups are a vital part of any data system and <b>shall not be overlooked</b>.<br>A <a href=https://www.backblaze.com/blog/the-3-2-1-backup-strategy target=_blank>3-2-1 backup strategy</a> is recommended to protect our data.</p></div><p>We will be following the guidelines and adhere to the 3-2-1 backup rule, which consists of:</p><ul><li><strong>3</strong> copies of our data.</li><li><strong>2</strong> storage devices.</li><li><strong>1</strong> copy off-site.</li></ul><p>It was introduced in the late 2000s, but it&rsquo;s still very relevant, even though a lot has changed since then. As previously mentioned, we&rsquo;ll have two S3 buckets, which makes two copies on two different storage devices. The third copy will be on a bare-metal server located in Poland with two dedicated drives.</p><p>The Immich service runs on a virtual machine hosted in Finland, so technically with the replica S3 bucket located in Germany and the bare-metal server running in Poland, we&rsquo;re more than safe not with one but two copies off-site. Though, we&rsquo;re not out of the woods just yet.</p><p><strong>What do we need to back-up exactly to be able to restore all data on a brand new machine?</strong> The <a href=https://docs.immich.app/administration/backup-and-restore/>Backup and Restore</a> documentation page outlines what needs to be backed up:</p><ul><li>The media location (S3QL file system): all our photos and videos live here.</li><li>PostgreSQL database: it holds metadata and user information.</li></ul><p>Both are necessary for a successful restoration process that would allow the system to function properly.</p><style>.quote::before{content:var(--quote-emoji)}</style><div class=quote style="--quote-emoji:'⛓️‍💥'"><h4>Warning</h4><p>When backing these up it's possible for them to get out of sync, potentially resulting in broken assets after you restore.
+The best way of dealing with this is to stop the immich-server container while you take a backup. If nothing is changing then the backup will always be in sync.</p></div><p>In order to do so, we&rsquo;re going to automate this task via a systemd service that sets the stage for the backup jobs.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> lib<span style=color:#f92672>,</span> pkgs<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>immich;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  config <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkIf cfg<span style=color:#f92672>.</span>enable {
+</span></span><span style=display:flex><span>    systemd <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        custom-immich-start-trigger <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Trigger to start the Immich services&#34;</span>;
+</span></span><span style=display:flex><span>          serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>            ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>pkgs<span style=color:#f92672>.</span>systemd<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/systemctl start immich-server immich-machine-learning&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        custom-immich-stop-trigger <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Trigger to stop all Immich services&#34;</span>;
+</span></span><span style=display:flex><span>          after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;immich-server.service&#34;</span> ];
+</span></span><span style=display:flex><span>          serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>            ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>pkgs<span style=color:#f92672>.</span>systemd<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/systemctl stop immich-*&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      timers <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        custom-immich-stop-trigger <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Stop Immich services to allow backups daily at midnight&#34;</span>;
+</span></span><span style=display:flex><span>          timerConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            OnCalendar <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*-*-* 00:00:00&#34;</span>; <span style=color:#75715e># daily at midnight</span>
+</span></span><span style=display:flex><span>            Unit <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;custom-immich-stop-trigger.service&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>          wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;timers.target&#34;</span> ];
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        custom-immich-start-trigger <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Restart Immich services daily at 3 AM&#34;</span>;
+</span></span><span style=display:flex><span>          timerConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            OnCalendar <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*-*-* 0:03:00&#34;</span>; <span style=color:#75715e># daily at 3 am</span>
+</span></span><span style=display:flex><span>            Unit <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;custom-immich-start-trigger.service&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>          wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;timers.target&#34;</span> ];
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>It is important that we set a clear time-window for all the different backup jobs we schedule over night. The current configuration allows 3 hours to run all of them, which is rather generous.</p><h3 id=s3-bucket-replication>S3 bucket replication</h3><p>To interact with our remote S3 buckets, we will rely on <a href=https://docs.hetzner.com/storage/object-storage/getting-started/using-s3-api-tools>S3-compatible tools</a>, which include the popular <a href=https://github.com/minio/mc>MinIO client</a>. It is one of the easiest to operate and it supports <em>Server-Side Bucket Replication</em> via the <code>mc replicate</code> command.</p><p>Unfortunately, we can&rsquo;t use this command because Hetzner Object Storage <a href=https://docs.hetzner.com/storage/object-storage/supported-actions>does not support replication</a>. Instead, we&rsquo;re going to run <code>mc mirror</code> on a daily basis, which is basically <em>Client-Side Bucket Replication</em>.</p><p>We could also run <code>mc mirror --watch</code> continuously, but I find this unnecessary for this use case. It requires more resources and backing up our media daily is more than enough. YMMV ¯_(ツ)_/¯</p><p>Results can be inspected in the journal; we get a summary of the total data transferred at the end of every run.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>$ journalctl --no-hostname -u s3-replica.service -f
+</span></span><span style=display:flex><span>Dec 13 00:30:01 systemd[1116]: Starting S3 replica service...
+</span></span><span style=display:flex><span>Dec 13 00:30:01 s3-replica[1146]: &gt;&gt; Creating S3 bucket replica from 🇫🇮 to 🇩🇪
+</span></span><span style=display:flex><span>Dec 13 00:30:02 s3-replica[1147]: `s3-fi-immich/source-bucket/s3qls3ql_data_10180` -&gt; `s3-de-backup/replica-bucket/s3qls3ql_data_10180`
+</span></span><span style=display:flex><span>......
+</span></span><span style=display:flex><span>Dec 13 00:37:55 s3-replica[1147]: ┌───────────┬─────────────┬──────────┬──────────────┐
+</span></span><span style=display:flex><span>Dec 13 00:37:55 s3-replica[1147]: │ Total     │ Transferred │ Duration │ Speed        │
+</span></span><span style=display:flex><span>Dec 13 00:37:55 s3-replica[1147]: │ 48.30 GiB │ 48.30 GiB   │ 05m40s   │ 145.29 MiB/s │
+</span></span><span style=display:flex><span>Dec 13 00:37:55 s3-replica[1147]: └───────────┴─────────────┴──────────┴──────────────┘
+</span></span><span style=display:flex><span>Dec 13 00:37:55 s3-replica[1146]: &gt;&gt; Done creating S3 bucket replica
+</span></span><span style=display:flex><span>Dec 13 00:37:55 systemd[1116]: Finished S3 replica service.
+</span></span><span style=display:flex><span>Dec 13 00:37:55 systemd[1116]: s3-replica.service: Consumed 4min 25.343s CPU time, 85.8M memory peak.
+</span></span></code></pre></div><p>The daily task is modeled as a systemd service that&rsquo;s triggered via a systemd timer. It runs at half-past midnight, right after the other backup jobs, because it&rsquo;s the most time-consuming task that needs to account for failures and retries.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>s3ql;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  config <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkIf cfg<span style=color:#f92672>.</span>enable {
+</span></span><span style=display:flex><span>    systemd <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        s3-aliases <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;S3 aliases manager&#34;</span>;
+</span></span><span style=display:flex><span>          serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>            ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>s3-aliases<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>            RemainAfterExit <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>            User <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;admin&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>          wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;default.target&#34;</span> ];
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        s3-replica <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;S3 replica (mirror)&#34;</span>;
+</span></span><span style=display:flex><span>          serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>            ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>s3-replica<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>            TimeoutStartSec <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>            Restart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;on-failure&#34;</span>;
+</span></span><span style=display:flex><span>            RestartSec <span style=color:#f92672>=</span> <span style=color:#ae81ff>60</span>;
+</span></span><span style=display:flex><span>            User <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;root&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>          after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;s3-aliases.service&#34;</span> ];
+</span></span><span style=display:flex><span>          requires <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;s3-aliases.service&#34;</span> ];
+</span></span><span style=display:flex><span>          wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;default.target&#34;</span> ];
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      timers<span style=color:#f92672>.</span>s3-replica <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;S3 replica service timer&#34;</span>;
+</span></span><span style=display:flex><span>        wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;timers.target&#34;</span> ];
+</span></span><span style=display:flex><span>        timerConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          OnCalendar <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*-*-* 0:00:30&#34;</span>; <span style=color:#75715e># daily at half-past midnight</span>
+</span></span><span style=display:flex><span>          Persistent <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The <code>s3-aliases</code> service ensures the MinIO client aliases are set up with the corresponding credentials (only done once, much like the creation of the file system), so that the <code>s3-replica</code> service calls are authenticated.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>mc alias set hzfi <span style=color:#e6db74>&#34;</span>$BUCKET_URL<span style=color:#e6db74>&#34;</span> <span style=color:#e6db74>&#34;</span>$S3_ACCESS_KEY<span style=color:#e6db74>&#34;</span> <span style=color:#e6db74>&#34;</span>$S3_SECRET_KEY<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>mc alias set hzde <span style=color:#e6db74>&#34;</span>$BUCKET_URL<span style=color:#e6db74>&#34;</span> <span style=color:#e6db74>&#34;</span>$S3_ACCESS_KEY<span style=color:#e6db74>&#34;</span> <span style=color:#e6db74>&#34;</span>$S3_SECRET_KEY<span style=color:#e6db74>&#34;</span>
+</span></span></code></pre></div><p>Before replication kicks in, we force S3QL to write its current memory state and metadata to the remote S3 bucket. S3QL would take the current state of that local SQLite database, compress it into a small bundle, and push it to the bucket as a few objects (usually named <code>s3ql_metadata_bak_N</code>). This ensures we get an accurate replica.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>s3qlctrl flushcache <span style=color:#e6db74>${</span>cfg.settings.mountpoint<span style=color:#e6db74>}</span>
+</span></span><span style=display:flex><span>s3qlctrl backup-metadata <span style=color:#e6db74>${</span>cfg.settings.mountpoint<span style=color:#e6db74>}</span>
+</span></span></code></pre></div><p>At last, the exact command we run to replicate the data over to Germany is the following one.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>mc mirror --overwrite --remove --retry --summary hzfi/source-bucket hzde/replica-bucket
+</span></span></code></pre></div><p>The <code>--overwrite</code> and <code>--remove</code> flags should be used with caution. The former tells <code>mc</code> that the source bucket is the source of truth and any discrepancies should be overridden. Similarly, the other flag will result in the removal of files that are present in the replica bucket but not at the source. I found that these may be necessary after restarts, as <code>fsck.s3ql</code> may create file system conflicts between the source and the replica, but shouldn&rsquo;t be required otherwise.</p><h3 id=postgresql-backups>PostgreSQL backups</h3><p>Thus far, we have two copies of our media distributed across two S3 buckets. However, the media itself is not enough for a full restoration without the metadata that&rsquo;s persisted in a PostgreSQL database. So, we&rsquo;ll set up a daily backup job that creates a database dump via <code>pg_dumpall</code> and drops it on a directory accessible to other jobs.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> pkgs<span style=color:#f92672>,</span> lib<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>backups<span style=color:#f92672>.</span>postgresql;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  config <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkIf (cfg<span style=color:#f92672>.</span>enable <span style=color:#f92672>&amp;&amp;</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>postgresql<span style=color:#f92672>.</span>enable) {
+</span></span><span style=display:flex><span>    systemd <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      tmpfiles<span style=color:#f92672>.</span>rules <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;d </span><span style=color:#e6db74>${</span>cfg<span style=color:#f92672>.</span>directory<span style=color:#e6db74>}</span><span style=color:#e6db74> 0750 postgres postgres - -&#34;</span>
+</span></span><span style=display:flex><span>      ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      services<span style=color:#f92672>.</span>postgresql-backup <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;PostgreSQL Full Database Backup&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        requires <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;postgresql.service&#34;</span> ];
+</span></span><span style=display:flex><span>        after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;postgresql.service&#34;</span> ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>backupScript<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>          User <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;postgres&#34;</span>;
+</span></span><span style=display:flex><span>          Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>          TimeoutStartSec <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;10min&#34;</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>      timers<span style=color:#f92672>.</span>postgresql-backup <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Timer for PostgreSQL Backup&#34;</span>;
+</span></span><span style=display:flex><span>        wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;timers.target&#34;</span> ];
+</span></span><span style=display:flex><span>        timerConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          OnCalendar <span style=color:#f92672>=</span> cfg<span style=color:#f92672>.</span>schedule;
+</span></span><span style=display:flex><span>          Unit <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;postgresql-backup.service&#34;</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>This is the first backup job that runs right after Immich services are stopped at midnight &mdash; it currently takes about 7 seconds, but it may grow over time. Additionally, the script takes care of pruning backups older than 7 days.</p><p>Besides this backup, we also have the one managed by Immich &mdash; set up from the administration settings.</p><p><img src=../../images/immich/postgres.png alt=postgres></p><p>It&rsquo;s usually good practice to enable it, but to also make our own backups if we can afford the disk space.</p><h3 id=borg-backups>Borg backups</h3><p>Database dumps are stored in the same machine that&rsquo;s running the Immich service (single device, single location), so we&rsquo;ll need to copy them over to other devices to follow the 3-2-1 backup rule. There are multiple tools to handle this task: <code>rsync</code>, <code>rclone</code>, <code>kopia</code>, <code>restic</code>, you name it. We&rsquo;re going to use <a href=https://www.borgbackup.org/>Borg</a>, which is one of my favorites tools out there.</p><p>We&rsquo;ll set up two different systemd services that run right after the Postgres backup job: one for the Postgres database dump; another for the Immich media stored under the S3QL file system.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  compression <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;auto,zstd&#34;</span>;
+</span></span><span style=display:flex><span>  encryption <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    mode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;repokey-blake2&#34;</span>;
+</span></span><span style=display:flex><span>    passCommand <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;cat run/agenix/borg-passphrase&#34;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>  environment <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    BORG_RSH <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ssh -i /etc/ssh/ssh_host_ed25519_key&#34;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>  extraCreateArgs <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;--stats&#34;</span> ];
+</span></span><span style=display:flex><span>  failOnWarnings <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>  prune <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    keep <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      within <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;1d&#34;</span>; <span style=color:#75715e># Keep all archives from the last day</span>
+</span></span><span style=display:flex><span>      daily <span style=color:#f92672>=</span> <span style=color:#ae81ff>7</span>;
+</span></span><span style=display:flex><span>      weekly <span style=color:#f92672>=</span> <span style=color:#ae81ff>4</span>;
+</span></span><span style=display:flex><span>      monthly <span style=color:#f92672>=</span> <span style=color:#ae81ff>-1</span>; <span style=color:#75715e># Keep at least one archive for each month</span>
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>  startAt <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*-*-* 0:00:05&#34;</span>; <span style=color:#75715e># daily 5 mins after midnight</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  services<span style=color:#f92672>.</span>borgbackup<span style=color:#f92672>.</span>jobs <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    postgres <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>inherit</span> compression encryption environment extraCreateArgs failOnWarnings prune startAt;
+</span></span><span style=display:flex><span>      paths <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/lib/postgresql/backups&#34;</span>;
+</span></span><span style=display:flex><span>      repo <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ssh://admin@cubi/data/backups/immich/postgres&#34;</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    immich-s3-media <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>inherit</span> compression encryption environment extraCreateArgs failOnWarnings prune startAt;
+</span></span><span style=display:flex><span>      paths <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/mnt/s3ql/immich&#34;</span>;
+</span></span><span style=display:flex><span>      repo <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ssh://admin@cubi/data/backups/immich/s3-media&#34;</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>In fairness, there is an additional Postgres job to comply with the 3-2-1 rule; the only difference is the repo.</p><p>Borg allows us to set many different settings, with compression and encryption being among the most important ones. We&rsquo;re setting them to run daily, sharing the same passphrase, as they are both Immich data after all.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@metropolis:~<span style=color:#f92672>]</span>$ systemctl status borgbackup-job-postgres.timer
+</span></span><span style=display:flex><span>● borgbackup-job-postgres.timer - BorgBackup job postgres timer
+</span></span><span style=display:flex><span>     Loaded: loaded <span style=color:#f92672>(</span>/etc/systemd/system/borgbackup-job-postgres.timer; enabled; preset: ignored<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>     Active: active <span style=color:#f92672>(</span>waiting<span style=color:#f92672>)</span> since Tue 2025-12-23 17:57:38 UTC; 18h ago
+</span></span><span style=display:flex><span> Invocation: cb5f6e93f0b34a9bb37edb72d0d38bbe
+</span></span><span style=display:flex><span>    Trigger: Thu 2025-12-25 00:00:05 UTC; 11h left
+</span></span><span style=display:flex><span>   Triggers: ● borgbackup-job-postgres.service
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 17:57:38 metropolis systemd<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Started BorgBackup job postgres timer.
+</span></span></code></pre></div><p>These two Borg Backup jobs ensure the data is copied from the cloud over to the bare-metal server (hostname: <code>cubi</code>) via SSH. I still find this fascinating, because it didn&rsquo;t require any complicated firewall rules or VPNs to get this working. Setting up <a href=https://tailscale.com/>Tailscale</a> on both machines was enough to establish a secure communication channel.</p><p><img src=../../images/immich/tailscale.png alt=tailscale></p><p>I use Tailscale for other purposes as well and I can&rsquo;t recommend it enough!</p><style>.quote::before{content:var(--quote-emoji)}</style><div class=quote style="--quote-emoji:'ℹ️'"><h4>Information</h4><p>The standard networking MTU (Maximum Transmission Unit) is 1500, but usually the Tailscale interface sets this value to 1280. If S3QL traffic is being routed over the Tailscale mesh to reach the remote S3 bucket, the overhead of the WireGuard encapsulation could cause packet fragmentation if the S3QL blocks are too large.</p></div><p>This hasn&rsquo;t been a problem for me so far, but if that ever becomes one, a solution could be enabling Tailscale only before running backups run and disable it afterwards.</p><p>We can inspect the service logs, where we&rsquo;ll find some cool stats about the latest backup run.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@metropolis:~<span style=color:#f92672>]</span>$ journalctl -u borgbackup-job-postgres.service --no-hostname
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:00 systemd<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: Started BorgBackup job postgres.
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : -----------------------------------------------------------------------
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Repository: ssh://admin@cubi/data/backups/immich/postgres
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Archive name: metropolis-postgres-2025-12-23T00:01:00.failed
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Archive fingerprint: 3c96afcc0f4a4a49b2a7762c3303b7a23499ef8e8fd4ffe...
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Time <span style=color:#f92672>(</span>start<span style=color:#f92672>)</span>: Tue, 2025-12-23 00:01:04
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Time <span style=color:#f92672>(</span>end<span style=color:#f92672>)</span>:   Tue, 2025-12-23 00:01:10
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Duration: 6.09 seconds
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Number of files: <span style=color:#ae81ff>8</span>
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Utilization of max. archive size: 0%
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : -----------------------------------------------------------------------
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 :                   Original size    Compressed size    Deduplicated size
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : This archive:           2.81 GB            1.07 GB             26.13 MB
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : All archives:           8.92 GB            3.37 GB            317.73 MB
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 :                   Unique chunks       Total chunks
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : Chunk index:                <span style=color:#ae81ff>362</span>               <span style=color:#ae81ff>3485</span>
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:10 : -----------------------------------------------------------------------
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:17 systemd<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: borgbackup-job-postgres.service: Deactivated successfully.
+</span></span><span style=display:flex><span>Dec <span style=color:#ae81ff>23</span> 00:01:17 systemd<span style=color:#f92672>[</span>1<span style=color:#f92672>]</span>: borgbackup-job-postgres.service: Consumed 8.487s CPU time...
+</span></span></code></pre></div><p>Or get information about all the backups in the remote machine via <code>borg info &lt;backup_directory></code>, e.g.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@cubi:~<span style=color:#f92672>]</span>$ borg info /data/backups/immich/s3-media/
+</span></span><span style=display:flex><span>Enter passphrase <span style=color:#66d9ef>for</span> key /data/backups/immich/s3-media:
+</span></span><span style=display:flex><span>Repository ID: 2b8f28abd83cca956e0bf816f9e2ada7beb0a3299d305e8c0a7536b12212fb2c
+</span></span><span style=display:flex><span>Location: /data/backups/immich/s3-media
+</span></span><span style=display:flex><span>Encrypted: Yes <span style=color:#f92672>(</span>repokey BLAKE2b<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>Cache: /home/admin/.cache/borg/2b8f28abd83cca956e0bf816f9e2ada7beb0a3299d305e8c0a7536b12212fb2c
+</span></span><span style=display:flex><span>Security dir: /home/admin/.config/borg/security/2b8f28abd83cca956e0bf816f9e2ada7beb0a3299d305e8c0a7536b12212fb2c
+</span></span><span style=display:flex><span>------------------------------------------------------------------------------
+</span></span><span style=display:flex><span>                       Original size      Compressed size    Deduplicated size
+</span></span><span style=display:flex><span>All archives:                1.47 TB              1.44 TB            290.85 GB
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                       Unique chunks         Total chunks
+</span></span><span style=display:flex><span>Chunk index:                  <span style=color:#ae81ff>282667</span>              <span style=color:#ae81ff>1462772</span>
+</span></span></code></pre></div><p>Furthermore, we can list all the backups made so far via <code>borg list &lt;backup_directory></code>, e.g.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@cubi:~<span style=color:#f92672>]</span>$ borg list /data/backups/immich/postgres/
+</span></span><span style=display:flex><span>Enter passphrase <span style=color:#66d9ef>for</span> key /data/backups/immich/postgres:
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-25T00:00:05 Thu, 2025-12-25 00:00:09 <span style=color:#f92672>[</span>6b8b217c7de989fffb9f74d906cc22e10ae86549444babe3ad71d2a0c6527b19<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-26T00:00:05 Fri, 2025-12-26 00:00:10 <span style=color:#f92672>[</span>9db373920bbf52979cdf87c2ec6dab0742dbc429d99884ccd4b63b1671b5bc7a<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-27T00:00:05 Sat, 2025-12-27 00:00:08 <span style=color:#f92672>[</span>813ab922e5eb4f871d53174c179a8413abf26927508c5c60e55f710e599348d9<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-28T00:00:07 Sun, 2025-12-28 00:00:10 <span style=color:#f92672>[</span>eec9ad20cea37916db47f3d89782b135d45947518463c02ec1d743077a68c98c<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-29T00:00:07 Mon, 2025-12-29 00:00:11 <span style=color:#f92672>[</span>b0501a933329191e60034aec10758c269230763495dd7bfbdb2a4589479c59dc<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-30T00:00:05 Tue, 2025-12-30 00:00:08 <span style=color:#f92672>[</span>f48f4dd94ab683885494f0573c6ca9aabde5f4693f2782872874f6cbb95efe40<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2025-12-31T00:00:07 Wed, 2025-12-31 00:00:10 <span style=color:#f92672>[</span>d4c9e4b107d2afd8fff9a9ac604b32e06e5ca6c0e82a70e4c3dadcc3ed2d31c5<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>metropolis-postgres-2026-01-01T00:00:07 Thu, 2026-01-01 00:00:10 <span style=color:#f92672>[</span>85364a08beb327edf646b3131eeeb57854a462c6f06d2ac0c9040037edc802ac<span style=color:#f92672>]</span>
+</span></span></code></pre></div><p>Any of these backups can be restored in different ways via the <code>borg</code> client: <code>extract</code>, <code>mount</code> or <code>export-tar</code>. In the <a href=#restoring-backups>Restoring backups</a> section further down, we&rsquo;re going to explore the former.</p><h3 id=systemd-notifications>Systemd notifications</h3><p>Since most services run under systemd, robust monitoring is essential. While a full observability stack (e.g. Prometheus with <code>systemd-exporter</code> and Grafana) provides deep metrics, it is often resource-hungry.</p><p>To maintain a minimal resource footprint, we will opt for a lightweight alternative: a <a href=https://core.telegram.org/bots>Telegram Bot</a> integrated directly with systemd to provide real-time failure alerts via <code>OnFailure</code> triggers.</p><p>The picture displayed below is a failure notification example for the <code>immich-machine-learning</code> unit.</p><p><img src=../../images/immich/telegram-bot.png alt=telegram-bot></p><p>The script that interacts with Telegram&rsquo;s API and results in the message shown above is quite minimalistic.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  hostname <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>networking<span style=color:#f92672>.</span>hostName;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  telegram-script <span style=color:#f92672>=</span> { tpe <span style=color:#f92672>?</span> <span style=color:#e6db74>&#34;system&#34;</span> }: pkgs<span style=color:#f92672>.</span>writeShellScriptBin <span style=color:#e6db74>&#34;run&#34;</span> <span style=color:#e6db74>&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    TELEGRAM_CHAT_ID=$(cat /run/agenix/telegram-chat-id | tr -d &#39;\n&#39;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    TELEGRAM_TOKEN=$(cat /run/agenix/telegram-token | tr -d &#39;\n&#39;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    UNIT_NAME=$1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    LOGS=$(</span><span style=color:#e6db74>${</span>pkgs<span style=color:#f92672>.</span>systemd<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/journalctl --</span><span style=color:#e6db74>${</span>tpe<span style=color:#e6db74>}</span><span style=color:#e6db74> -u &#34;$UNIT_NAME&#34; -n 15 --no-hostname --no-pager)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    MESSAGE=&#34;⚠️ Service Failure @ \`</span><span style=color:#e6db74>${</span>hostname<span style=color:#e6db74>}</span><span style=color:#e6db74>\` ☠️
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    Service: $UNIT_NAME
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    Recent Logs:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    \`\`\`
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    $LOGS
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    \`\`\`&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    </span><span style=color:#e6db74>${</span>pkgs<span style=color:#f92672>.</span>curl<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/curl -s -X POST &#34;https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      -d chat_id=&#34;$TELEGRAM_CHAT_ID&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      --data-urlencode &#34;text=$MESSAGE&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      -d parse_mode=&#34;Markdown&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  &#39;&#39;</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>All specified systemd units will have set up this notification script on failure via a custom NixOS module.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> lib<span style=color:#f92672>,</span> pkgs<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>systemd<span style=color:#f92672>.</span>monitoring;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  systemNotifications <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;notify-telegram-system-fail@&#34;</span>;
+</span></span><span style=display:flex><span>  userNotifications <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;notify-telegram-user-fail@&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  options<span style=color:#f92672>.</span>systemd<span style=color:#f92672>.</span>monitoring <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    enable <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkEnableOption <span style=color:#e6db74>&#34;Enable systemd service failure notifications via the Telegram API&#34;</span>;
+</span></span><span style=display:flex><span>    user<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>      type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>listOf lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>      default <span style=color:#f92672>=</span> [ ];
+</span></span><span style=display:flex><span>      description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;List of user-level services to enable failure notifications for.&#34;</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>    system<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>      type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>listOf lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>      default <span style=color:#f92672>=</span> [ ];
+</span></span><span style=display:flex><span>      description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;List of system-level services to enable failure notifications for.&#34;</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  config <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkIf cfg<span style=color:#f92672>.</span>enable {
+</span></span><span style=display:flex><span>    systemd<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>genAttrs cfg<span style=color:#f92672>.</span>system<span style=color:#f92672>.</span>services
+</span></span><span style=display:flex><span>      (name: {
+</span></span><span style=display:flex><span>        unitConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          OnFailure <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkDefault <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>systemNotifications<span style=color:#e6db74>}</span><span style=color:#e6db74>%n&#34;</span>;
+</span></span><span style=display:flex><span>          DefaultDependencies <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>          After <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;network-online.target&#34;</span> ];
+</span></span><span style=display:flex><span>          StartLimitIntervalSec <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkDefault <span style=color:#ae81ff>300</span>;
+</span></span><span style=display:flex><span>          StartLimitBurst <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkDefault <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      }) <span style=color:#f92672>//</span> {
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>systemNotifications<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;System-level Telegram notification for service %i&#34;</span>;
+</span></span><span style=display:flex><span>        serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>          ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>telegram-script {}<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run %i&#34;</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    systemd<span style=color:#f92672>.</span>user<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>genAttrs cfg<span style=color:#f92672>.</span>user<span style=color:#f92672>.</span>services
+</span></span><span style=display:flex><span>      (name: {
+</span></span><span style=display:flex><span>        unitConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          OnFailure <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkDefault <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>userNotifications<span style=color:#e6db74>}</span><span style=color:#e6db74>%n&#34;</span>;
+</span></span><span style=display:flex><span>          DefaultDependencies <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>          After <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;network-online.target&#34;</span> ];
+</span></span><span style=display:flex><span>          StartLimitIntervalSec <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkDefault <span style=color:#ae81ff>300</span>;
+</span></span><span style=display:flex><span>          StartLimitBurst <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkDefault <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      }) <span style=color:#f92672>//</span> {
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>userNotifications<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;User-level Telegram notification for service %i&#34;</span>;
+</span></span><span style=display:flex><span>        serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>          ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>telegram-script { tpe <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;user&#34;</span>; }<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run %i&#34;</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Initially, I had a simpler approach where every single systemd service was configured to receive notifications on failure, but I later realized there are a lot of systemd units declared by NixOS for which I wouldn&rsquo;t want to receive notifications. So, while this is a bit more manual, I find it more granular and easier to maintain.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>monitoring <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>    disk<span style=color:#f92672>.</span>threshold <span style=color:#f92672>=</span> <span style=color:#ae81ff>80</span>;
+</span></span><span style=display:flex><span>    user<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> [ ];
+</span></span><span style=display:flex><span>    system<span style=color:#f92672>.</span>services <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;borgbackup-job-immich-s3-media&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;borgbackup-job-postgres&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;immich-machine-learning&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;immich-server&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;postgresql&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;postgresql-backup&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;redis-immich&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;s3-replica&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;s3ql-fs&#34;</span>
+</span></span><span style=display:flex><span>      <span style=color:#e6db74>&#34;s3ql-mount&#34;</span>
+</span></span><span style=display:flex><span>    ];
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Last but not least, I also set up another service that <em>monitors disk usage</em> via the <code>df</code> command and sends a warning over Telegram when it&rsquo;s over the specified threshold (default to 80%).</p><h2 id=google-photos-migration>Google Photos migration</h2><p>I mentioned at the start of this blogpost that I&rsquo;ve found <a href=https://github.com/simulot/immich-go>immich-go</a> to be very reliable to import Google Photos data, so I would like to share more details about my experience with the process.</p><p><img src=../../images/immich/immich-go.png alt=immich-go></p><p>The command I ran to migrate <strong>384 GBs</strong> of compressed data is more or less the suggested one from the <a href=https://github.com/simulot/immich-go/blob/main/docs/best-practices.md#google-photos-migration>docs</a>.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  packages<span style=color:#f92672>.</span><span style=color:#e6db74>${</span>system<span style=color:#e6db74>}</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    google-migration <span style=color:#f92672>=</span> pkgs<span style=color:#f92672>.</span>writeShellScriptBin <span style=color:#e6db74>&#34;takeout-migration&#34;</span> <span style=color:#e6db74>&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      </span><span style=color:#e6db74>${</span>pkgs<span style=color:#f92672>.</span>immich-go<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/immich-go upload from-google-photos \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --server $IMMICH_SERVER \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --api-key $IMMICH_API_KEY \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --concurrent-tasks 8 \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --client-timeout 60m \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --pause-immich-jobs=true \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --on-errors continue \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --session-tag \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        --include-unmatched \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        $1
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &#39;&#39;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Besides the two environment variables (the API key needs to be created in the Immich Web UI), we need to specify the directory where we stored the <code>zip</code> files we&rsquo;ve got from <a href=https://takeout.google.com>Google Takeout</a>.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ nix run .#google-migration -- ~/Downloads/google-photos/takeout-*.zip
+</span></span></code></pre></div><p>However, before I went through it, I did a few test runs with smaller datasets to get a better understanding of the process. I learned that if you&rsquo;re migrating multiple albums, the import process will result in multiple errors on the first run, but don&rsquo;t panic just yet! It all works out just fine by re-running the process; <em>the operations are idempotent</em>.</p><p>Also, before running the final migration, I wanted to make sure everything was set up correctly: from the S3QL file system to the services and the many backup jobs. So far, I&rsquo;m pretty happy with the results!</p><p><img src=../../images/immich/immich-stats.png alt=immich-stats></p><p>For some reason the UI shows 256 GBs in one place, and 293 GBs in another; not sure what&rsquo;s the reason for that discrepancy. In any case, the S3QL file system provides this information too.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>$ sudo s3qlstat /mnt/s3ql
+</span></span><span style=display:flex><span>Directory entries:    264278
+</span></span><span style=display:flex><span>Inodes:               264280
+</span></span><span style=display:flex><span>Data objects:         440142
+</span></span><span style=display:flex><span>Total data size:      293 GiB
+</span></span><span style=display:flex><span>After de-duplication: 293 GiB (99.97% of total)
+</span></span><span style=display:flex><span>After compression:    287 GiB (97.76% of total, 97.79% of de-duplicated)
+</span></span><span style=display:flex><span>Database size:        88.2 MiB (uncompressed)
+</span></span><span style=display:flex><span>Cache size:           46.3 MiB, 257 entries
+</span></span><span style=display:flex><span>Cache size (dirty):   0 bytes, 0 entries
+</span></span><span style=display:flex><span>Queued object removals: 0
+</span></span></code></pre></div><p>The initial 384 GBs have been significantly reduced through two layers of optimization: initial de-duplication during the import process, followed by the native compression and de-duplication provided by the S3QL filesystem.</p><h2 id=disaster-recovery>Disaster recovery</h2><p>It&rsquo;s highly advisable to periodically exercise a full disaster recovery validation on a fresh install, which will keep us honest and ensure our process is rock solid. It&rsquo;s going to cost us a few extra bucks $$ to run these tests, but it&rsquo;s all worth it.</p><p>We&rsquo;ll start by creating a new server on Hetzner with the default values (Ubuntu image is fine), followed by creating a new S3 bucket, which is usually included in the <a href=https://docs.hetzner.com/storage/object-storage/overview/#pricing>monthly base price</a>, so it shouldn&rsquo;t incur extra charges.</p><p>Once the machine is on (remember to set up the SSH key), we&rsquo;ll use <a href=https://github.com/nix-community/nixos-anywhere/>nixos-anywhere</a> to install NixOS on it.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>nix run github:nix-community/nixos-anywhere -- --flake .#mini-metropolis root@&lt;IP_ADDRESS&gt;
+</span></span></code></pre></div><p>This assumes our NixOS configuration is properly set up to run on a new machine. It&rsquo;s going to differ from the production configuration, so we&rsquo;ll set up a <code>mini-metropolis</code> host for this purpose.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  imports <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>../../metropolis/services/immich.nix</span>
+</span></span><span style=display:flex><span>  ];
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  services<span style=color:#f92672>.</span>tailscale<span style=color:#f92672>.</span>enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>monitoring<span style=color:#f92672>.</span>enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  services<span style=color:#f92672>.</span>s3ql <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    settings <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      bucket <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3c://hel1.your-objectstorage.com/test-immich/s3ql&#34;</span>;
+</span></span><span style=display:flex><span>        name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hzfi&#34;</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>      cache <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        directory <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/root/.s3ql&#34;</span>;
+</span></span><span style=display:flex><span>        size <span style=color:#f92672>=</span> <span style=color:#ae81ff>20000000</span>; <span style=color:#75715e># 20 GBs</span>
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>      mountpoint <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/mnt/s3ql&#34;</span>;
+</span></span><span style=display:flex><span>      skipMkfs <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>; <span style=color:#75715e># only fsck is needed on restoration</span>
+</span></span><span style=display:flex><span>      threads <span style=color:#f92672>=</span> <span style=color:#ae81ff>16</span>;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The main purpose of the new install is to exercise all the different restoration methods:</p><ol><li>Mount the S3QL file system by relying on the remote S3 bucket data.<ul><li>We can use <code>mc mirror</code> to replicate it to our test bucket.</li><li>Restore the Postgres backup from Borg and run it on our database instance.</li></ul></li><li>Populate the S3QL file system with the Borg media backup.<ul><li>We rely on a new S3 bucket that can be later mounted on the new machine.</li><li>Restore the Postgres backup from Borg and run it on our database instance.</li></ul></li></ol><p>Since our main goal is to test the restoration processes, we can disable all backup jobs from our NixOS configuration. Furthermore, the initial configuration we deploy needs to have all services disabled as well.</p><h3 id=restoring-from-s3-replica>Restoring from S3 replica</h3><p>We&rsquo;re going to begin with the (arguably) easier and recommended method, which requires some of the same steps we take for running backups, starting with stopping the Immich services.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@metropolis:~<span style=color:#f92672>]</span>$ sudo systemctl stop immich-*
+</span></span></code></pre></div><p>Followed by running the same commands the <code>s3-replica</code> service runs, except we modify the target bucket.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@metropolis:~<span style=color:#f92672>]</span>$ sudo s3qlctrl flushcache /mnt/s3ql
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>admin@metropolis:~<span style=color:#f92672>]</span>$ sudo s3qlctrl backup-metadata /mnt/s3ql
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>admin@metropolis:~<span style=color:#f92672>]</span>$ mc mirror --overwrite --retry --summary hzfi/source hzfi/test-bucket
+</span></span><span style=display:flex><span>┌────────────┬─────────────┬──────────┬──────────────┐
+</span></span><span style=display:flex><span>│ Total      │ Transferred │ Duration │ Speed        │
+</span></span><span style=display:flex><span>│ 287.69 GiB │ 287.69 GiB  │ 18m24s   │ 266.82 MiB/s │
+</span></span><span style=display:flex><span>└────────────┴─────────────┴──────────┴──────────────┘
+</span></span></code></pre></div><p>Next step is to get the PostgreSQL backup made by Borg over to the new machine, which is possible to achieve in different ways &mdash; We&rsquo;re going to leverage the Tailscale mesh and do it directly in <code>mini-metropolis</code>.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>[admin@mini:~]$ export BORG_REPO<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;ssh://admin@cubi/data/backups/immich/postgres&#34;</span>
+</span></span><span style=display:flex><span>[admin@mini:~]$ export BORG_RSH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;ssh -i /etc/ssh/ssh_host_ed25519_key&#34;</span>
+</span></span><span style=display:flex><span>[admin@mini:~]$ borg extract --progress ::metropolis-immich-postgres-2025-12-28T00:00:05
+</span></span><span style=display:flex><span>[admin@mini:~]$ mkdir tmp <span style=color:#f92672>&amp;&amp;</span> cd tmp
+</span></span><span style=display:flex><span>[admin@mini:~/tmp]$ borg extract <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   /data/backups/immich/postgres/::metropolis-postgres-2025-12-28T00:00:05
+</span></span></code></pre></div><p>The backup name can be found via <code>borg list</code> in the machine where all of them are stored (Cubi in this case). Once we have the backup data ready to be restored, we can proceed with enabling all of our services &mdash; especially S3QL, which will take care of recovering the file system from the remote S3 bucket.</p><p>Before moving on, we must ensure the S3QL file system has been mounted correctly.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>[admin@mini:~]$ df -h
+</span></span><span style=display:flex><span>Filesystem                                          Size  Used Avail Use% Mounted on
+</span></span><span style=display:flex><span>devtmpfs                                            388M     0  388M   0% /dev
+</span></span><span style=display:flex><span>tmpfs                                               3.8G     0  3.8G   0% /dev/shm
+</span></span><span style=display:flex><span>tmpfs                                               1.9G  3.3M  1.9G   1% /run
+</span></span><span style=display:flex><span>/dev/sda3                                            75G  3.4G   67G   5% /
+</span></span><span style=display:flex><span>tmpfs                                               3.8G  1.1M  3.8G   1% /run/wrappers
+</span></span><span style=display:flex><span>/dev/sda2                                           511M   42M  470M   9% /boot
+</span></span><span style=display:flex><span>tmpfs                                               776M  4.0K  776M   1% /run/user/1000
+</span></span><span style=display:flex><span>s3c://nbg1.your-objectstorage.com/test-immich/s3ql  1.0T  286G  739G  28% /mnt/s3ql
+</span></span></code></pre></div><p>Once we&rsquo;re through this, we&rsquo;re ready to restore the PostgreSQL backup in our database.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>sudo -u postgres psql -c &#34;DROP DATABASE IF EXISTS immich;&#34;
+</span></span><span style=display:flex><span>sudo -u postgres psql -c &#34;CREATE DATABASE immich;&#34;
+</span></span><span style=display:flex><span>sudo -u postgres psql -d immich -c &#34;DROP SCHEMA public CASCADE; CREATE SCHEMA public;&#34;
+</span></span><span style=display:flex><span>sudo -u postgres psql -d immich -f /path/to/&lt;full_backup_date&gt;.sql
+</span></span><span style=display:flex><span>sudo -u postgres psql -d immich -c &#34;ALTER SCHEMA vectors OWNER TO immich;&#34;
+</span></span><span style=display:flex><span>sudo -u postgres psql -d immich -c &#34;ALTER SCHEMA public OWNER TO immich;&#34;
+</span></span></code></pre></div><p>While not strictly necessary, we restart the PostgreSQL service to ensure all changes take effect.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>[admin@mini:~]$ sudo systemctl restart postgresql
+</span></span></code></pre></div><p>Having just recovered our S3QL file system from the S3 bucket, Immich will likely still fail because of the missing <code>.immich</code> files (as the metadata is cleared via <code>fsck.s3ql --force-remote</code>).</p><p>To fix it, we recreate those &ldquo;sentinel&rdquo; files before restarting the Immich server.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#66d9ef>for</span> f in library upload thumbs encoded-video profile backups; <span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>  sudo mkdir -p /mnt/s3ql/immich/$f
+</span></span><span style=display:flex><span>  sudo touch /mnt/s3ql/immich/$f/.immich
+</span></span><span style=display:flex><span><span style=color:#66d9ef>done</span>
+</span></span><span style=display:flex><span>sudo chown -R immich:immich /mnt/s3ql/immich
+</span></span></code></pre></div><p>At last, we restart the Immich service and everything should be good!</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-console data-lang=console><span style=display:flex><span>[admin@mini:~]$ sudo systemctl restart immich-server
+</span></span></code></pre></div><p>The ultimate check should be done in the Immich Web UI. Thumbnails should be rendered and we should be able to see photos and play videos. If all that works, we&rsquo;re done here! 🥳</p><p>Reflecting on this exercise, I would highly recommend not skipping it; only by going through it, I discovered multiple flaws in my setup. We still have to test the second method, though, which involves Borg backups directly.</p><h3 id=restoring-from-borg-backups>Restoring from Borg backups</h3><p>Besides the S3 replica bucket, we have a third copy of our media data backed up by Borg backup jobs in the Cubi machine. In order to restore the latest backup, we have two main options here:</p><ol><li>Extract it in the Mini host connected to Cubi via SSH.</li><li>Extract it directly in the Cubi host.</li></ol><p>In both cases, we&rsquo;ll need to create the S3QL file system pointing to a new S3 bucket and mount it, i.e.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@cubi:~<span style=color:#f92672>]</span>$ mkfs.s3ql s3c://hel1.your-objectstorage.com/immich4/s3ql --authfile s3ql-auth
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@cubi:~<span style=color:#f92672>]</span>$ mkdir -p /mnt/s3ql
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@cubi:~<span style=color:#f92672>]</span>$ mount.s3ql <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   --allow-other <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   --cachedir /root/s3ql-recovery <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   --cachesize <span style=color:#ae81ff>20000000</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   --authfile s3ql-auth <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   s3c://hel1.your-objectstorage.com/immich4/s3ql /mnt/s3ql
+</span></span><span style=display:flex><span>Using <span style=color:#ae81ff>10</span> upload threads.
+</span></span><span style=display:flex><span>Autodetected <span style=color:#ae81ff>524226</span> file descriptors available <span style=color:#66d9ef>for</span> cache entries
+</span></span><span style=display:flex><span>Downloading metadata...
+</span></span><span style=display:flex><span>Downloaded 1/1 metadata blocks <span style=color:#f92672>(</span>100%<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>Mounting s3c://hel1.your-objectstorage.com/immich4/s3ql at /mnt/s3ql...
+</span></span></code></pre></div><p>Both approaches can take a long time to restore a large file system, so the S3 replica bucket will always be the first recommended approach. Having said that, we&rsquo;ll exercise our second option and do it directly in the Cubi host, which consists of extracting the latest backup made by Borg directly in the S3QL mount point.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@cubi:~<span style=color:#f92672>]</span>$ cd /mnt/s3ql
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@cubi:/mnt/s3ql<span style=color:#f92672>]</span>$ borg extract --progress <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>   /data/backups/immich/s3-media/::metropolis-immich-s3-media-2025-12-27T00:00:05
+</span></span><span style=display:flex><span>Enter passphrase <span style=color:#66d9ef>for</span> key /data/backups/immich/s3-media:
+</span></span><span style=display:flex><span>  0.4% Extracting: mnt/s3ql/immich/encoded-video/7730770f-aaa3-4002-9e2d-8eb3a283f278/4e/df/4edf459d-a469-47ea-a99e-1ade31e3dfba.mp4
+</span></span></code></pre></div><p>Despite the many hours it may take &mdash; it took me about 20 hours for an S3QL file system of ~293 GBs &mdash; it&rsquo;s the second most effective approach for the following reasons:</p><ul><li><strong>Efficiency</strong>: we only extract the data from the latest archive, not the entire history of the Borg repository.</li><li><strong>Integrity</strong>: Borg handles the decryption and decompression on the fly as it writes to the S3QL file system.</li><li><strong>No Local Space Needed(*)</strong>: the data goes straight from the network into the S3QL cache and then to the cloud.</li></ul><p><strong>(*)</strong> We do need local storage for the S3QL cache size, which needs to be set accordingly (20 GBs in our example). Once the Borg media backup has completed the extraction and we have verified the S3 bucket has the expected size, we&rsquo;ll unmount the file system from Cubi.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>admin@cubi:~<span style=color:#f92672>]</span>$ sudo umount.s3ql /mnt/s3ql
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>admin@cubi:~<span style=color:#f92672>]</span>$ sudo fusermount -uz /mnt/s3ql
+</span></span></code></pre></div><p>We can now update the S3QL settings for the Mini machine to use the new S3 bucket and redeploy.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>  s3ql<span style=color:#f92672>.</span>settings <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    bucket<span style=color:#f92672>.</span>url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;s3c://hel1.your-objectstorage.com/immich4/s3ql&#34;</span>;
+</span></span><span style=display:flex><span>    mountpoint <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/mnt/s3ql&#34;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Beware that when mounting an S3 bucket that has been populated from the Borg backup, we&rsquo;ll more likely to find a nested directory data structure such as <code>/mnt/s3ql/mnt/s3ql/immich</code>, so that needs to be addressed first.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@mini:~<span style=color:#f92672>]</span><span style=color:#75715e># cd /mnt/s3ql</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@mini:~<span style=color:#f92672>]</span><span style=color:#75715e># mv mnt/s3ql/* .</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>root@mini:~<span style=color:#f92672>]</span><span style=color:#75715e># rm -rf mnt</span>
+</span></span></code></pre></div><p>Once we ensure the file system is correctly mounted, we stop the Immich services one more time.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#f92672>[</span>root@mini:~<span style=color:#f92672>]</span><span style=color:#75715e># systemctl stop immich-*</span>
+</span></span></code></pre></div><p>Ultimately, we must also restore the PostgreSQL backup corresponding to the same date (see the previous section for instructions), restart the Immich server and we are done! 🛸</p><h2 id=final-thoughts>Final Thoughts</h2><p>Well that&rsquo;s been quite the journey! Eventually, the technical challenge was too compelling to resist 🤓</p><p>Immich keeps growing on me, so I purchased a <a href=https://buy.immich.app/>server license</a> to support its ongoing development. The Android app is equally impressive — it’s robust and offers the closest experience to the Google Photos UI/UX currently available.</p><p><img src=../../images/immich/immich-supporter.png alt=supporter></p><p>I have been daily-driving it for a few weeks now, and every day I&rsquo;m more confident it&rsquo;s here to stay.</p><p>Full disclosure: <em>I haven&rsquo;t ditched Google Photos yet</em>, but it is inevitable.</p><p>My annual subscription plan is valid until August 2026, so that gives me plenty of time to stress-test Immich Photos on S3QL and validate the system&rsquo;s long-term reliability before the final cut off.</p><p>Closing out this post by sharing one more memory, peace out ✌️</p><p><img src=../../images/immich/alakul.jpg alt=alakul>
+<em>Snap from a 2025 hike in Ala Kul (Ала-көл), Kyrgyzstan 🇰🇬 &mdash; up at 3,920 meters</em></p><p>Best,
+Gabriel.</p></div><div id=gh-comments><div id=gh-comments-list></div></div><script src=https://code.jquery.com/jquery-3.2.1.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://gvolpe.com/js/github-comments.js></script><script type=text/javascript>DoGithubComments("gvolpe/blog-comments","35")</script><noscript>Please enable JavaScript to view comments.</noscript><div class=related-posts><h3>Related Content</h3><div class=related-grid><div class=related-post><h4><a href=https://gvolpe.com/blog/niri/>The perfect tiling window manager</a></h4><div class=related-meta>2025.09.14 •
+📚📚📚 3 min read</div></div><div class=related-post><h4><a href=https://gvolpe.com/blog/unison-forex/>Unison: Forex API & Caching</a></h4><div class=related-meta>2025.05.11 •
+📚📚📚📚📚 17 min read</div></div><div class=related-post><h4><a href=https://gvolpe.com/blog/home-manager-dotfiles-management/>Home Manager: dotfiles management</a></h4><div class=related-meta>2024.12.17 •
+📚📚📚📚📚 11 min read</div></div></div></div><nav class=post-navigation><div class=nav-previous><span class=nav-label>← Previous</span>
+<a href=https://gvolpe.com/blog/niri/ class=nav-title>The perfect tiling window manager</a></div><div></div></nav></article><aside class=sidebar><nav class=toc><h4>Contents</h4><div id=toc-content></div></nav></aside></div></div></div></main><script src=https://gvolpe.com/js/email.js></script><script src=https://gvolpe.com/js/main.js></script></body></html>

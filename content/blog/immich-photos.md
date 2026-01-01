@@ -692,7 +692,7 @@ metropolis-postgres-2025-12-31T00:00:07 Wed, 2025-12-31 00:00:10 [d4c9e4b107d2af
 metropolis-postgres-2026-01-01T00:00:07 Thu, 2026-01-01 00:00:10 [85364a08beb327edf646b3131eeeb57854a462c6f06d2ac0c9040037edc802ac]
 ```
 
-Any of these backups can be restored in different ways via the `borg` client: `extract`, `mount` or `export-tar`. In the [Restoring backups](#restoring-backups) section further down, we're going to explore the former.
+Any of these backups can be restored in different ways via the `borg` client: `extract`, `mount` or `export-tar`. In the [Disaster recovery](#disaster-recovery) section further down, we're going to explore the former.
 
 ### Systemd notifications
 
@@ -1103,7 +1103,7 @@ Once we ensure the file system is correctly mounted, we stop the Immich services
 
 Ultimately, we must also restore the PostgreSQL backup corresponding to the same date (see the previous section for instructions), restart the Immich server and we are done! 🛸
 
-## Final Thoughts
+## Final thoughts
 
 Well that's been quite the journey! Eventually, the technical challenge was too compelling to resist 🤓
 

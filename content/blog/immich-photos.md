@@ -70,6 +70,7 @@ in
         locations = {
           "/" = {
             proxyPass = "http://localhost:${toString port}";
+            proxyWebsockets = true;
           };
         };
       };

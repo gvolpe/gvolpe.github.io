@@ -66,8 +66,8 @@
     --bg-secondary: rgba(255, 255, 255, 0.85);
     --bg-card: rgba(255, 255, 255, 0.9);
     --accent-primary: #FF006B;
-    --accent-secondary: #00CED1;
-    --accent-tertiary: #FF7F50;
+    --accent-secondary: #0033FF;
+    --accent-tertiary: #EB541C;
     --text-primary: #2D1B4E;
     --text-secondary: #5A4B7C;
     --text-muted: #8B7BA8;
@@ -1206,14 +1206,19 @@ a.post-tag {
     font-size: 1.05rem;
 }
 
-.post-body ul, .post-body ol {
-    margin: 1.5rem 0;
+.post-body ul, ol, li {
+    margin: 0.2rem 0;
     padding-left: 2rem;
 }
 
 .post-body li {
-    margin-bottom: 0.5rem;
+    line-height: 1.6rem;
     color: var(--text-secondary);
+}
+
+.post-body > ul,
+.post-body > ol {
+    margin-bottom: 2rem;
 }
 
 .post-body strong {
@@ -1225,6 +1230,10 @@ a.post-tag {
     color: var(--accent-primary);
     font-style: normal;
     font-weight: 500;
+}
+
+.post-body a {
+    color: var(--accent-secondary);
 }
 
 /* Local video container */
@@ -2247,19 +2256,19 @@ footer {
 @media (max-width: 768px) {
     .highlight pre {
         padding: 3.5rem 0.75rem 0.75rem 0.75rem;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
     }
 
     .highlight::before {
         padding: 0.6rem 0.75rem;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
     }
 
     .highlight::after {
         top: 0.5rem;
         right: 0.75rem;
         padding: 0.3rem 0.6rem;
-        font-size: 0.75rem;
+        font-size: 0.65rem;
     }
 }
 

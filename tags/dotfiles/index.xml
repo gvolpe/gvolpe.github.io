@@ -2,11 +2,11 @@
 &lt;p&gt;Quoting the official description from their &lt;a href="https://github.com/nix-community/home-manager/"&gt;website&lt;/a&gt;:&lt;/p&gt;
 &lt;style&gt;
 .quote::before {
- content: "📜";
+ content: var(--quote-emoji);
 }
 &lt;/style&gt;
 
-&lt;div class="quote"&gt;
+&lt;div class="quote" style="--quote-emoji: '📜';"&gt;
  &lt;h4&gt;Home Manager&lt;/h4&gt;
  &lt;p&gt;
 "This project provides a basic system for managing a user environment using the Nix package manager together with the Nix libraries found in Nixpkgs. It allows declarative configuration of user specific (non-global) packages and dotfiles."

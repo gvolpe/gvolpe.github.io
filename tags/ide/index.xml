@@ -2,11 +2,11 @@
 &lt;p&gt;Quoting the &lt;a href="https://github.com/digital-asset/ghcide"&gt;Ghcide&lt;/a&gt; repository, it is defined as:&lt;/p&gt;
 &lt;style&gt;
 .quote::before {
- content: "📜";
+ content: var(--quote-emoji);
 }
 &lt;/style&gt;
 
-&lt;div class="quote"&gt;
+&lt;div class="quote" style="--quote-emoji: '📜';"&gt;
  &lt;h4&gt;Quote&lt;/h4&gt;
  &lt;p&gt;
 "A library for building Haskell IDE tooling"

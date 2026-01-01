@@ -2,11 +2,11 @@
 &lt;p&gt;Here&amp;rsquo;s what the &lt;a href="https://nixos.org/manual/nix/stable/advanced-topics/distributed-builds.html"&gt;NixOS official documentation&lt;/a&gt; has to say on the topic:&lt;/p&gt;
 &lt;style&gt;
 .quote::before {
- content: "📜";
+ content: var(--quote-emoji);
 }
 &lt;/style&gt;
 
-&lt;div class="quote"&gt;
+&lt;div class="quote" style="--quote-emoji: '📜';"&gt;
  &lt;h4&gt;Remote Builds&lt;/h4&gt;
  &lt;p&gt;
 "Nix supports remote builds, where a local Nix installation can forward Nix builds to other machines. This allows multiple builds to be performed in parallel and allows Nix to perform multi-platform builds in a semi-transparent way. For instance, if you perform a build for a &lt;code&gt;86_64-darwin&lt;/code&gt; on an &lt;code&gt;i686-linux&lt;/code&gt; machine, Nix can automatically forward the build to a &lt;code&gt;x86_64-darwin&lt;/code&gt; machine, if available."

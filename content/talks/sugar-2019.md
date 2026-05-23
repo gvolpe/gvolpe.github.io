@@ -5,7 +5,7 @@ type: meetup
 tags: ["scala", "argentina"]
 ---
 
-Discussing excerpts from my book [Practical FP in Scala](leanpub.com/pfp-scala) back in my hometown.
+Discussing excerpts from my book [Practical FP in Scala](https://leanpub.com/pfp-scala) back in my hometown.
 
 {{< thumbnail "../../images/talks/sugar.png" >}}
 

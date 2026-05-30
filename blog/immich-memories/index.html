@@ -1,0 +1,174 @@
+<!doctype html><html lang=en-us data-theme=light><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=https://gvolpe.com/images/favicon.png><title>Immich Memories Notifications - Gabriel Volpe</title><meta name=description content="One of the most beloved features Immich offers (also Google Photos) is memories. It temporarily transports us back in time to cherish our old precious photos …"><meta property="og:title" content="Immich Memories Notifications"><meta property="og:description" content="One of the most beloved features Immich offers (also Google Photos) is memories. It temporarily transports us back in time to cherish our old precious photos …"><meta property="og:type" content="article"><meta property="og:url" content="https://gvolpe.com/blog/immich-memories/"><meta property="og:site_name" content="Gabriel Volpe"><meta name=twitter:card content="summary_large_image"><meta name=twitter:title content="Immich Memories Notifications"><meta name=twitter:description content="One of the most beloved features Immich offers (also Google Photos) is memories. It temporarily transports us back in time to cherish our old precious photos …"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel=stylesheet><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css crossorigin=anonymous referrerpolicy=no-referrer><link rel=stylesheet href=https://gvolpe.com/css/style.css><script defer src=https://analytics.gvolpe.com/script.js data-website-id=d1402dba-c29e-4232-abe6-159c15ae2ff7></script></head><body><main><div id=post-overlay-id class="post-overlay active"><div class=reading-progress></div><div class=post-overlay-backdrop></div><div id=post-overlay-content-id class=post-overlay-content style=position:relative;min-height:100vh;padding:0;transform:translateY(0)><div class=post-overlay-header><div class=post-overlay-title><a href=/ class=overlay-site-title>Gabriel Volpe</a></div><button class=post-overlay-close aria-label="Close post" onclick='window.location.href="/"'>
+<i class="fas fa-times"></i></button></div><div class=post-layout><article class=post-content><header class=post-header><div class=post-meta><span class=post-date>2026.05.30</span><div class=reading-time-post><span class=coffee-cups>📚📚📚📚📚
+</span><span>5 min read</span></div></div><h1 class=post-title>Immich Memories Notifications</h1><div class=post-tags-header><a href=https://gvolpe.com/tags/cloud class=post-tag>cloud</a>
+<a href=https://gvolpe.com/tags/immich class=post-tag>immich</a>
+<a href=https://gvolpe.com/tags/nixos class=post-tag>nixos</a>
+<a href=https://gvolpe.com/tags/ntfy class=post-tag>ntfy</a></div></header><div class=post-body><p>One of the most beloved features <a href=../immich-photos>Immich</a> offers (also Google Photos) is <em>memories</em>. It temporarily transports us back in time to cherish our old precious photos and videos once again. However, we need to remember to open the app on a daily basis to do so &mdash; there&rsquo;s no baked in notification system that would remind us.</p><p>This is another <a href=https://github.com/immich-app/immich/discussions/3981>heavily-requested feature</a>, and if you check out that discussion, you&rsquo;ll find a couple of vibe-coded solutions like <a href=https://github.com/james-maschal/Immich-Memories-Notification>this python script</a> or <a href=https://github.com/ismaildakrory/immich-memories-notify>this dockerized application</a>. None of them felt right to me, though.</p><p>So after living without this feature for the past few months, I finally found the time and energy to tackle the issue, and I&rsquo;d like to share a custom solution that ensures we are reminded to check on our memories 👇</p><p><img src=../../images/memories/android.jpg alt=android>
+<em>Sneak peek of a custom Android push notification 🤖</em></p><p>Does this pick your interest? Keep on reading :)</p><h2 id=memories>Memories</h2><p>Notifications must support multiple users in my case, so I&rsquo;ve created NixOS module that can be used as follows.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  notifications<span style=color:#f92672>.</span>immich-memories <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>    domain <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;immich.app&#34;</span>;
+</span></span><span style=display:flex><span>    users <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      gab <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        apiKey <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;immich-memories-api-key&#34;</span>;
+</span></span><span style=display:flex><span>        ntfy<span style=color:#f92672>.</span>topic <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;immich&#34;</span>;
+</span></span><span style=display:flex><span>        schedule <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*-*-* 08:00:00&#34;</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The premise is simple enough if we look at the main script implementation.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>notifications<span style=color:#f92672>.</span>immich-memories;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  script <span style=color:#f92672>=</span> userCfg: pkgs<span style=color:#f92672>.</span>writeShellApplication {
+</span></span><span style=display:flex><span>    name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;run&#34;</span>;
+</span></span><span style=display:flex><span>    runtimeInputs <span style=color:#f92672>=</span> <span style=color:#66d9ef>with</span> pkgs; [ coreutils curl jq ];
+</span></span><span style=display:flex><span>    text <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;&#39;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      IMMICH_API_KEY=$(cat /run/agenix/</span><span style=color:#e6db74>${</span>userCfg<span style=color:#f92672>.</span>apiKey<span style=color:#e6db74>}</span><span style=color:#e6db74> | tr -d &#39;\n&#39;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      NTFY_API_TOKEN=$(cat /run/agenix/</span><span style=color:#e6db74>${</span>userCfg<span style=color:#f92672>.</span>ntfy<span style=color:#f92672>.</span>token<span style=color:#e6db74>}</span><span style=color:#e6db74> | tr -d &#39;\n&#39;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      TODAY=$(date +&#34;%Y-%m-%d&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      MEMORIES=$(curl -s \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        -H &#34;x-api-key:$IMMICH_API_KEY&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        -H &#34;Content-Type: application/json&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &#34;https://</span><span style=color:#e6db74>${</span>cfg<span style=color:#f92672>.</span>domain<span style=color:#e6db74>}</span><span style=color:#e6db74>/api/memories/statistics?for=$TODAY&#34; | jq .total)
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      if [ &#34;</span><span style=color:#ae81ff>&#39;&#39;$</span><span style=color:#e6db74>{MEMORIES:-0}&#34; -ge 1 ]; then
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        curl -s \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          -H &#34;Title: Remember this day? 📸&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          -H &#34;Click: immich://open&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          -H &#34;Authorization: Bearer $NTFY_API_TOKEN&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          -d &#34;You have $MEMORIES memories available 🤩&#34; \
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>          </span><span style=color:#e6db74>${</span>config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>ntfy-sh<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>base-url<span style=color:#e6db74>}</span><span style=color:#e6db74>/</span><span style=color:#e6db74>${</span>userCfg<span style=color:#f92672>.</span>ntfy<span style=color:#f92672>.</span>topic<span style=color:#e6db74>}</span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>      fi
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>    &#39;&#39;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span> { }
+</span></span></code></pre></div><p>It queries the <a href=https://api.immich.app/endpoints/memories>Immich Memories API</a> to check whether we have any memories available (it requires an API key with <code>memory.statistics</code> permissions), and if that&rsquo;s the case, it sends a push notification via the <a href=https://github.com/binwiederhier/ntfy>ntfy-sh</a> service.</p><p>This job is then triggered on a daily basis via standard systemd timers.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  config <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkIf (cfg<span style=color:#f92672>.</span>enable <span style=color:#f92672>&amp;&amp;</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>ntfy-sh<span style=color:#f92672>.</span>enable) {
+</span></span><span style=display:flex><span>    systemd <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>concatMapAttrs
+</span></span><span style=display:flex><span>      (name: userCfg: {
+</span></span><span style=display:flex><span>        services<span style=color:#f92672>.</span><span style=color:#e6db74>&#34;immich-memories-notification-</span><span style=color:#e6db74>${</span>name<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Immich Memories Notification for </span><span style=color:#e6db74>${</span>name<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>;
+</span></span><span style=display:flex><span>          after <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;ntfy-sh.service&#34;</span> ];
+</span></span><span style=display:flex><span>          serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;oneshot&#34;</span>;
+</span></span><span style=display:flex><span>            ExecStart <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>script userCfg<span style=color:#e6db74>}</span><span style=color:#e6db74>/bin/run&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        timers<span style=color:#f92672>.</span><span style=color:#e6db74>&#34;immich-memories-notification-trigger-</span><span style=color:#e6db74>${</span>name<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Run Immich Memories Notification check daily for </span><span style=color:#e6db74>${</span>name<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>;
+</span></span><span style=display:flex><span>          timerConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            OnCalendar <span style=color:#f92672>=</span> userCfg<span style=color:#f92672>.</span>schedule;
+</span></span><span style=display:flex><span>            Unit <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;immich-memories-notification-</span><span style=color:#e6db74>${</span>name<span style=color:#e6db74>}</span><span style=color:#e6db74>.service&#34;</span>;
+</span></span><span style=display:flex><span>          };
+</span></span><span style=display:flex><span>          wantedBy <span style=color:#f92672>=</span> [ <span style=color:#e6db74>&#34;timers.target&#34;</span> ];
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      })
+</span></span><span style=display:flex><span>      cfg<span style=color:#f92672>.</span>users;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The <code>cfg.users</code> attrset comes from the aforementioned custom NixOS module, shown below.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  options<span style=color:#f92672>.</span>notifications<span style=color:#f92672>.</span>immich-memories <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    enable <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkEnableOption <span style=color:#e6db74>&#34;Enable Immich memories notifications&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    domain <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>      description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;The domain on which immich is hosted&#34;</span>;
+</span></span><span style=display:flex><span>      type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    users <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>      type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>attrsOf (
+</span></span><span style=display:flex><span>        lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>submodule (
+</span></span><span style=display:flex><span>          { <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>          {
+</span></span><span style=display:flex><span>            options <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>              apiKey <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>                description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;The immich api key secret to be looked up under /run/agenix/&#34;</span>;
+</span></span><span style=display:flex><span>                type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>              };
+</span></span><span style=display:flex><span>              ntfy <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>                token <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>                  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;The ntfy api token secret to be looked up under /run/agenix/&#34;</span>;
+</span></span><span style=display:flex><span>                  default <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ntfy-api-token&#34;</span>;
+</span></span><span style=display:flex><span>                  type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>                };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>                topic <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>                  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;The ntfy topic to send the push notification to&#34;</span>;
+</span></span><span style=display:flex><span>                  type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>                };
+</span></span><span style=display:flex><span>              };
+</span></span><span style=display:flex><span>              schedule <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>mkOption {
+</span></span><span style=display:flex><span>                description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;The calendar time when the job needs to run (default at 8 am)&#34;</span>;
+</span></span><span style=display:flex><span>                default <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*-*-* 08:00:00&#34;</span>;
+</span></span><span style=display:flex><span>                type <span style=color:#f92672>=</span> lib<span style=color:#f92672>.</span>types<span style=color:#f92672>.</span>str;
+</span></span><span style=display:flex><span>              };
+</span></span><span style=display:flex><span>            };
+</span></span><span style=display:flex><span>          }
+</span></span><span style=display:flex><span>        ));
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The following screenshot shows the systemd service being triggered for username <code>gab</code> at 8 am UTC.</p><p><img src=../../images/memories/systemd-job.png alt=service></p><p>Did I ever mention I love NixOS? 🤩</p><h3 id=notification-service>Notification service</h3><p>Testing can be done quickly via the freely available <a href=https://ntfy.sh/>ntfy-sh</a> service. However, for real-world use you should consider self-hosting with the service behind a reverse proxy, which can&rsquo;t be any easier with NixOS.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>{ config<span style=color:#f92672>,</span> <span style=color:#f92672>...</span> }:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span>
+</span></span><span style=display:flex><span>  cfg <span style=color:#f92672>=</span> config<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>ntfy-sh<span style=color:#f92672>.</span>settings;
+</span></span><span style=display:flex><span>  domain <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;your-custom-domain.com&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>in</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>  systemd<span style=color:#f92672>.</span>services<span style=color:#f92672>.</span>ntfy-sh<span style=color:#f92672>.</span>serviceConfig <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    CacheDirectory <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ntfy-sh&#34;</span>;
+</span></span><span style=display:flex><span>    StateDirectory <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ntfy-sh&#34;</span>;
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  services <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    ntfy-sh <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      environmentFile <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/run/agenix/ntfy-env&#34;</span>;
+</span></span><span style=display:flex><span>      settings <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        listen-http <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;127.0.0.1:8080&#34;</span>;
+</span></span><span style=display:flex><span>        base-url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://</span><span style=color:#e6db74>${</span>domain<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>;
+</span></span><span style=display:flex><span>        behind-proxy <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># cache</span>
+</span></span><span style=display:flex><span>        attachment-cache-dir <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/cache/ntfy-sh/attachments&#34;</span>;
+</span></span><span style=display:flex><span>        cache-file <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/cache/ntfy-sh/cache.db&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># authentication</span>
+</span></span><span style=display:flex><span>        auth-file <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/lib/ntfy-sh/auth.db&#34;</span>;
+</span></span><span style=display:flex><span>        auth-default-access <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;deny-all&#34;</span>;
+</span></span><span style=display:flex><span>        <span style=color:#75715e># web ui auth</span>
+</span></span><span style=display:flex><span>        enable-login <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        require-login <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    nginx <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      enable <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>      virtualHosts<span style=color:#f92672>.</span><span style=color:#e6db74>${</span>domain<span style=color:#e6db74>}</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        forceSSL <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        enableACME <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        locations<span style=color:#f92672>.</span><span style=color:#e6db74>&#34;/&#34;</span> <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          proxyPass <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://</span><span style=color:#e6db74>${</span>cfg<span style=color:#f92672>.</span>listen-http<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>;
+</span></span><span style=display:flex><span>          proxyWebsockets <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span>        };
+</span></span><span style=display:flex><span>      };
+</span></span><span style=display:flex><span>    };
+</span></span><span style=display:flex><span>  };
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>The <code>environmentFile</code> option is perhaps the most relevant here; it is where we declare our admin user and available access tokens. It looks as follows (then encrypted via <a href=https://github.com/ryantm/agenix>agenix</a>):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=display:flex><span><span style=color:#a6e22e>NTFY_AUTH_USERS</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;myuser:$2b$10$HY51Myw1T/tOV6dQHFJak.7P5JohyXXojxVqt4.PQMDjEZIeAb8MC:admin&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>NTFY_AUTH_TOKENS</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;myuser:tk_8zqjy8boky0s1kogjggdq35ej0ff1&#39;</span>
+</span></span></code></pre></div><p>You can try their <a href=https://docs.ntfy.sh/config/#config-generator>config generator</a> or use the <code>ntfy</code> client to get these values.</p><h3 id=mobile-notification>Mobile notification</h3><p>We&rsquo;ve seen a sneak peek of the push notification, but know it&rsquo;s also possible to specify the icon, e.g. <a href=https://raw.githubusercontent.com/immich-app/immich/refs/heads/main/mobile/android/fastlane/metadata/android/en-US/images/icon.png>Immich Icon</a>.</p><p><img src=../../images/memories/app-icon.jpg alt=android-icon></p><p>The most important part is that when we tap on it, it opens the Immich App.</p><p><img src=../../images/memories/immich-app.jpg alt=immich></p><p>Now it took me some time to figure out the exact command to get this working as intended.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-nix data-lang=nix><span style=display:flex><span>curl <span style=color:#960050;background-color:#1e0010>-</span>s <span style=color:#960050;background-color:#1e0010>\</span>
+</span></span><span style=display:flex><span>  <span style=color:#960050;background-color:#1e0010>-</span>H <span style=color:#e6db74>&#34;Title: Remember this day? 📸&#34;</span> <span style=color:#960050;background-color:#1e0010>\</span>
+</span></span><span style=display:flex><span>  <span style=color:#960050;background-color:#1e0010>-</span>H <span style=color:#e6db74>&#34;Click: immich://open&#34;</span> <span style=color:#960050;background-color:#1e0010>\</span>
+</span></span><span style=display:flex><span>  <span style=color:#960050;background-color:#1e0010>-</span>H <span style=color:#e6db74>&#34;Authorization: Bearer $NTFY_API_TOKEN&#34;</span> <span style=color:#960050;background-color:#1e0010>\</span>
+</span></span><span style=display:flex><span>  <span style=color:#960050;background-color:#1e0010>-</span>d <span style=color:#e6db74>&#34;You have $MEMORIES memories available 🤩&#34;</span> <span style=color:#960050;background-color:#1e0010>\</span>
+</span></span><span style=display:flex><span>  <span style=color:#960050;background-color:#1e0010>$</span>{cfg<span style=color:#f92672>.</span>settings<span style=color:#f92672>.</span>base-url}<span style=color:#e6db74>/immich</span>
+</span></span></code></pre></div><p>The key was using <code>immich://open</code>, which leverages their custom URL scheme defined both for <a href=https://github.com/immich-app/immich/blob/26714f6bfe70db9b8ec776fa8897c16181eb59b1/mobile/android/app/src/main/AndroidManifest.xml#L97>Android</a> and <a href=https://github.com/immich-app/immich/blob/a838167f110deaa6c7c7c2361e01287f05219bfa/mobile/ios/Runner/Info.plist#L103>iOS</a>.</p><h2 id=closing-remarks>Closing remarks</h2><p>Immich has been great so far! I hope someone finds this little trick useful to enhance the overall experience.</p><style>.quote::before{content:var(--quote-emoji)}</style><div class=quote style="--quote-emoji:'🌈'"><h4>I'm Google Photos free!</h4><p>My subscription has now come to an end — I previously thought it was end of August, but it turns out it was end of May. I deleted about 300 GBs worth of media and uninstalled the app from my phone for good. It felt scary and liberating at the same time 🐎</p></div><p>Closing out this post by sharing a special memory from my home country &mdash; <a href="https://www.youtube.com/watch?v=UkJBS0Zazmw">time flies</a> 🥹</p><p><img src=../../images/memories/calafate.jpeg alt=glacier>
+<em>Snap from a 2016 ice trekking on Perito Moreno Glacier, Argentina 🇦🇷</em></p><p>Best,
+Gabriel.</p></div><div id=gh-comments><div id=gh-comments-list></div></div><script src=https://code.jquery.com/jquery-3.2.1.min.js integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin=anonymous></script><script src=https://gvolpe.com/js/github-comments.js></script><script type=text/javascript>DoGithubComments("gvolpe/blog-comments","36")</script><noscript>Please enable JavaScript to view comments.</noscript><div class=related-posts><h3>Related Content</h3><div class=related-grid><div class=related-post><h4><a href=https://gvolpe.com/blog/immich-photos/>Immich Photos on S3 object storage</a></h4><div class=related-meta>2026.01.01 •
+📚📚📚📚📚 31 min read</div></div><div class=related-post><h4><a href=https://gvolpe.com/blog/niri/>The perfect tiling window manager</a></h4><div class=related-meta>2025.09.14 •
+📚📚📚 3 min read</div></div><div class=related-post><h4><a href=https://gvolpe.com/blog/unison-forex/>Unison: Forex API & Caching</a></h4><div class=related-meta>2025.05.11 •
+📚📚📚📚📚 17 min read</div></div></div></div><nav class=post-navigation><div class=nav-previous><span class=nav-label>← Previous</span>
+<a href=https://gvolpe.com/blog/immich-photos/ class=nav-title>Immich Photos on S3 object storage</a></div><div></div></nav></article><aside class=sidebar><nav class=toc><h4>Contents</h4><div id=toc-content></div></nav></aside></div></div></div></main><script src=https://gvolpe.com/js/email.js></script><script src=https://gvolpe.com/js/main.js></script></body></html>

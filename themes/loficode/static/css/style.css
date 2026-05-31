@@ -76,6 +76,7 @@
     --glow-color: rgba(255, 0, 107, 0.3);
     --code-bg: rgba(45, 27, 78, 0.9);
     --code-border: rgba(255, 0, 107, 0.1);
+    --code-text: #f8f8f2;
 
     /* Button gradients */
     --btn-gradient: linear-gradient(135deg, #FF006B 0%, #FF7F50 100%);

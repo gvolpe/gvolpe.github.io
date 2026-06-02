@@ -76,26 +76,30 @@ This job is then triggered on a daily basis via standard systemd timers.
 ```nix
 {
   config = lib.mkIf (cfg.enable && config.services.ntfy-sh.enable) {
-    systemd = lib.concatMapAttrs
-      (name: userCfg: {
-        services."immich-memories-notification-${name}" = {
-          description = "Immich Memories Notification for ${name}";
-          after = [ "ntfy-sh.service" ];
-          serviceConfig = {
-            Type = "oneshot";
-            ExecStart = "${script userCfg}/bin/run";
+    systemd = lib.foldlAttrs
+      (acc: name: userCfg: {
+        services = acc.services // {
+          "immich-memories-notification-${name}" = {
+            description = "Immich Memories Notification for ${name}";
+            after = [ "ntfy-sh.service" ];
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${script userCfg}/bin/run";
+            };
           };
         };
-
-        timers."immich-memories-notification-trigger-${name}" = {
-          description = "Run Immich Memories Notification check daily for ${name}";
-          timerConfig = {
-            OnCalendar = userCfg.schedule;
-            Unit = "immich-memories-notification-${name}.service";
+        timers = acc.timers // {
+          "immich-memories-notification-trigger-${name}" = {
+            description = "Run Immich Memories Notification check daily for ${name}";
+            timerConfig = {
+              OnCalendar = userCfg.schedule;
+              Unit = "immich-memories-notification-${name}.service";
+            };
+            wantedBy = [ "timers.target" ];
           };
-          wantedBy = [ "timers.target" ];
         };
       })
+      { services = { }; timers = { }; }
       cfg.users;
   };
 }

@@ -1,8 +1,25 @@
 {{ if and .Params.github_comments_issueid .Site.Params.Comments.github_repo }}
 
-<div id="gh-comments">
-  <div id="gh-comments-list"></div>
-</div>
+<section id="gh-comments" class="gh-comments" aria-labelledby="gh-comments-title">
+  <div class="gh-comments-header">
+    <div>
+      <p class="gh-comments-kicker">Discussion</p>
+      <h2 id="gh-comments-title">Comments</h2>
+    </div>
+    <a
+      class="gh-comments-thread-link"
+      href="https://github.com/{{ .Site.Params.Comments.github_repo }}/issues/{{ .Params.github_comments_issueid }}"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      View on GitHub
+    </a>
+  </div>
+
+  <div id="gh-comments-list" class="gh-comments-list" aria-live="polite">
+    <div class="gh-comments-loading">Loading comments...</div>
+  </div>
+</section>
 
 <script
   src="https://code.jquery.com/jquery-3.2.1.min.js"
@@ -19,6 +36,6 @@
     );
 </script>
 
-<noscript>Please enable JavaScript to view comments.</noscript>
+<noscript><p class="gh-comments-noscript">Please enable JavaScript to view comments.</p></noscript>
 
 {{ end }}

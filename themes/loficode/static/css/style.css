@@ -868,7 +868,8 @@ svg {
     width: 100%;
 }
 
-.post-content ul, li {
+.post-item > .post-content ul,
+.post-item > .post-content li {
     padding: 0rem 0.9rem;
 }
 
@@ -1207,19 +1208,28 @@ a.post-tag {
     font-size: 1.05rem;
 }
 
-.post-body ul, ol, li {
-    margin: 0.2rem 0;
-    padding-left: 2rem;
+.post-body ul,
+.post-body ol {
+    margin: 0.5rem 0 1.25rem;
+    padding-left: 1.25rem;
 }
 
 .post-body li {
+    margin: 0.15rem 0;
+    padding-left: 0.25rem;
     line-height: 1.6rem;
     color: var(--text-secondary);
 }
 
+.post-body li > ul,
+.post-body li > ol {
+    margin: 0.25rem 0 0.35rem;
+    padding-left: 1.1rem;
+}
+
 .post-body > ul,
 .post-body > ol {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .post-body strong {

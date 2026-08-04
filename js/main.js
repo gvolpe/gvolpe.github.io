@@ -329,11 +329,15 @@
 
       if (posts.length > 0) {
         searchData = Array.from(posts).map((post) => {
+          const tags = post.tags || [];
+          const excerpt = plainText(post.excerpt || post.summary);
+
           return {
             title: post.title,
             url: post.url,
-            excerpt: post.summary,
-            tags: post.tags,
+            excerpt,
+            searchText: plainText(`${post.title} ${excerpt} ${post.summary || ""}`),
+            tags,
             date: post.date,
             element: post,
           };
@@ -392,8 +396,7 @@
     const searchLower = query.toLowerCase();
     const results = searchData.filter((post) => {
       return (
-        post.title.toLowerCase().includes(searchLower) ||
-        post.excerpt.toLowerCase().includes(searchLower) ||
+        post.searchText.toLowerCase().includes(searchLower) ||
         post.tags.some((tag) => tag.toLowerCase().includes(searchLower))
       );
     });
@@ -497,6 +500,12 @@
   function truncateText(text, maxLength) {
     if (text.length <= maxLength) return text;
     return text.substr(0, maxLength).trim() + "...";
+  }
+
+  function plainText(value) {
+    const element = document.createElement("div");
+    element.innerHTML = value || "";
+    return element.textContent || element.innerText || "";
   }
 
   // Event listeners for search

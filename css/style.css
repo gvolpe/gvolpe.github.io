@@ -860,15 +860,16 @@ svg {
     width: 6px;
 }
 
-.post-content {
+.post-item > .post-content {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
 }
 
-.post-content ul, li {
+.post-item > .post-content ul,
+.post-item > .post-content li {
     padding: 0rem 0.9rem;
 }
 
@@ -1207,19 +1208,28 @@ a.post-tag {
     font-size: 1.05rem;
 }
 
-.post-body ul, ol, li {
-    margin: 0.2rem 0;
-    padding-left: 2rem;
+.post-body ul,
+.post-body ol {
+    margin: 0.5rem 0 1.25rem;
+    padding-left: 1.25rem;
 }
 
 .post-body li {
+    margin: 0.15rem 0;
+    padding-left: 0.25rem;
     line-height: 1.6rem;
     color: var(--text-secondary);
 }
 
+.post-body li > ul,
+.post-body li > ol {
+    margin: 0.25rem 0 0.35rem;
+    padding-left: 1.1rem;
+}
+
 .post-body > ul,
 .post-body > ol {
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .post-body strong {
@@ -3071,95 +3081,265 @@ footer {
   height: 100%;
 }
 
-/* Github comments style */
-#gh-comments-list {
-  text-align: center;
-  overflow: hidden;
+/* GitHub comments */
+#gh-comments {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
 }
 
-#gh-comment {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 0.4rem;
-    transition: all 0.3s ease;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.5rem;
+.gh-comments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.gh-comments-kicker {
+    margin: 0 0 0.25rem;
+    color: var(--accent-tertiary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+#gh-comments-title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+.gh-comments-thread-link,
+.gh-post-btn {
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 0.65rem 1rem;
+    color: var(--accent-primary);
+    background: var(--bg-card);
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.gh-comments-thread-link:hover,
+.gh-post-btn:hover {
+    color: white;
+    border-color: var(--accent-primary);
+    background: var(--btn-gradient);
+    box-shadow: 0 8px 22px var(--glow-color);
+    transform: translateY(-1px);
+}
+
+#gh-comments-list,
+.gh-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+}
+
+.gh-comments-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.gh-comments-loading,
+.gh-comments-empty,
+.gh-comments-error,
+.gh-comments-noscript {
+    padding: 1rem 1.25rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.gh-comments-error {
+    color: var(--accent-primary);
+}
+
+.gh-comment {
     position: relative;
     overflow: hidden;
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    margin: 8px 0px;
+    border-radius: 12px;
+    box-shadow: 0 8px 28px var(--shadow-color);
 }
 
-#gh-comment::before {
+.gh-comment::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+    inset: 0 auto 0 0;
     width: 4px;
     background: var(--btn-gradient);
 }
 
-#gh-comment p {
-  margin:0px;
-  font-family: serif;
-  font-size: 14px;
-}
-
-#gh-comment img {
-  display: inline;
-  vertical-align: middle;
-  margin: 2px 10px 2px 2px;
-}
-
-.gh-post-btn {
-    background: var(--btn-gradient);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 25px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+.gh-comment-author {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    box-shadow: 0 8px 25px var(--glow-color);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem 0.85rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255, 0, 107, 0.05) 100%);
 }
 
-.gh-comment-author {
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    padding: 0.3rem 0.8rem;
-    border-radius: 10px;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
-    margin-left: 5px;
+.gh-comment-author img {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+}
+
+.gh-comment-meta {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.gh-comment-author b {
+    line-height: 1.2;
 }
 
 .gh-comment-author b a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.gh-comment-author b a:hover {
     color: var(--accent-primary);
 }
 
-.gh-comment-body {
-    background: var(--bg-primary);
-    border-radius: 16px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    text-align: justify;
-    position: relative;
-    overflow: hidden;
-    margin-left: 5px;
+.gh-comment-author time {
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
 }
 
-.gh-comment-body * {
+.gh-comment-body {
+    padding: 1.25rem 1.5rem 1.35rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.65;
+    overflow-x: auto;
+}
+
+.gh-comment-body > *:first-child {
+    margin-top: 0;
+}
+
+.gh-comment-body > *:last-child {
+    margin-bottom: 0;
+}
+
+.gh-comment-body p {
+    margin: 0 0 1rem;
+}
+
+.gh-comment-body a {
+    color: var(--accent-secondary);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+}
+
+.gh-comment-body ul,
+.gh-comment-body ol {
+    margin: 0.5rem 0 1rem;
+    padding-left: 1.25rem;
+}
+
+.gh-comment-body li {
+    margin: 0.15rem 0;
+}
+
+.gh-comment-body blockquote {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent-primary);
+    border-radius: 8px;
+}
+
+.gh-comment-body code {
+    color: var(--accent-primary);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.1rem 0.35rem;
     font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88em;
+}
+
+.gh-comment-body pre {
+    margin: 1rem 0;
+    padding: 1rem;
+    overflow-x: auto;
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+}
+
+.gh-comment-body pre code {
+    padding: 0;
+    color: var(--code-text);
+    background: transparent;
+    border: 0;
+}
+
+.gh-comment-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.gh-comment-body table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+}
+
+.gh-comment-body th,
+.gh-comment-body td {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.gh-comment-body input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .gh-comments-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .gh-comments-actions {
+        justify-content: flex-start;
+    }
+
+    .gh-comment-author {
+        padding: 0.9rem 1rem 0.8rem 1.25rem;
+    }
+
+    .gh-comment-body {
+        padding: 1rem 1.25rem 1.1rem;
+        font-size: 0.92rem;
+    }
 }

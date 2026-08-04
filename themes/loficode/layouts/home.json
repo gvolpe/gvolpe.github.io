@@ -8,7 +8,7 @@
     "dateFormatted" (.Date.Format "2006.01.02")
     "summary" .Summary
     "content" .Content
-    "excerpt" (truncate 200 .Summary)
+    "excerpt" (.Summary | plainify | truncate 160)
     "tags" .Params.tags
     "subtitle" .Params.subtitle
     "mood" .Params.mood

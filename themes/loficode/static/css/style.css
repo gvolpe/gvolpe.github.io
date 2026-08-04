@@ -860,12 +860,12 @@ svg {
     width: 6px;
 }
 
-.post-content {
+.post-item > .post-content {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     max-width: 1000px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .post-content ul, li {

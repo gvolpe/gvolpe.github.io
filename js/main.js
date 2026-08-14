@@ -47,6 +47,7 @@
           const newTheme = e.matches ? "dark" : "light";
           htmlElement.setAttribute("data-theme", newTheme);
           updateThemeIcon();
+          syncRemark42Theme();
         }
       });
   }
@@ -61,6 +62,7 @@
       htmlElement.setAttribute("data-theme", newTheme);
       localStorage.setItem("theme", newTheme);
       updateThemeIcon();
+      syncRemark42Theme();
     });
   }
 
@@ -508,6 +510,215 @@
     return element.textContent || element.innerText || "";
   }
 
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    })[char]);
+  }
+
+  function remark42ThreadURL(post) {
+    const config = window.remark42SiteConfig || {};
+    const base = (config.page_url_base || window.location.origin).replace(/\/$/, "");
+    const path = new URL(post.url || `/blog/${post.slug}/`, window.location.origin).pathname;
+    return `${base}${path}`;
+  }
+
+  function currentRemark42Theme() {
+    return htmlElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  }
+
+  function cssVar(name) {
+    return getComputedStyle(htmlElement).getPropertyValue(name).trim();
+  }
+
+  function rgbTriplet(value, fallback) {
+    if (!value) {
+      return fallback;
+    }
+
+    const rgb = value.match(/rgba?\(([^)]+)\)/);
+    if (rgb) {
+      return rgb[1].split(",").slice(0, 3).map((part) => parseInt(part, 10)).join(",");
+    }
+
+    const hex = value.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+    if (hex) {
+      const raw = hex[1].length === 3
+        ? hex[1].split("").map((char) => char + char).join("")
+        : hex[1];
+      return [
+        parseInt(raw.slice(0, 2), 16),
+        parseInt(raw.slice(2, 4), 16),
+        parseInt(raw.slice(4, 6), 16),
+      ].join(",");
+    }
+
+    return fallback;
+  }
+
+  function remark42Colors() {
+    const isDark = currentRemark42Theme() === "dark";
+    const accentPrimary = cssVar("--accent-primary");
+    const accentSecondary = cssVar("--accent-secondary");
+    const accentTertiary = cssVar("--accent-tertiary");
+    const textPrimary = cssVar("--text-primary");
+    const textSecondary = cssVar("--text-secondary");
+    const textMuted = cssVar("--text-muted");
+    const bgCard = cssVar("--bg-card");
+    const bgSecondary = cssVar("--bg-secondary");
+    const border = cssVar("--border-color");
+    const codeBg = cssVar("--code-bg");
+    const codeText = cssVar("--code-text");
+    const formSurface = isDark ? "#2A194B" : bgCard;
+    const formSurfaceMuted = isDark ? "#35235D" : bgSecondary;
+    const formText = isDark ? "#F4F0FF" : textPrimary;
+    const formMutedText = isDark ? "#D7CFF2" : textSecondary;
+
+    return {
+      "--primary-color": rgbTriplet(accentPrimary, "255,0,107"),
+      "--primary-brighter-color": rgbTriplet(accentTertiary, "255,127,80"),
+      "--primary-darker-color": rgbTriplet(accentPrimary, "230,0,95"),
+      "--primary-text-color": rgbTriplet(textPrimary, "45,27,78"),
+      "--secondary-text-color": rgbTriplet(textSecondary, "90,75,124"),
+      "--secondary-darker-text-color": rgbTriplet(textMuted, "139,123,168"),
+      "--primary-background-color": rgbTriplet(bgCard, "255,255,255"),
+      "--line-color": border,
+      "--line-brighter-color": border,
+      "--color4": bgSecondary,
+      "--color5": isDark ? formText : "#EEEEEE",
+      "--color6": bgCard,
+      "--color7": formSurfaceMuted,
+      "--color8": formSurface,
+      "--color9": accentSecondary,
+      "--color15": accentPrimary,
+      "--color16": border,
+      "--color19": formSurfaceMuted,
+      "--color20": formMutedText,
+      "--color21": bgSecondary,
+      "--color22": formSurface,
+      "--color23": formSurfaceMuted,
+      "--color24": border,
+      "--color31": border,
+      "--color33": accentTertiary,
+      "--color35": textSecondary,
+      "--color37": textMuted,
+      "--color40": border,
+      "--color41": textPrimary,
+      "--color45": border,
+      "--color46": border,
+      "--color47": "rgba(" + rgbTriplet(accentPrimary, "255,0,107") + ",.3)",
+      "--color48": "rgba(" + rgbTriplet(accentPrimary, "255,0,107") + ",.45)",
+      "--chroma-bg": codeBg,
+      "--chroma-base": codeText,
+    };
+  }
+
+  let remark42Instance = null;
+  let remark42Pending = null;
+  let remark42ActiveNode = null;
+  let remark42ActiveRoot = null;
+
+  function ensureRemark42Script(host) {
+    if (window.REMARK42 || document.getElementById("remark42-embed-script")) {
+      return;
+    }
+
+    const script = document.createElement("script");
+    let extension = ".js";
+    script.id = "remark42-embed-script";
+    if ("noModule" in script) {
+      script.type = "module";
+      extension = ".mjs";
+    } else {
+      script.async = true;
+    }
+    script.defer = true;
+    script.src = `${host}/web/embed${extension}`;
+    script.addEventListener("load", mountPendingRemark42);
+    (document.head || document.body).appendChild(script);
+  }
+
+  function mountPendingRemark42() {
+    if (!remark42Pending || !window.REMARK42 || !window.REMARK42.createInstance) {
+      return;
+    }
+
+    if (remark42Instance && remark42Instance.destroy) {
+      remark42Instance.destroy();
+    } else if (window.REMARK42.destroy) {
+      window.REMARK42.destroy();
+    }
+
+    remark42Instance = window.REMARK42.createInstance({
+      node: remark42Pending.node,
+      ...remark42Pending.config,
+    });
+    remark42ActiveNode = remark42Pending.node;
+    remark42ActiveRoot = remark42Pending.root;
+    remark42Pending = null;
+  }
+
+  function destroyRemark42Comments() {
+    if (remark42Instance && remark42Instance.destroy) {
+      remark42Instance.destroy();
+    } else if (window.REMARK42 && window.REMARK42.destroy) {
+      window.REMARK42.destroy();
+    }
+
+    remark42Instance = null;
+    remark42Pending = null;
+    remark42ActiveNode = null;
+    remark42ActiveRoot = null;
+  }
+
+  function syncRemark42Theme() {
+    if (!remark42ActiveRoot) {
+      return;
+    }
+
+    const root = remark42ActiveRoot;
+    destroyRemark42Comments();
+    initRemark42Comments(root);
+  }
+
+  function initRemark42Comments(root = document) {
+    const section = root.matches && root.matches("[data-remark42-comments]")
+      ? root
+      : root.querySelector("[data-remark42-comments]");
+    const siteConfig = window.remark42SiteConfig || {};
+    if (!section || !siteConfig.host || !siteConfig.site_id) {
+      return;
+    }
+
+    const node = section.querySelector("#remark42");
+    if (!node || remark42ActiveNode === node) {
+      return;
+    }
+
+    const config = {
+      host: siteConfig.host,
+      site_id: siteConfig.site_id,
+      url: section.dataset.remark42Url,
+      page_title: section.dataset.remark42Title,
+      components: ["embed"],
+      theme: currentRemark42Theme(),
+      __colors__: remark42Colors(),
+      no_footer: true,
+      show_rss_subscription: false,
+    };
+
+    remark42Pending = { node, config, root: section };
+    window.remark_config = config;
+    ensureRemark42Script(config.host);
+    mountPendingRemark42();
+  }
+
+  window.addEventListener("REMARK42::ready", mountPendingRemark42);
+
   // Event listeners for search
   if (searchToggle) {
     searchToggle.addEventListener("click", toggleSearch);
@@ -615,6 +826,9 @@
 
       // Handle initial URL
       this.handleInitialRoute();
+
+      // Initialize comments on direct post pages.
+      initRemark42Comments(document);
     }
 
     detectPageType() {
@@ -959,6 +1173,7 @@
       // Remove existing overlay
       const existingOverlay = document.querySelector(".post-overlay");
       if (existingOverlay) {
+        destroyRemark42Comments();
         existingOverlay.remove();
       }
 
@@ -1015,6 +1230,8 @@
               <div class="post-body">
                 ${post.content}
               </div>
+
+              ${this.renderRemark42Comments(post)}
 
               ${relatedPosts.length > 0
           ? `
@@ -1123,10 +1340,39 @@
       setTimeout(() => {
         initializeCodeFences();
         this.generateOverlayTOC(overlay);
+        initRemark42Comments(overlay);
 
         // Re-initialize ambient sound controls for the overlay
         this.initializeOverlayAmbientControls(overlay);
       }, 100);
+    }
+
+    renderRemark42Comments(post) {
+      if (!post.comments || !window.remark42SiteConfig) {
+        return "";
+      }
+
+      return `
+        <section
+          id="comments"
+          class="remark-comments"
+          aria-labelledby="remark-comments-title"
+          data-remark42-comments
+          data-remark42-url="${escapeHtml(remark42ThreadURL(post))}"
+          data-remark42-title="${escapeHtml(post.title)}"
+        >
+          <div class="remark-comments-header">
+            <div>
+              <p class="remark-comments-kicker">Discussion</p>
+              <h2 id="remark-comments-title">Comments</h2>
+            </div>
+          </div>
+
+          <div id="remark42" class="remark42-container">
+            <div class="remark-comments-loading">Loading comments...</div>
+          </div>
+        </section>
+      `;
     }
 
     findRelatedPosts(currentPost) {
@@ -1252,6 +1498,7 @@
       // Remove post overlay
       const overlay = document.querySelector(".post-overlay");
       if (overlay) {
+        destroyRemark42Comments();
         overlay.classList.remove("active");
         setTimeout(() => {
           overlay.remove();

@@ -1,0 +1,28 @@
+{{ $commentsEnabled := or .Params.comments .Params.github_comments_issueid }}
+{{ $comments := .Site.Params.Comments }}
+{{ if and $commentsEnabled $comments.remark42_url $comments.remark42_site_id $comments.remark42_page_url_base }}
+{{ $pageURL := printf "%s%s" $comments.remark42_page_url_base .RelPermalink }}
+
+<section
+  id="comments"
+  class="remark-comments"
+  aria-labelledby="remark-comments-title"
+  data-remark42-comments
+  data-remark42-url="{{ $pageURL }}"
+  data-remark42-title="{{ .Title }}"
+>
+  <div class="remark-comments-header">
+    <div>
+      <p class="remark-comments-kicker">Discussion</p>
+      <h2 id="remark-comments-title">Comments</h2>
+    </div>
+  </div>
+
+  <div id="remark42" class="remark42-container">
+    <div class="remark-comments-loading">Loading comments...</div>
+  </div>
+</section>
+
+<noscript><p class="remark-comments-noscript">Please enable JavaScript to view comments.</p></noscript>
+
+{{ end }}

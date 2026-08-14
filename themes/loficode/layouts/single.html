@@ -55,7 +55,7 @@
                 {{ .Content }}
             </div>
 
-            {{ partial "github-comments.html" . }}
+            {{ partial "remark42-comments.html" . }}
 
             {{ $related := .Site.RegularPages.Related . | first 3 }}
             {{ with $related }}

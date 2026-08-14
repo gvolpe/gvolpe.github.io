@@ -27,7 +27,9 @@
       devShell.${system} = pkgs.mkShell {
         name = "site-tools-shell";
         buildInputs = with pkgs;[
+          curl
           hugo
+          jq
         ];
         shellHook = ''        '';
       };

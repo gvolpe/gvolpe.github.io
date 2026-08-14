@@ -24,6 +24,9 @@ theme = "loficode"
 
   [params.comments]
     github_repo = "gvolpe/blog-comments"
+    remark42_url = "https://comments.gvolpe.com"
+    remark42_site_id = "blog"
+    remark42_page_url_base = "https://gvolpe.com"
 
 [[menu.main]]
   name = "Tags"

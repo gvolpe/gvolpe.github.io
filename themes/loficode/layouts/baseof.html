@@ -18,6 +18,15 @@
     {{ end }}
 
     <script src="{{ "js/email.js" | absLangURL }}"></script>
+    {{ with .Site.Params.Comments }}
+    <script>
+      window.remark42SiteConfig = {
+        host: {{ printf "%q" .remark42_url | safeJS }},
+        site_id: {{ printf "%q" .remark42_site_id | safeJS }},
+        page_url_base: {{ printf "%q" .remark42_page_url_base | safeJS }}
+      };
+    </script>
+    {{ end }}
     <script src="{{ "js/main.js" | absLangURL }}"></script>
 </body>
 </html>

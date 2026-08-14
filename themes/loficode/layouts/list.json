@@ -17,6 +17,7 @@
       "wordCount" .WordCount
       "featured" .Params.featured
       "slug" .File.BaseFileName
+      "comments" (not (not (or .Params.comments .Params.github_comments_issueid)))
     -}}
     {{- $posts = $posts | append $post -}}
   {{- end -}}

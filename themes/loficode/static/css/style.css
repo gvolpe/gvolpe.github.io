@@ -267,12 +267,15 @@ nav {
 }
 
 .logo::before {
-    content: "🚀 ";
-    font-size: 1.2rem;
-    -webkit-text-fill-color: var(--accent-tertiary) !important;
-    color: var(--accent-tertiary);
+    content: "";
+    display: inline-block;
+    width: 1.7rem;
+    height: 1.7rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: url("/images/gvolpe.png") center / cover no-repeat;
+    border: 1px solid var(--border-color);
     filter: drop-shadow(0 0 8px var(--accent-tertiary));
-    background: none;
 }
 
 .books {
@@ -1070,7 +1073,8 @@ svg {
     }
 
     .logo::before {
-        font-size: 1rem;
+        width: 1.35rem;
+        height: 1.35rem;
     }
 
     .post-item {
@@ -2679,12 +2683,15 @@ footer {
 }
 
 .overlay-site-title::before {
-    content: "🤖";
-    font-size: 1rem;
-    -webkit-text-fill-color: var(--accent-tertiary) !important;
-    color: var(--accent-tertiary);
+    content: "";
+    display: inline-block;
+    width: 1.35rem;
+    height: 1.35rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: url("/images/gvolpe.png") center / cover no-repeat;
+    border: 1px solid var(--border-color);
     filter: drop-shadow(0 0 8px var(--accent-tertiary));
-    background: none;
 }
 
 .overlay-site-title:hover {

@@ -1,4 +1,16 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Poland on Gabriel Volpe</title><link>https://gvolpe.com/tags/poland/</link><description>Recent content in Poland on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 14 Mar 2023 09:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/poland/index.xml" rel="self" type="application/rss+xml"/><item><title>Functional Event-Driven Architecture @ Scalar 2023 - Warsaw, PL 🇵🇱</title><link>https://gvolpe.com/talks/scalar-2023/</link><pubDate>Tue, 14 Mar 2023 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scalar-2023/</guid><description>&lt;p&gt;Coming back to the stages after a few absent years from the circuit to introduce a new book: &lt;a href="https://leanpub.com/feda"&gt;Functional Event-Driven Architecture - Powered by Scala 3&lt;/a&gt;.&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Poland on Gabriel Volpe</title><link>https://gvolpe.com/tags/poland/</link><description>Recent content in Poland on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Tue, 25 Aug 2026 07:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/poland/index.xml" rel="self" type="application/rss+xml"/><item><title>A tax-paying prisoner in Poland</title><link>https://gvolpe.com/blog/tax-paying-prisoner-in-poland/</link><pubDate>Tue, 25 Aug 2026 07:00:00 +0000</pubDate><guid>https://gvolpe.com/blog/tax-paying-prisoner-in-poland/</guid><description>&lt;p&gt;Today is my birthday, but I&amp;rsquo;m not in the mood to celebrate. Today marks &lt;strong&gt;131 days&lt;/strong&gt; since my legal status in Poland has basically become &lt;em&gt;tax-paying prisoner&lt;/em&gt;, which was the day my second temporary residency card has expired (April 16, 2026).&lt;/p&gt;
+&lt;p&gt;Today is &lt;strong&gt;Day 439&lt;/strong&gt; since my residency application was submitted on June 12, 2025. The Polish law says it shouldn&amp;rsquo;t take more than &lt;em&gt;60 days&lt;/em&gt;.&lt;/p&gt;
+&lt;style&gt;
+.quote::before {
+ content: var(--quote-emoji);
+}
+&lt;/style&gt;
+
+&lt;div class="quote" style="--quote-emoji: '⏳';"&gt;
+ &lt;h4&gt;Pobyt stały? Na razie stałe jest tylko czekanie.&lt;/h4&gt;
+ &lt;p&gt;
+"Permanent residence? For now, the only permanent is wait."
+&lt;/p&gt;</description></item><item><title>Functional Event-Driven Architecture @ Scalar 2023 - Warsaw, PL 🇵🇱</title><link>https://gvolpe.com/talks/scalar-2023/</link><pubDate>Tue, 14 Mar 2023 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/scalar-2023/</guid><description>&lt;p&gt;Coming back to the stages after a few absent years from the circuit to introduce a new book: &lt;a href="https://leanpub.com/feda"&gt;Functional Event-Driven Architecture - Powered by Scala 3&lt;/a&gt;.&lt;/p&gt;
 &lt;div class="thumbnail"&gt;
  &lt;img src="../../images/talks/scalar-signify-2023.jpg" alt="thumbnail" style="max-width:100%; height:auto;"&gt;&lt;/img&gt;
 &lt;/div&gt;

@@ -95,3 +95,28 @@ And to the internet trolls spewing out xenophobic comments, I love you all 😘 
 
 Peace out ✌,
 Gabriel.
+
+---
+
+## Addendum: Gdańsk protest
+
+On September 7, a protest was held in front of the Gdańsk immigration office which I attended. 
+
+![prisoner](../../images/immigration/prisoner.jpg)
+*"I've been waiting for 452 days now. I wrote these books faster." reads in Polish*
+
+It was great to connect with people going through similar situations (some have it worse than others).
+
+![czekania](../../images/immigration/czekania.jpg)
+*"3 years of wait for a 3 years residency permit" reads in Polish*
+
+The turn up was great; it is estimated that approximately 350 people attended.
+
+![turnup](../../images/immigration/turnup.jpg)
+
+And the media coverage (TVN24, TVP23, and others) made it hard for the politicians to ignore, so thanks for showing up!
+
+![tv](../../images/immigration/tv.jpg)
+*Valentin (one of the organizers) talking to the press about the official claims*
+
+Although we are not yet sure things will change in the short term, there is hope now 🤞 (and more protests to come until a systematic change is implemented across the country). I may no longer be in the country to find out, but a core change is desperately needed.

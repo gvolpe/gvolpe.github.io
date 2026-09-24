@@ -1,0 +1,292 @@
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dots - NixCon 2026</title>
+  <meta name="description" content="Dots: The Home-Manager module you didn't know you needed">
+  <link rel="icon" href="../images/favicon.png">
+  <link rel="stylesheet" href="/slides/dots/style.css">
+</head>
+<body>
+  <main id="deck" class="deck" aria-live="polite">
+    <section class="slide title-slide" data-title="Intro">
+      <div class="stage wide split even">
+        <div>
+          <p class="kicker">NixCon 2026</p>
+          <h1>Dots</h1>
+          <p class="subtitle">The Home Manager module you didn't know you needed</p>
+          <div class="meta">
+            <span class="pill">
+              <a href="https://gvolpe.com" target="_blank">@gvolpe</a>
+            </span>
+            <span class="pill">
+              <a href="https://github.com/gvolpe/dots" target="_blank">github.com/gvolpe/dots</a>
+            </span>
+          </div>
+        </div>
+        <script type="text/plain" data-terminal data-title="intro" data-terminal-width="102%">
+          $ nix flake show github:gvolpe/dots
+          github:gvolpe/dots/eb63362e4e928dca2b118972464e7384b8347bec
+          └───homeModules
+              └───default: Home Manager module
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="The Itch">
+      <div class="stage split">
+        <div>
+          <p class="kicker">The itch</p>
+          <h2>Dotfiles are where we think with our hands.</h2>
+        </div>
+        <div class="stack">
+          <p class="lede">Home Manager makes user environments reproducible, which are immutable by default.</p>
+          <p class="lede muted">Then you want to tweak a terminal color, a window rule, a keybinding, or a simple program's configuration. That part should feel immediate.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Immutable shenanigans">
+      <div class="stage split">
+        <div>
+          <p class="kicker">The usual move</p>
+          <h2>Place the config file in the nix store.</h2>
+          <p>Simple. Reproducible. Portable. Also read-only by design.</p>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="programs/fastfecth/default.nix" data-width="96%">
+          { pkgs, ... }:
+
+          {
+            home.packages = [ pkgs.fastfetch ];
+
+            xdg.configFile."fastfetch/config.jsonc" = {
+              source = ./config.jsonc;
+            };
+          }
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="The Loop">
+      <div class="stage split">
+        <div>
+          <p class="kicker">The loop</p>
+          <h2>Every tiny change becomes a rebuild.</h2>
+          <p>That is fine for committed configuration, but it gets in the way while discovering what the configuration should be.</p>
+        </div>
+        <script type="text/plain" data-terminal data-title="hm switch" data-terminal-width="90%">
+          $ vim home/programs/fastfetch/config.jsonc
+
+          $ home-manager switch --flake .#niri-mutable
+          Activating linkGeneration (yet again)
+
+          $ fastfetch
+
+          Clumsy. Slow. Unproductive.
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="The Hidden Lever">
+      <div class="stage split">
+        <div>
+          <p class="kicker">The hidden lever</p>
+          <h2>Home Manager already has an escape hatch.</h2>
+          <p><code>mkOutOfStoreSymlink</code> points the managed file at your working copy instead of copying it into the Nix store.</p>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="the infamous function" data-terminal-width="110%">
+          lib.file.mkOutOfStoreSymlink = path:
+            let
+              pathStr = toString path;
+              name = hm.strings.storeFileName (baseNameOf pathStr);
+            in
+              pkgs.runCommandLocal name {} ''
+                ln -s ${escapeShellArg pathStr} $out
+              '';
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="The catch">
+      <div class="stage split">
+        <div>
+          <p class="kicker">The catch</p>
+          <h2>It works, albeit being a leaky abstraction.</h2>
+          <p>Each module starts carrying path math, and a hardcoded symlink'd config file. Hard to share. Not reproducible on different machines.</p>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="before dots" data-terminal-width="117%">
+          { config, pkgs, ... }:
+
+          let
+            filePath = "~/dotfiles/home/programs/fastfetch/config.jsonc";
+          in
+          {
+            home.packages = [ pkgs.fastfetch ];
+
+            xdg.configFile."fastfetch/config.jsonc" = {
+              source = config.lib.file.mkOutOfStoreSymlink filePath;
+            };
+          }
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Dots">
+      <div class="stage split">
+        <div>
+          <p class="kicker">Dots</p>
+          <h2>Make the boring part disappear.</h2>
+          <p>One function at the call site. One module owns the immutability policy.</p>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="after dots">
+          { config, pkgs, ... }:
+
+          {
+            home.packages = [ pkgs.fastfetch ];
+
+            xdg.configFile."fastfetch/config.jsonc" = {
+              source = config.dotfiles.make ./config.jsonc;
+            };
+          }
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="The Contract">
+      <div class="stage wide split">
+        <div>
+          <p class="kicker">The contract</p>
+          <h2>Three options are enough.</h2>
+          <p><code>mutable</code> chooses the mode. <code>path</code> says where the live checkout is. <code>sourceRoot</code> lets Dots compute the relative path.</p>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="home/dotfiles.nix" data-terminal-width="93%">
+          { config, ... }:
+
+          {
+            dotfiles = {
+              mutable = true;
+              path = "${config.home.homeDirectory}/dotfiles/home";
+              sourceRoot = ./.;
+            };
+          }
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Two Modes">
+      <div class="stage">
+        <p class="kicker">Two modes</p>
+        <h2>Same modules, different mood.</h2>
+        <div class="compare">
+          <div class="mode-block">
+            <strong>Immutable</strong>
+            <p>Configuration goes into the Nix store. Great for sharing, CI, rollback, and machines that should be pinned in place.</p>
+            <script type="text/plain" data-terminal data-title="freeze" data-terminal-width="80%">
+              $ home-manager switch --flake .#niri
+            </script>
+          </div>
+          <div class="mode-block">
+            <strong>Mutable</strong>
+            <p>Configuration links to the working tree. Great for trying things quickly and committing once the shape feels right.</p>
+            <script type="text/plain" data-terminal data-title="tinker" data-terminal-width="90%">
+              $ home-manager switch --flake .#niri-mutable
+            </script>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Wrappers">
+      <div class="stage split">
+        <div>
+          <p class="kicker">The ultimate combo</p>
+          <h2>Dots plus wrappers for an easy win.</h2>
+          <p>Forget about XDG configuration files and local state. Packages become self-contained, fully configured and easy to share.</p>
+          <div class="meta">
+            <span class="pill">codeberg.org/viperML/wrapper-manager</span>
+          </div>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="dots + wrappers">
+          { config, lib, pkgs, ... }:
+
+          {
+            wrappers.fastfetch = lib.mkWrapper {
+              basePackage = pkgs.fastfetch;
+              prependFlags = [
+                "--config"
+                (config.dotfiles.make ./config.jsonc)
+              ];
+            };
+          }
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Try it out">
+      <div class="stage split">
+        <div>
+          <p class="kicker">Try it out!</p>
+          <h2>Expose your wrappers in your flake.</h2>
+          <p>The wrappers option is part of dots and can be used to easily access your custom packages.</p>
+        </div>
+        <div class="code-stack">
+          <script type="text/plain" data-code="nix" data-title="flake.nix" data-terminal-width="125%">
+            outputs = { self, nixpkgs, ... }:
+            {
+              packages.${system} = {
+                inherit (self.homeConfigurations.niri.config.wrappers) fastfetch;
+              };
+            }
+          </script>
+          <script type="text/plain" data-terminal data-title="try it out" data-terminal-width="95%">
+            $ nix run github:gvolpe/nix-config#fastfetch
+          </script>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Payoff">
+      <div class="stage wide split even">
+        <figure class="image-panel">
+          <img src="/images/fastfetch.png" alt="Fastfecth running on a kitty terminal">
+          <figcaption class="caption">The result can still be reproducible when you are done tinkering.</figcaption>
+        </figure>
+        <div>
+          <p class="kicker">The payoff</p>
+          <p class="statement">Mutable while exploring. Immutable when sharing. Still <em>Home Manager</em>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Questions">
+      <div class="stage wide split even">
+        <div>
+          <p class="kicker">Thank you!</p>
+          <h1>Questions?</h1>
+          <p class="subtitle">Find me online or at the pub 🍻</p>
+          <div class="meta">
+            <span class="pill">
+              <a href="https://gvolpe.com" target="_blank">gvolpe.com</a>
+            </span>
+            <span class="pill">
+              <a href="https://github.com/gvolpe/dots" target="_blank">github.com/gvolpe/dots</a>
+            </span>
+          </div>
+        </div>
+        <figure class="image-panel">
+          <img src="/images/nixcon26.svg" alt="Nixcon 2026 logo">
+        </figure>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="controls" aria-label="Slide controls">
+    <button class="nav-button prev" id="prevSlide" type="button" title="Previous slide" aria-label="Previous slide"></button>
+    <button class="nav-button next" id="nextSlide" type="button" title="Next slide" aria-label="Next slide"></button>
+  </nav>
+  <div class="counter" id="counter" aria-hidden="true"></div>
+  <div class="progress" aria-hidden="true"><span id="progress"></span></div>
+
+  <script src="/slides/dots/dots.js"></script>
+</body>
+</html>

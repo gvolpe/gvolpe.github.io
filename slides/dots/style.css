@@ -23,6 +23,11 @@
   box-sizing: border-box;
 }
 
+figure {
+  min-width: 0;
+  margin: 0;
+}
+
 html,
 body {
   height: 100%;
@@ -598,6 +603,21 @@ li::marker {
   transition: width 180ms ease;
 }
 
+@media (max-width: 1600px) {
+  .code-window {
+    width: min(var(--code-window-width, 100%), 100%);
+    max-width: 100%;
+  }
+
+  .terminal {
+    width: min(var(--terminal-width, var(--code-window-width, 100%)), 100%);
+  }
+
+  .code-window pre {
+    font-size: 0.80rem;
+  }
+}
+
 @media (max-width: 980px) {
   .slide {
     padding: 3rem 1.25rem 5.5rem;
@@ -638,9 +658,6 @@ li::marker {
     display: none;
   }
 
-  .code-window pre {
-    font-size: 0.88rem;
-  }
 }
 
 @media (max-width: 620px) {

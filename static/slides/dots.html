@@ -45,10 +45,35 @@
       </div>
     </section>
 
-    <section class="slide" data-title="Immutable shenanigans">
+    <section class="slide" data-title="Home Manager modules">
       <div class="stage split">
         <div>
           <p class="kicker">The usual move</p>
+          <h2>Leverage Home Manager modules.</h2>
+          <p>Easy to start with. Immutable by default. Not ideal for tinkering around.</p>
+        </div>
+        <script type="text/plain" data-code="nix" data-title="programs/fastfecth/default.nix" data-width="90%">
+          {
+            programs.fastfetch = {
+              enable = true;
+              settings = {
+                logo = {
+                  source = "nixos_small";
+                  padding = {
+                    right = 1;
+                  };
+                };
+              };
+            };
+          }
+        </script>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Immutable shenanigans">
+      <div class="stage split">
+        <div>
+          <p class="kicker">Alternative to modules</p>
           <h2>Place the config file in the nix store.</h2>
           <p>Simple. Reproducible. Portable. Also read-only by design.</p>
         </div>
@@ -229,11 +254,12 @@
           <p>The wrappers option is part of dots and can be used to easily access your custom packages.</p>
         </div>
         <div class="code-stack">
-          <script type="text/plain" data-code="nix" data-title="flake.nix" data-terminal-width="125%">
+          <script type="text/plain" data-code="nix" data-title="flake.nix" data-terminal-width="100%">
             outputs = { self, nixpkgs, ... }:
             {
               packages.${system} = {
-                inherit (self.homeConfigurations.niri.config.wrappers) fastfetch;
+                inherit (self.homeConfigurations.niri.config.wrappers) 
+                  fastfetch;
               };
             }
           </script>

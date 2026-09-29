@@ -11,9 +11,9 @@ Part of the spontaneous lightning talks at Nixcon 2026.
 
 ## Recording
  
-Coming soon ™️. In the meantime, here's the stream of the full day.
+Coming soon ™️. In the meantime, here's the stream of the full day (my talk starts at [6:37:03](https://youtu.be/wtw3O-ZX5Uk?t=23823)).
 
-{{< youtube wtw3O-ZX5Uk >}}
+{{< youtube id="wtw3O-ZX5Uk" start=23823 >}}
 
 ## Slides
 

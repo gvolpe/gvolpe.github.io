@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nix on Gabriel Volpe</title><link>https://gvolpe.com/tags/nix/</link><description>Recent content in Nix on Gabriel Volpe</description><generator>Hugo</generator><language>en-us</language><lastBuildDate>Sun, 27 Sep 2026 09:00:00 +0000</lastBuildDate><atom:link href="https://gvolpe.com/tags/nix/index.xml" rel="self" type="application/rss+xml"/><item><title>Dots @ Nixcon 2026 - Kraków, PL 🇵🇱</title><link>https://gvolpe.com/talks/nixcon-2026/</link><pubDate>Sun, 27 Sep 2026 09:00:00 +0000</pubDate><guid>https://gvolpe.com/talks/nixcon-2026/</guid><description>&lt;p&gt;Dots: the Home Manager module you didn&amp;rsquo;t know you needed!&lt;/p&gt;
 &lt;p&gt;Part of the spontaneous lightning talks at Nixcon 2026.&lt;/p&gt;
 &lt;h2 id="recording"&gt;Recording&lt;/h2&gt;
-&lt;p&gt;Coming soon ™️. In the meantime, here&amp;rsquo;s the stream of the full day.&lt;/p&gt;
+&lt;p&gt;Coming soon ™️. In the meantime, here&amp;rsquo;s the stream of the full day (my talk starts at &lt;a href="https://youtu.be/wtw3O-ZX5Uk?t=23823"&gt;6:37:03&lt;/a&gt;).&lt;/p&gt;
 &lt;div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"&gt;
- &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/wtw3O-ZX5Uk?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=0" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
+ &lt;iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" loading="eager" referrerpolicy="strict-origin-when-cross-origin" src="https://www.youtube.com/embed/wtw3O-ZX5Uk?autoplay=0&amp;amp;controls=1&amp;amp;end=0&amp;amp;loop=0&amp;amp;mute=0&amp;amp;start=23823" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border:0;" title="YouTube video"&gt;&lt;/iframe&gt;
  &lt;/div&gt;
 
 &lt;h2 id="slides"&gt;Slides&lt;/h2&gt;

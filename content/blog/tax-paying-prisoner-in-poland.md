@@ -3,6 +3,7 @@ title:  "A tax-paying prisoner in Poland"
 date:   2026-08-25 07:00:00
 tags: ["poland", "immigration"]
 comments: false
+hide_from_home: true
 ---
 
 Today is my birthday, but I'm not in the mood to celebrate. Today marks **131 days** since my legal status in Poland has basically become *tax-paying prisoner*, which was the day my second temporary residency card has expired (April 16, 2026).

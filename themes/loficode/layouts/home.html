@@ -32,14 +32,13 @@
     <h2 class="taxonomy-title">Latest on the blog</h2>
   </div>
 
+  {{ $posts := where (where .Site.RegularPages "Section" "eq" "blog") "Params.hide_from_home" "ne" true }}
   <div class="posts-list" id="posts-container">
-    {{ $posts := where .Site.RegularPages "Section" "eq" "blog" }} {{
-    $postsPerPage := 3 }} {{ range first $postsPerPage $posts }} {{ partial
+    {{ $postsPerPage := 3 }} {{ range first $postsPerPage $posts }} {{ partial
     "post-list-item.html" . }} {{ end }}
   </div>
 
-  {{ $posts := where .Site.RegularPages "Section" "eq" "blog" }} {{ if gt (len
-  $posts) 3 }}
+  {{ if gt (len $posts) 3 }}
   <div class="load-more-section">
     <button
       id="load-more-btn"

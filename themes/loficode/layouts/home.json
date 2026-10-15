@@ -1,5 +1,5 @@
 {{- $posts := slice -}}
-{{- range (where .Site.RegularPages "Section" "eq" "blog") -}}
+{{- range (where (where .Site.RegularPages "Section" "eq" "blog") "Params.hide_from_home" "ne" true) -}}
   {{- $post := dict
     "title" .Title
     "url" .Permalink
